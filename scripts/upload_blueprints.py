@@ -65,7 +65,12 @@ def load_blueprint_files() -> List[Dict]:
     
     return blueprints
 
-def upload_blueprints(dynamodb, table_name: str, blueprints: List[Dict]) -> Dict[str, List[str]]:
+def upload_blueprints(
+    dynamodb,
+    table_name: str,
+    blueprints: List[Dict],
+    apply_changes: bool = True,
+) -> Dict[str, List[str]]:
     """Upload blueprints to DynamoDB table."""
     table = dynamodb.Table(table_name)
     results = {"success": [], "failed": []}
@@ -80,10 +85,12 @@ def upload_blueprints(dynamodb, table_name: str, blueprints: List[Dict]) -> Dict
             if 'version' not in blueprint:
                 blueprint['version'] = 'latest'
 
-            # Upload to DynamoDB
-            table.put_item(Item=blueprint)
+            if apply_changes:
+                table.put_item(Item=blueprint)
+                print(f"✅ Uploaded blueprint: {blueprint['irn']}@{blueprint['version']}")
+            else:
+                print(f"🧪 Dry-run: blueprint would upload: {blueprint['irn']}@{blueprint['version']}")
             results["success"].append(f"{blueprint['irn']}@{blueprint['version']}")
-            print(f"✅ Uploaded blueprint: {blueprint['irn']}@{blueprint['version']}")
             
         except Exception as e:
             results["failed"].append(f"{blueprint.get('irn', 'unknown')}: {str(e)}")
@@ -91,7 +98,12 @@ def upload_blueprints(dynamodb, table_name: str, blueprints: List[Dict]) -> Dict
 
     return results
 
-def run(env_name: str, aws_profile: str, aws_region: str = None) -> Dict[str, List[str]]:
+def run(
+    env_name: str,
+    aws_profile: str,
+    aws_region: str = None,
+    apply_changes: bool = True,
+) -> Dict[str, List[str]]:
     """Programmatic entry point that returns structured data"""
     # Get region from profile if not specified
     if aws_region is None:
@@ -111,7 +123,7 @@ def run(env_name: str, aws_profile: str, aws_region: str = None) -> Dict[str, Li
     # Upload blueprints to DynamoDB
     table_name = f"{env_name}_blueprints"
     print(f"⬆️  Uploading blueprints to table: {table_name}")
-    results = upload_blueprints(dynamodb, table_name, blueprints)
+    results = upload_blueprints(dynamodb, table_name, blueprints, apply_changes=apply_changes)
     
     return results
 

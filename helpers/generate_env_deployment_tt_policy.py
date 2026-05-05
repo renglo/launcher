@@ -34,6 +34,8 @@ def _policy_document(
     table_arn_prefix = f"arn:aws:dynamodb:{region}:{account_id}:table/{env_name}_"
     role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
     policy_arn = f"arn:aws:iam::{account_id}:policy/{policy_name}"
+    ecr_repo_arn = f"arn:aws:ecr:{region}:{account_id}:repository/{env_name}_backend"
+    lambda_arn = f"arn:aws:lambda:{region}:{account_id}:function:{env_name}-backend-*"
 
     statements: list[dict] = [
         {
@@ -91,6 +93,53 @@ def _policy_document(
                 "iam:CreatePolicyVersion",
             ],
             "Resource": policy_arn,
+        },
+        {
+            "Sid": "EcrScopedRepository",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:CreateRepository",
+                "ecr:DescribeRepositories",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload",
+                "ecr:PutImage",
+            ],
+            "Resource": ecr_repo_arn,
+        },
+        {
+            "Sid": "EcrAuthTokenGlobal",
+            "Effect": "Allow",
+            "Action": ["ecr:GetAuthorizationToken"],
+            "Resource": "*",
+        },
+        {
+            "Sid": "LambdaScopedBackend",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:CreateFunction",
+                "lambda:GetFunction",
+                "lambda:UpdateFunctionCode",
+                "lambda:CreateAlias",
+                "lambda:UpdateAlias",
+                "lambda:ListVersionsByFunction",
+            ],
+            "Resource": lambda_arn,
+        },
+        {
+            "Sid": "ApiGatewayManage",
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:GET",
+                "apigateway:POST",
+                "apigateway:PATCH",
+            ],
+            "Resource": [
+                f"arn:aws:apigateway:{region}::/restapis/*",
+                f"arn:aws:apigateway:{region}::/apis/*",
+            ],
         },
     ]
     if deployment_operator_role_arn:

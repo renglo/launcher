@@ -4,7 +4,8 @@ Create IAM identity for deploy_environment.py operators (sysadmin profile).
 
 Idempotent: skips or merges when user, group, role, or policy already exists.
 Builds the same policy document as generate_env_deployment_tt_policy (inline via
-import), optionally extended with sts:AssumeRole on <env>_deployment_tt_role.
+import), including scoped permissions for backend bootstrap resources (ECR/APIGateway/Lambda),
+optionally extended with sts:AssumeRole on <env>_deployment_tt_role.
 
 Typical usage:
   python helpers/provision_env_deployment_tt_identity.py myenv \\
@@ -332,7 +333,7 @@ def main() -> int:
     )
     parser.add_argument(
         "environment_name",
-        help="Environment prefix (same as deploy_environment.py), e.g. arbitiumrs",
+        help="Environment prefix (same as deploy_environment.py)",
     )
     parser.add_argument(
         "--aws-profile",

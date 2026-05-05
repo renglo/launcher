@@ -52,10 +52,30 @@ def write_created_resources_txt(
         lines.append(f"- created: {s3.get('created', '')}")
         lines.append("")
 
+    backend = result.get("backend", {})
+    if isinstance(backend, dict):
+        lines.append("Backend Infra:")
+        ecr = backend.get("ecr", {})
+        if isinstance(ecr, dict):
+            lines.append(f"- ecr_repository: {ecr.get('repository_name', '')}")
+            lines.append(f"- ecr_repository_arn: {ecr.get('repository_arn', '')}")
+        lambda_info = backend.get("lambda", {})
+        if isinstance(lambda_info, dict):
+            lines.append(f"- lambda_function_name: {lambda_info.get('function_name', '')}")
+            lines.append(f"- lambda_function_arn: {lambda_info.get('function_arn', '')}")
+        ws = backend.get("websocket", {})
+        if isinstance(ws, dict):
+            lines.append(f"- websocket_url: {ws.get('websocket_url', '')}")
+            lines.append(f"- websocket_connections: {ws.get('connections_url', '')}")
+        lines.append("")
+
     env_config_path = result.get("env_config_path", "")
+    extension_install_path = result.get("extension_install_path", "")
     if env_config_path:
         lines.append("Generated Files:")
         lines.append(f"- env_config.py: {env_config_path}")
+        if extension_install_path:
+            lines.append(f"- extension_install.json: {extension_install_path}")
         lines.append("")
 
     out_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")

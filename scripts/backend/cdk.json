@@ -1,0 +1,4 @@
+{
+  "app": "python cdk_app.py",
+  "context": {}
+}

@@ -13,6 +13,8 @@ def write_env_config_py(
     aws_region: str,
     cognito: Mapping[str, Any],
     s3_bucket_name: str,
+    websocket_connections: str = "",
+    vite_websocket_url: str = "",
 ) -> Path:
     """Create or overwrite env_config.py at launcher repo root."""
     csrf = secrets.token_urlsafe(48)
@@ -35,6 +37,9 @@ def write_env_config_py(
         f"COGNITO_APP_CLIENT_ID = {repr(str(cognito['app_client_id']))}",
         "",
         f"S3_BUCKET_NAME = {repr(s3_bucket_name)}",
+        "",
+        f"WEBSOCKET_CONNECTIONS = {repr(websocket_connections)}",
+        f"VITE_WEBSOCKET_URL = {repr(vite_websocket_url)}",
         "",
         "# OpenSearch (uncomment when OpenSearch is enabled in deploy_environment.py)",
         "# OPENSEARCH_ENDPOINT = 'https://search-xxx.us-east-1.es.amazonaws.com'",
