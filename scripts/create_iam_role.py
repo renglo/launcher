@@ -2,13 +2,14 @@ import boto3
 import argparse
 import json
 from typing import Dict
+from botocore.exceptions import ClientError
 
 def get_aws_account_id(session):
     """Retrieve the AWS account number dynamically."""
     sts_client = session.client("sts")
     return sts_client.get_caller_identity()["Account"]
 
-def create_iam_role(env_name, aws_region, aws_profile):
+def create_iam_role(env_name, aws_region, aws_profile, apply_changes: bool = True):
     """Creates an IAM role for Lambda and attaches the previously created policy."""
 
     # Initialize Boto3 session with the specified profile
@@ -43,16 +44,30 @@ def create_iam_role(env_name, aws_region, aws_profile):
     }
 
     # Step 1: Create the Role
-    print(f"🛠️ Creating IAM Role: {role_name}...")
+    print(f"🛠️ Ensuring IAM Role: {role_name}...")
     try:
+        if not apply_changes:
+            try:
+                role_arn = iam_client.get_role(RoleName=role_name)["Role"]["Arn"]
+            except ClientError as e:
+                if e.response.get("Error", {}).get("Code") in {"NoSuchEntity", "NoSuchEntityException"}:
+                    role_arn = f"arn:aws:iam::{aws_account_id}:role/{role_name}"
+                else:
+                    raise
+            return role_name, role_arn
         role_response = iam_client.create_role(
             RoleName=role_name,
             AssumeRolePolicyDocument=json.dumps(trust_policy),
             Description=f"IAM role for {env_name} Lambda functions",
         )
     except iam_client.exceptions.EntityAlreadyExistsException:
-        print(f"⚠️ Role '{role_name}' already exists. Fetching existing role ARN...")
+        print(f"⚠️ Role '{role_name}' already exists. Ensuring trust policy + policy attachment...")
         role_arn = iam_client.get_role(RoleName=role_name)["Role"]["Arn"]
+        if apply_changes:
+            iam_client.update_assume_role_policy(RoleName=role_name, PolicyDocument=json.dumps(trust_policy))
+            attached = iam_client.list_attached_role_policies(RoleName=role_name).get("AttachedPolicies", [])
+            if not any(p.get("PolicyArn") == policy_arn for p in attached):
+                iam_client.attach_role_policy(RoleName=role_name, PolicyArn=policy_arn)
         return role_name, role_arn
 
     # Get role ARN
@@ -72,9 +87,9 @@ def create_iam_role(env_name, aws_region, aws_profile):
 
     return role_name, role_arn
 
-def run(env_name: str, aws_region: str, aws_profile: str) -> Dict[str, str]:
+def run(env_name: str, aws_region: str, aws_profile: str, apply_changes: bool = True) -> Dict[str, str]:
     """Programmatic entry point that returns structured data"""
-    role_name, role_arn = create_iam_role(env_name, aws_region, aws_profile)
+    role_name, role_arn = create_iam_role(env_name, aws_region, aws_profile, apply_changes=apply_changes)
     
     return {
         "role_name": role_name,

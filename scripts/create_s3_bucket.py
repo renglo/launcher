@@ -11,10 +11,28 @@ def _bucket_exists(s3_client, bucket_name: str) -> bool:
         return True
     except ClientError as e:
         code = e.response.get("Error", {}).get("Code", "")
-        return code in {"200", "301", "403"}
+        return code in {"200", "301"}
 
 
-def create_s3_bucket(bucket_name: str, aws_region: str, aws_profile: str) -> Dict[str, str]:
+def _bucket_taken(s3_client, bucket_name: str) -> bool:
+    try:
+        s3_client.head_bucket(Bucket=bucket_name)
+        return True
+    except ClientError as e:
+        code = e.response.get("Error", {}).get("Code", "")
+        return code in {"301", "403", "BucketAlreadyExists"}
+
+
+def _deterministic_fallback_name(base_name: str, attempt: int) -> str:
+    return f"{base_name}-{attempt:02d}"
+
+
+def create_s3_bucket(
+    bucket_name: str,
+    aws_region: str,
+    aws_profile: str,
+    apply_changes: bool = True,
+) -> Dict[str, str]:
     """Create S3 bucket if missing and return metadata."""
     session = boto3.Session(profile_name=aws_profile, region_name=aws_region)
     s3_client = session.client("s3", region_name=aws_region)
@@ -27,26 +45,48 @@ def create_s3_bucket(bucket_name: str, aws_region: str, aws_profile: str) -> Dic
             "created": "false",
         }
 
-    print(f"🛠️  Creating S3 bucket: {bucket_name}...")
-    if aws_region == "us-east-1":
-        s3_client.create_bucket(Bucket=bucket_name)
-    else:
-        s3_client.create_bucket(
-            Bucket=bucket_name,
-            CreateBucketConfiguration={"LocationConstraint": aws_region},
-        )
+    if not apply_changes:
+        return {
+            "bucket_name": bucket_name,
+            "bucket_arn": f"arn:aws:s3:::{bucket_name}",
+            "created": "false",
+        }
 
-    print(f"✅ S3 bucket '{bucket_name}' created successfully.")
-    return {
-        "bucket_name": bucket_name,
-        "bucket_arn": f"arn:aws:s3:::{bucket_name}",
-        "created": "true",
-    }
+    candidate = bucket_name
+    for attempt in range(0, 5):
+        try:
+            print(f"🛠️  Creating S3 bucket: {candidate}...")
+            if aws_region == "us-east-1":
+                s3_client.create_bucket(Bucket=candidate)
+            else:
+                s3_client.create_bucket(
+                    Bucket=candidate,
+                    CreateBucketConfiguration={"LocationConstraint": aws_region},
+                )
+            print(f"✅ S3 bucket '{candidate}' created successfully.")
+            return {
+                "bucket_name": candidate,
+                "bucket_arn": f"arn:aws:s3:::{candidate}",
+                "created": "true",
+            }
+        except ClientError as e:
+            code = e.response.get("Error", {}).get("Code", "")
+            if code in {"BucketAlreadyOwnedByYou"}:
+                return {
+                    "bucket_name": candidate,
+                    "bucket_arn": f"arn:aws:s3:::{candidate}",
+                    "created": "false",
+                }
+            if code in {"BucketAlreadyExists"} or _bucket_taken(s3_client, candidate):
+                candidate = _deterministic_fallback_name(bucket_name, attempt + 1)
+                continue
+            raise
+    raise RuntimeError("Could not allocate an available S3 bucket name after fallback attempts.")
 
 
-def run(bucket_name: str, aws_profile: str, aws_region: str) -> Dict[str, str]:
+def run(bucket_name: str, aws_profile: str, aws_region: str, apply_changes: bool = True) -> Dict[str, str]:
     """Programmatic entry point that returns structured data."""
-    return create_s3_bucket(bucket_name, aws_region, aws_profile)
+    return create_s3_bucket(bucket_name, aws_region, aws_profile, apply_changes=apply_changes)
 
 
 def main():

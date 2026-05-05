@@ -34,12 +34,15 @@ def table_exists(dynamodb, table_name):
     except dynamodb.exceptions.ResourceNotFoundException:
         return False
 
-def create_table(dynamodb, table_name, partition_key, sort_key=None, local_secondary_indexes=None):
+def create_table(dynamodb, table_name, partition_key, sort_key=None, local_secondary_indexes=None, apply_changes=True):
     """Create a DynamoDB table with optional LSI indexes."""
     if table_exists(dynamodb, table_name):
         print(f"✅ Table '{table_name}' already exists. Skipping creation.")
         return
 
+    if not apply_changes:
+        print(f"🧪 Dry-run: table '{table_name}' would be created.")
+        return
     print(f"🛠️  Creating table: {table_name}...")
     
     key_schema = [{"AttributeName": partition_key, "KeyType": "HASH"}]  # Partition Key
@@ -81,7 +84,7 @@ def create_table(dynamodb, table_name, partition_key, sort_key=None, local_secon
     waiter.wait(TableName=table_name)
     print(f"✅ Table '{table_name}' is now active.")
 
-def run(env_name: str, aws_profile: str, region: str = "us-east-1") -> Dict[str, str]:
+def run(env_name: str, aws_profile: str, region: str = "us-east-1", apply_changes: bool = True) -> Dict[str, str]:
     """Programmatic entry point that returns structured data"""
     # Initialize Boto3 Session with selected profile
     boto3.setup_default_session(profile_name=aws_profile)
@@ -103,9 +106,12 @@ def run(env_name: str, aws_profile: str, region: str = "us-east-1") -> Dict[str,
     # Create standard tables
     for table in tables:
         
-        create_table(dynamodb, table["name"], table["partition_key"], table["sort_key"])    
-        response = dynamodb.describe_table(TableName=table["name"])
-        table_arns[table["name"]] = response["Table"]["TableArn"]
+        create_table(dynamodb, table["name"], table["partition_key"], table["sort_key"], apply_changes=apply_changes)
+        if table_exists(dynamodb, table["name"]):
+            response = dynamodb.describe_table(TableName=table["name"])
+            table_arns[table["name"]] = response["Table"]["TableArn"]
+        else:
+            table_arns[table["name"]] = ""
 
     # Create data table with LSIs
     data_table_name = f"{env_name}_data"
@@ -115,9 +121,19 @@ def run(env_name: str, aws_profile: str, region: str = "us-east-1") -> Dict[str,
         {"IndexName": "time_index", "SortKey": "time_index", "ProjectionType": "INCLUDE", "NonKeyAttributes": ["path_index"]},
     ]
     
-    create_table(dynamodb, data_table_name, "portfolio_index", "doc_index", local_secondary_indexes=data_table_lsis)
-    response = dynamodb.describe_table(TableName=data_table_name)
-    table_arns[data_table_name] = response["Table"]["TableArn"]
+    create_table(
+        dynamodb,
+        data_table_name,
+        "portfolio_index",
+        "doc_index",
+        local_secondary_indexes=data_table_lsis,
+        apply_changes=apply_changes,
+    )
+    if table_exists(dynamodb, data_table_name):
+        response = dynamodb.describe_table(TableName=data_table_name)
+        table_arns[data_table_name] = response["Table"]["TableArn"]
+    else:
+        table_arns[data_table_name] = ""
 
     return table_arns
 

@@ -1,6 +1,5 @@
 import argparse
 import json
-import random
 import re
 from typing import Any, Dict, Optional
 
@@ -13,9 +12,8 @@ def get_aws_account_id(session):
     return sts_client.get_caller_identity()["Account"]
 
 
-def generate_random_number():
-    """Generate an 8-digit random number."""
-    return str(random.randint(10000000, 99999999))
+def _default_bucket_name(env_name: str, aws_account_id: str, aws_region: str) -> str:
+    return f"{env_name}-{aws_account_id}-{aws_region}".lower()
 
 
 def _extract_s3_bucket_name_from_policy_document(document: Any) -> Optional[str]:
@@ -193,7 +191,7 @@ def _build_tt_runtime_policy_document(
     }
 
 
-def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile):
+def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile, apply_changes: bool = True):
     """Creates an IAM policy with the specified environment name and Cognito User Pool ID."""
 
     session = boto3.Session(profile_name=aws_profile, region_name=aws_region)
@@ -233,7 +231,7 @@ def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile):
                 f"IAM policy {policy_name!r} exists but no S3 bucket ARN could be parsed from it. "
                 "Fix or delete the policy, then re-run."
             )
-        s3_bucket_name = f"{env_name}-{generate_random_number()}"
+        s3_bucket_name = _default_bucket_name(env_name, aws_account_id, aws_region)
 
     policy_document = _build_tt_runtime_policy_document(
         env_name,
@@ -244,6 +242,8 @@ def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile):
     )
 
     if not policy_already_exists:
+        if not apply_changes:
+            return policy_name, policy_arn, s3_bucket_name
         response = iam_client.create_policy(
             PolicyName=policy_name,
             PolicyDocument=json.dumps(policy_document),
@@ -265,6 +265,8 @@ def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile):
         return policy_name, policy_arn, s3_bucket_name
 
     print(f"🔄 IAM Policy '{policy_name}' exists but needs updating. Creating new version...")
+    if not apply_changes:
+        return policy_name, policy_arn, s3_bucket_name
     iam_client.create_policy_version(
         PolicyArn=policy_arn,
         PolicyDocument=json.dumps(policy_document),
@@ -276,13 +278,20 @@ def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile):
     return policy_name, policy_arn, s3_bucket_name
 
 
-def run(env_name: str, cognito_user_pool_id: str, aws_profile: str, aws_region: str) -> Dict[str, str]:
+def run(
+    env_name: str,
+    cognito_user_pool_id: str,
+    aws_profile: str,
+    aws_region: str,
+    apply_changes: bool = True,
+) -> Dict[str, str]:
     """Programmatic entry point that returns structured data"""
     policy_name, policy_arn, s3_bucket_name = create_iam_policy(
         env_name,
         cognito_user_pool_id,
         aws_region,
         aws_profile,
+        apply_changes=apply_changes,
     )
 
     return {
