@@ -1,11 +1,19 @@
 import argparse
+from pathlib import Path
 from typing import Dict, Any
+
 import create_dynamodb_tables
 import create_cognito_user_pool
 import create_iam_policy
 import create_iam_role
+import create_s3_bucket
 import create_opensearch_index
 import upload_blueprints
+import write_env_config
+import write_created_resources
+
+
+_LAUNCHER_ROOT = Path(__file__).resolve().parent.parent
 
 
 class DeploymentResult:
@@ -17,8 +25,11 @@ class DeploymentResult:
         self.cognito: Dict[str, str] = {}
         self.iam_policy: Dict[str, str] = {}
         self.iam_role: Dict[str, str] = {}
+        self.s3: Dict[str, str] = {}
         self.opensearch: Dict[str, str] = {}
         self.status_blueprints: Dict[str, str] = {}
+        self.env_config_path: str = ""
+        self.resources_list_path: str = ""
 
 def deploy_environment(
     env_name: str,
@@ -58,7 +69,16 @@ def deploy_environment(
         aws_region=aws_region
     )
 
-    # Step 4: Create IAM Role
+    # Step 4: Create S3 Bucket
+    print("\n🪣 Creating S3 Bucket...")
+    bucket_name = result.iam_policy.get("s3_bucket_name", result.iam_policy["s3_bucket_arn"])
+    result.s3 = create_s3_bucket.run(
+        bucket_name=bucket_name,
+        aws_profile=aws_profile,
+        aws_region=aws_region,
+    )
+
+    # Step 5: Create IAM Role
     print("\n👔 Creating IAM Role...")
     result.iam_role = create_iam_role.run(
         env_name=env_name,
@@ -66,7 +86,7 @@ def deploy_environment(
         aws_region=aws_region
     )
 
-    '''# Step 5: Create OpenSearch index (domain {env}-search or collection {env}-collection)
+    '''# Step 6: Create OpenSearch index (domain {env}-search or collection {env}-collection)
     print("\n🔍 Creating OpenSearch index...")
     try:
         result.opensearch = create_opensearch_index.run(
@@ -80,13 +100,35 @@ def deploy_environment(
         result.opensearch = {}
     '''
 
-    # Step 6: Add default Blueprints
+    # Step 7: Add default Blueprints
     print("\nAdding default blueprints to DB...")
     result.status_blueprints = upload_blueprints.run(
         env_name=env_name,
         aws_profile=aws_profile,
         aws_region=aws_region
     )
+
+    env_path = write_env_config.write_env_config_py(
+        _LAUNCHER_ROOT,
+        env_name,
+        aws_region,
+        result.cognito,
+        result.s3["bucket_name"],
+    )
+    result.env_config_path = str(env_path)
+    resources_txt_path = write_created_resources.write_created_resources_txt(
+        _LAUNCHER_ROOT,
+        env_name,
+        {
+            "dynamodb_tables": result.dynamodb_tables,
+            "cognito": result.cognito,
+            "iam_policy": result.iam_policy,
+            "iam_role": result.iam_role,
+            "s3": result.s3,
+            "env_config_path": result.env_config_path,
+        },
+    )
+    result.resources_list_path = str(resources_txt_path)
 
     return result
 
@@ -120,7 +162,9 @@ def print_deployment_summary(result: DeploymentResult):
     
     print("\nS3")
     print("-------------")
-    print(f"Bucket ARN : {result.iam_policy['s3_bucket_arn']}")
+    print(f"Bucket Name: {result.s3.get('bucket_name', '')}")
+    print(f"Bucket ARN : {result.s3.get('bucket_arn', '')}")
+    print(f"Created    : {result.s3.get('created', '')}")
 
     if result.opensearch:
         print("\nOpenSearch")
@@ -132,6 +176,15 @@ def print_deployment_summary(result: DeploymentResult):
     print("-------------")
     print(f"Success : {len(result.status_blueprints['success'])} blueprints")
     print(f"Failed  : {len(result.status_blueprints['failed'])} blueprints")
+
+    if result.env_config_path:
+        print("\nenv_config.py")
+        print("-------------")
+        print(f"Written: {result.env_config_path}")
+    if result.resources_list_path:
+        print("\ncreated_resources.txt")
+        print("-------------")
+        print(f"Written: {result.resources_list_path}")
 
 
 def main():
