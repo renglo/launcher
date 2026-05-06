@@ -55,18 +55,53 @@ def write_created_resources_txt(
     backend = result.get("backend", {})
     if isinstance(backend, dict):
         lines.append("Backend Infra:")
-        ecr = backend.get("ecr", {})
-        if isinstance(ecr, dict):
-            lines.append(f"- ecr_repository: {ecr.get('repository_name', '')}")
-            lines.append(f"- ecr_repository_arn: {ecr.get('repository_arn', '')}")
-        lambda_info = backend.get("lambda", {})
-        if isinstance(lambda_info, dict):
-            lines.append(f"- lambda_function_name: {lambda_info.get('function_name', '')}")
-            lines.append(f"- lambda_function_arn: {lambda_info.get('function_arn', '')}")
-        ws = backend.get("websocket", {})
-        if isinstance(ws, dict):
-            lines.append(f"- websocket_url: {ws.get('websocket_url', '')}")
-            lines.append(f"- websocket_connections: {ws.get('connections_url', '')}")
+        stage_backends: list[tuple[str, dict[str, Any]]] = []
+        for stage_name in ("production", "staging"):
+            value = backend.get(stage_name)
+            if isinstance(value, dict):
+                stage_backends.append((stage_name, value))
+
+        if stage_backends:
+            for stage_name, stage_backend in stage_backends:
+                lines.append(f"- stage: {stage_name}")
+                ecr = stage_backend.get("ecr", {})
+                if isinstance(ecr, dict):
+                    lines.append(f"  ecr_repository: {ecr.get('repository_name', '')}")
+                    lines.append(f"  ecr_repository_arn: {ecr.get('repository_arn', '')}")
+                lambda_info = stage_backend.get("lambda", {})
+                if isinstance(lambda_info, dict):
+                    lines.append(f"  lambda_function_name: {lambda_info.get('function_name', '')}")
+                    lines.append(f"  lambda_function_arn: {lambda_info.get('function_arn', '')}")
+                alias_info = stage_backend.get("alias", {})
+                if isinstance(alias_info, dict):
+                    lines.append(f"  lambda_alias_name: {alias_info.get('alias_name', '')}")
+                    lines.append(f"  lambda_alias_arn: {alias_info.get('alias_arn', '')}")
+                ws = stage_backend.get("websocket", {})
+                if isinstance(ws, dict):
+                    lines.append(f"  websocket_url: {ws.get('websocket_url', '')}")
+                    lines.append(f"  websocket_connections: {ws.get('connections_url', '')}")
+                codedeploy = stage_backend.get("codedeploy", {})
+                if isinstance(codedeploy, dict):
+                    lines.append(f"  codedeploy_application: {codedeploy.get('application_name', '')}")
+                    lines.append(f"  codedeploy_deployment_group: {codedeploy.get('deployment_group_name', '')}")
+                    lines.append(f"  codedeploy_config: {codedeploy.get('deployment_config_name', '')}")
+        else:
+            ecr = backend.get("ecr", {})
+            if isinstance(ecr, dict):
+                lines.append(f"- ecr_repository: {ecr.get('repository_name', '')}")
+                lines.append(f"- ecr_repository_arn: {ecr.get('repository_arn', '')}")
+            lambda_info = backend.get("lambda", {})
+            if isinstance(lambda_info, dict):
+                lines.append(f"- lambda_function_name: {lambda_info.get('function_name', '')}")
+                lines.append(f"- lambda_function_arn: {lambda_info.get('function_arn', '')}")
+            alias_info = backend.get("alias", {})
+            if isinstance(alias_info, dict):
+                lines.append(f"- lambda_alias_name: {alias_info.get('alias_name', '')}")
+                lines.append(f"- lambda_alias_arn: {alias_info.get('alias_arn', '')}")
+            ws = backend.get("websocket", {})
+            if isinstance(ws, dict):
+                lines.append(f"- websocket_url: {ws.get('websocket_url', '')}")
+                lines.append(f"- websocket_connections: {ws.get('connections_url', '')}")
         lines.append("")
 
     env_config_path = result.get("env_config_path", "")

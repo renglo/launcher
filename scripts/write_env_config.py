@@ -15,6 +15,8 @@ def write_env_config_py(
     s3_bucket_name: str,
     websocket_connections: str = "",
     vite_websocket_url: str = "",
+    websocket_connections_staging: str = "",
+    vite_websocket_url_staging: str = "",
 ) -> Path:
     """Create or overwrite env_config.py at launcher repo root."""
     csrf = secrets.token_urlsafe(48)
@@ -40,6 +42,8 @@ def write_env_config_py(
         "",
         f"WEBSOCKET_CONNECTIONS = {repr(websocket_connections)}",
         f"VITE_WEBSOCKET_URL = {repr(vite_websocket_url)}",
+        f"WEBSOCKET_CONNECTIONS_STAGING = {repr(websocket_connections_staging)}",
+        f"VITE_WEBSOCKET_URL_STAGING = {repr(vite_websocket_url_staging)}",
         "",
         "# OpenSearch (uncomment when OpenSearch is enabled in deploy_environment.py)",
         "# OPENSEARCH_ENDPOINT = 'https://search-xxx.us-east-1.es.amazonaws.com'",
