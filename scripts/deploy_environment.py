@@ -43,7 +43,8 @@ def deploy_environment(
     aws_region: str,
     github_repo: str,
     enable_staging_role: bool = True,
-    skip_cdk_bootstrap: bool = False,
+    skip_cdk_bootstrap: bool = True,
+    seed_image_uri: str = "",
     dry_run: bool = False,
 ) -> DeploymentResult:
     """
@@ -138,6 +139,7 @@ def deploy_environment(
             aws_region=aws_region,
             lambda_role_arn=result.iam_role["role_arn"],
             stage_name="production",
+            seed_image_uri=seed_image_uri,
             apply_changes=not dry_run,
         )
     )
@@ -267,7 +269,16 @@ def main():
     parser.add_argument("--aws-region", default="us-east-1", help="AWS region to deploy to")
     parser.add_argument("--github-repo", required=True, help="GitHub org/repo for OIDC trust policy")
     parser.add_argument("--disable-staging-role", action="store_true", help="Disable staging GitHub OIDC role")
-    parser.add_argument("--skip-cdk-bootstrap", action="store_true", help="Skip CDK bootstrap step")
+    parser.add_argument(
+        "--enable-cdk-bootstrap",
+        action="store_true",
+        help="Run CDK bootstrap (optional now; required later if/when using CDK deploy flows).",
+    )
+    parser.add_argument(
+        "--seed-image-uri",
+        default="",
+        help="ECR image URI used only when backend Lambda is created for the first time.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Plan IAM/backend changes without creating resources")
 
     args = parser.parse_args()
@@ -279,7 +290,8 @@ def main():
             aws_region=args.aws_region,
             github_repo=args.github_repo,
             enable_staging_role=not args.disable_staging_role,
-            skip_cdk_bootstrap=args.skip_cdk_bootstrap,
+            skip_cdk_bootstrap=not args.enable_cdk_bootstrap,
+            seed_image_uri=args.seed_image_uri,
             dry_run=args.dry_run,
         )
         print_deployment_summary(result)

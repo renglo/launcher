@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
+import os
+import shutil
+import subprocess
 from typing import Any, Optional
 
 import boto3
@@ -24,6 +28,7 @@ class BackendProvisionConfig:
     timeout_seconds: int = 30
     memory_mb: int = 512
     websocket_route: str = create_websocket_api.DEFAULT_ROUTE
+    seed_image_uri: str = ""
     apply_changes: bool = True
 
 
@@ -79,6 +84,8 @@ def _ensure_lambda_function(
     except client.exceptions.ResourceNotFoundException:
         if not apply_changes:
             return {"function_name": function_name, "function_arn": "", "created": True}
+        if not image_uri.strip():
+            raise ValueError("Lambda does not exist and no image URI is available for create_function.")
         config = client.create_function(
             FunctionName=function_name,
             Role=role_arn,
@@ -91,6 +98,86 @@ def _ensure_lambda_function(
             Description=REGLO_DEPLOYMENT_DESCRIPTION,
         )
         return {"function_name": function_name, "function_arn": config.get("FunctionArn", ""), "created": True}
+
+
+def _lambda_exists(session: boto3.Session, function_name: str) -> bool:
+    client = session.client("lambda")
+    try:
+        client.get_function(FunctionName=function_name)
+        return True
+    except client.exceptions.ResourceNotFoundException:
+        return False
+
+
+def _build_and_push_seed_image(
+    session: boto3.Session,
+    repository_name: str,
+    region: str,
+    architecture: str,
+    apply_changes: bool,
+) -> str:
+    account_id = session.client("sts").get_caller_identity()["Account"]
+    registry = f"{account_id}.dkr.ecr.{region}.amazonaws.com"
+    image_uri = f"{registry}/{repository_name}:seed"
+    if not apply_changes:
+        return image_uri
+
+    if os.name == "nt":
+        docker_executable = shutil.which("docker") or shutil.which("docker.exe") or shutil.which("docker.cmd")
+        if docker_executable and not docker_executable.lower().endswith(".exe"):
+            docker_executable = shutil.which("docker.exe") or docker_executable
+    else:
+        docker_executable = shutil.which("docker")
+    if not docker_executable:
+        raise RuntimeError("Docker is required to build/push seed image but was not found in PATH.")
+
+    ecr = session.client("ecr", region_name=region)
+    token_data = ecr.get_authorization_token()["authorizationData"][0]
+    password = token_data["authorizationToken"]
+    endpoint = token_data["proxyEndpoint"]
+    import base64
+
+    decoded = base64.b64decode(password).decode("utf-8")
+    _, pwd = decoded.split(":", 1)
+    subprocess.run(
+        [docker_executable, "login", "--username", "AWS", "--password-stdin", endpoint.replace("https://", "")],
+        input=pwd,
+        text=True,
+        check=True,
+    )
+
+    seed_context = Path(__file__).resolve().parent / "backend" / "seed-image"
+    dockerfile = seed_context / "Dockerfile"
+    platform = "linux/amd64" if architecture == "x86_64" else "linux/arm64"
+    buildx_executable = docker_executable
+    try:
+        subprocess.run([buildx_executable, "buildx", "version"], check=True, capture_output=True, text=True)
+        subprocess.run(
+            [
+                buildx_executable,
+                "buildx",
+                "build",
+                "--platform",
+                platform,
+                "--provenance=false",
+                "--sbom=false",
+                "-t",
+                image_uri,
+                "-f",
+                str(dockerfile),
+                "--push",
+                str(seed_context),
+            ],
+            check=True,
+        )
+    except Exception:
+        # Fallback for engines without buildx plugin.
+        subprocess.run(
+            [docker_executable, "build", "--platform", platform, "-t", image_uri, "-f", str(dockerfile), str(seed_context)],
+            check=True,
+        )
+        subprocess.run([docker_executable, "push", image_uri], check=True)
+    return image_uri
 
 
 def _ensure_rest_api(
@@ -198,7 +285,15 @@ def run(config: BackendProvisionConfig) -> dict[str, Any]:
     websocket_name = _websocket_api_name(config.env_name, config.stage_name)
 
     ecr_result = _ensure_ecr_repository(session, repository_name, config.apply_changes)
-    seed_image_uri = f"public.ecr.aws/lambda/python:3.12"
+    seed_image_uri = (config.seed_image_uri or "").strip()
+    if not seed_image_uri and not _lambda_exists(session, function_name):
+        seed_image_uri = _build_and_push_seed_image(
+            session=session,
+            repository_name=repository_name,
+            region=config.aws_region,
+            architecture=config.architecture,
+            apply_changes=config.apply_changes,
+        )
     lambda_result = _ensure_lambda_function(
         session,
         function_name=function_name,
