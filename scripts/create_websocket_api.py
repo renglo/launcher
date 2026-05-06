@@ -224,6 +224,7 @@ def run(
     stage_name: str,
     aws_profile: Optional[str] = None,
     region: str = "us-east-1",
+    apply_changes: bool = True,
 ) -> Dict[str, str]:
     """Create or update WebSocket API; return URLs and ids."""
     if aws_profile:
@@ -238,11 +239,20 @@ def run(
         api = apigw.get_api(ApiId=existing_api_id)
         api_id = existing_api_id
     else:
+        if not apply_changes:
+            return {
+                "api_id": "",
+                "api_endpoint": "",
+                "stage_url": "",
+                "websocket_url": "",
+                "connections_url": "",
+            }
         api = create_websocket_api(apigw, api_name, route_selection_expr)
         api_id = api["ApiId"]
 
-    upsert_route_with_integration(apigw, api_id, route, integration_target)
-    ensure_stage(apigw, api_id, stage_name)
+    if apply_changes:
+        upsert_route_with_integration(apigw, api_id, route, integration_target)
+        ensure_stage(apigw, api_id, stage_name)
 
     api_endpoint = api.get("ApiEndpoint", "")
     stage_url = f"{api_endpoint}/{stage_name}/"

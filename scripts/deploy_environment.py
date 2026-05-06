@@ -130,9 +130,9 @@ def deploy_environment(
         result.opensearch = {}
     '''
 
-    # Step 7: Provision backend infra (one-time)
-    print("\n🚀 Provisioning backend infra...")
-    result.backend = provision_backend_infra(
+    # Step 7: Provision backend infra (one-time) for production + staging
+    print("\n🚀 Provisioning backend infra (production)...")
+    backend_production = provision_backend_infra(
         BackendProvisionConfig(
             env_name=env_name,
             aws_profile=aws_profile,
@@ -143,6 +143,22 @@ def deploy_environment(
             apply_changes=not dry_run,
         )
     )
+    print("\n🚀 Provisioning backend infra (staging)...")
+    backend_staging = provision_backend_infra(
+        BackendProvisionConfig(
+            env_name=env_name,
+            aws_profile=aws_profile,
+            aws_region=aws_region,
+            lambda_role_arn=result.iam_role["role_arn"],
+            stage_name="staging",
+            seed_image_uri=seed_image_uri,
+            apply_changes=not dry_run,
+        )
+    )
+    result.backend = {
+        "production": backend_production,
+        "staging": backend_staging,
+    }
 
     # Step 8: Add default Blueprints
     print("\nAdding default blueprints to DB...")
@@ -159,8 +175,10 @@ def deploy_environment(
         aws_region,
         result.cognito,
         result.s3["bucket_name"],
-        websocket_connections=result.backend.get("websocket", {}).get("connections_url", ""),
-        vite_websocket_url=result.backend.get("websocket", {}).get("websocket_url", ""),
+        websocket_connections=backend_production.get("websocket", {}).get("connections_url", ""),
+        vite_websocket_url=backend_production.get("websocket", {}).get("websocket_url", ""),
+        websocket_connections_staging=backend_staging.get("websocket", {}).get("connections_url", ""),
+        vite_websocket_url_staging=backend_staging.get("websocket", {}).get("websocket_url", ""),
     )
     result.env_config_path = str(env_path)
     extension_install_path = write_extension_install_config.write_extension_install_json(
@@ -230,12 +248,19 @@ def print_deployment_summary(result: DeploymentResult):
     if result.backend:
         print("\nBackend Infra")
         print("-------------")
-        ecr_info = result.backend.get("ecr", {})
-        print(f"ECR Repo   : {ecr_info.get('repository_name', '')}")
-        lambda_info = result.backend.get("lambda", {})
-        print(f"Lambda     : {lambda_info.get('function_name', '')}")
-        ws_info = result.backend.get("websocket", {})
-        print(f"WebSocket  : {ws_info.get('websocket_url', '')}")
+        for stage_name in ("production", "staging"):
+            stage_backend = result.backend.get(stage_name, {})
+            if not isinstance(stage_backend, dict):
+                continue
+            print(f"Stage      : {stage_name}")
+            ecr_info = stage_backend.get("ecr", {})
+            print(f"ECR Repo   : {ecr_info.get('repository_name', '')}")
+            lambda_info = stage_backend.get("lambda", {})
+            alias_info = stage_backend.get("alias", {})
+            print(f"Lambda     : {lambda_info.get('function_name', '')}")
+            print(f"Alias      : {alias_info.get('alias_name', '')}")
+            ws_info = stage_backend.get("websocket", {})
+            print(f"WebSocket  : {ws_info.get('websocket_url', '')}")
 
     if result.opensearch:
         print("\nOpenSearch")
