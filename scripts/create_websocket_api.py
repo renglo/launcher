@@ -190,7 +190,6 @@ def create_integration(apigw, api_id: str, route_key: str, integration_uri: str)
             IntegrationUri=cleaned_uri,
             PassthroughBehavior="WHEN_NO_MATCH",
             ContentHandlingStrategy="CONVERT_TO_TEXT",
-            IntegrationResponseSelectionExpression="${integration.response.statuscode}",
             PayloadFormatVersion="1.0",
             RequestTemplates={"message_template": request_template},
             TemplateSelectionExpression="message_template",

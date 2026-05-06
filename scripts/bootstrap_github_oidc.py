@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 from dataclasses import dataclass
 from typing import Any
@@ -159,9 +160,14 @@ def _ensure_oidc_provider(iam, oidc_provider_arn: str, apply_changes: bool) -> N
 def _ensure_cdk_bootstrap(account_id: str, config: BootstrapConfig) -> None:
     if config.skip_cdk_bootstrap or not config.apply_changes:
         return
+    cdk_executable = shutil.which("cdk") or shutil.which("cdk.cmd")
+    if not cdk_executable:
+        raise RuntimeError(
+            "CDK CLI not found in PATH. Install aws-cdk globally or rerun with --skip-cdk-bootstrap."
+        )
     subprocess.run(
         [
-            "cdk",
+            cdk_executable,
             "bootstrap",
             f"aws://{account_id}/{config.aws_region}",
             "--profile",
