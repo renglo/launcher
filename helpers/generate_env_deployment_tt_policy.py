@@ -36,6 +36,7 @@ def _policy_document(
     policy_arn = f"arn:aws:iam::{account_id}:policy/{policy_name}"
     ecr_repo_arn = f"arn:aws:ecr:{region}:{account_id}:repository/{env_name}_backend"
     lambda_arn = f"arn:aws:lambda:{region}:{account_id}:function:{env_name}-backend-*"
+    codedeploy_role_arn = f"arn:aws:iam::{account_id}:role/{env_name}-codedeploy-lambda-role"
 
     statements: list[dict] = [
         {
@@ -144,6 +145,40 @@ def _policy_document(
                 f"arn:aws:apigateway:{region}::/restapis/*",
                 f"arn:aws:apigateway:{region}::/apis/*",
             ],
+        },
+        {
+            "Sid": "CodeDeployLambdaGroups",
+            "Effect": "Allow",
+            "Action": [
+                "codedeploy:CreateApplication",
+                "codedeploy:GetApplication",
+                "codedeploy:CreateDeploymentGroup",
+                "codedeploy:GetDeploymentGroup",
+                "codedeploy:UpdateDeploymentGroup",
+            ],
+            "Resource": "*",
+        },
+        {
+            "Sid": "ManageCodeDeployServiceRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateRole",
+                "iam:GetRole",
+                "iam:UpdateAssumeRolePolicy",
+                "iam:AttachRolePolicy",
+            ],
+            "Resource": codedeploy_role_arn,
+        },
+        {
+            "Sid": "AttachAwsManagedCodeDeployPolicy",
+            "Effect": "Allow",
+            "Action": "iam:AttachRolePolicy",
+            "Resource": codedeploy_role_arn,
+            "Condition": {
+                "StringEquals": {
+                    "iam:PolicyARN": "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+                }
+            },
         },
     ]
     if deployment_operator_role_arn:

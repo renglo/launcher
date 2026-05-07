@@ -56,8 +56,10 @@ def _build_trust_policy(oidc_provider_arn: str, github_repo: str, github_environ
 def _build_permissions_policy(region: str, account_id: str, env_name: str) -> dict[str, Any]:
     ecr_repo_arn = f"arn:aws:ecr:{region}:{account_id}:repository/{env_name}_backend"
     lambda_arn = f"arn:aws:lambda:{region}:{account_id}:function:{env_name}-backend-*"
-    rest_api_arn = f"arn:aws:apigateway:{region}::/restapis/*"
-    ws_api_arn = f"arn:aws:apigateway:{region}::/apis/*"
+    codedeploy_app_arn = f"arn:aws:codedeploy:{region}:{account_id}:application:{env_name}-backend-codedeploy"
+    codedeploy_group_arn = f"arn:aws:codedeploy:{region}:{account_id}:deploymentgroup:{env_name}-backend-codedeploy/*"
+    codedeploy_config_arn = f"arn:aws:codedeploy:{region}:{account_id}:deploymentconfig:*"
+    lambda_execution_role_arn = f"arn:aws:iam::{account_id}:role/{env_name}_tt_role"
     return {
         "Version": "2012-10-17",
         "Statement": [
@@ -77,8 +79,6 @@ def _build_permissions_policy(region: str, account_id: str, env_name: str) -> di
                     "ecr:UploadLayerPart",
                     "ecr:CompleteLayerUpload",
                     "ecr:PutImage",
-                    "ecr:DescribeRepositories",
-                    "ecr:CreateRepository",
                 ],
                 "Resource": ecr_repo_arn,
             },
@@ -92,55 +92,38 @@ def _build_permissions_policy(region: str, account_id: str, env_name: str) -> di
                 "Sid": "LambdaScoped",
                 "Effect": "Allow",
                 "Action": [
-                    "lambda:CreateFunction",
                     "lambda:GetFunction",
+                    "lambda:GetFunctionConfiguration",
                     "lambda:UpdateFunctionCode",
+                    "lambda:UpdateFunctionConfiguration",
                     "lambda:PublishVersion",
-                    "lambda:ListVersionsByFunction",
-                    "lambda:CreateAlias",
-                    "lambda:UpdateAlias",
                     "lambda:GetAlias",
-                    "lambda:ListAliases",
                 ],
                 "Resource": lambda_arn,
             },
             {
-                "Sid": "ApiGatewayManage",
+                "Sid": "CodeDeployLambdaRelease",
                 "Effect": "Allow",
                 "Action": [
-                    "apigateway:GET",
-                    "apigateway:POST",
-                    "apigateway:PATCH",
+                    "codedeploy:CreateDeployment",
+                    "codedeploy:RegisterApplicationRevision",
+                    "codedeploy:GetDeployment",
+                    "codedeploy:GetDeploymentConfig",
+                    "codedeploy:GetDeploymentGroup",
+                    "codedeploy:GetApplication",
                 ],
-                "Resource": [rest_api_arn, ws_api_arn],
-            },
-            {
-                "Sid": "CloudFormationAndCdkToolkit",
-                "Effect": "Allow",
-                "Action": [
-                    "cloudformation:CreateStack",
-                    "cloudformation:UpdateStack",
-                    "cloudformation:DeleteStack",
-                    "cloudformation:DescribeStacks",
-                    "cloudformation:DescribeStackEvents",
-                    "cloudformation:DescribeStackResources",
-                    "cloudformation:GetTemplate",
-                    "cloudformation:CreateChangeSet",
-                    "cloudformation:ExecuteChangeSet",
-                    "cloudformation:DeleteChangeSet",
-                    "cloudformation:DescribeChangeSet",
-                    "cloudformation:ListStackResources",
-                    "s3:*",
-                    "ssm:GetParameter",
-                    "ssm:PutParameter",
-                ],
-                "Resource": "*",
+                "Resource": [codedeploy_app_arn, codedeploy_group_arn, codedeploy_config_arn],
             },
             {
                 "Sid": "PassExecutionRole",
                 "Effect": "Allow",
                 "Action": ["iam:PassRole"],
-                "Resource": f"arn:aws:iam::{account_id}:role/{env_name}*",
+                "Resource": lambda_execution_role_arn,
+                "Condition": {
+                    "StringEquals": {
+                        "iam:PassedToService": "lambda.amazonaws.com",
+                    }
+                },
             },
         ],
     }

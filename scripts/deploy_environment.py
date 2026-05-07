@@ -1,4 +1,5 @@
 import argparse
+import secrets
 from pathlib import Path
 from typing import Dict, Any
 
@@ -35,7 +36,7 @@ class DeploymentResult:
         self.backend: Dict[str, Any] = {}
         self.env_config_path: str = ""
         self.resources_list_path: str = ""
-        self.extension_install_path: str = ""
+        self.environment_json_paths: Dict[str, str] = {}
 
 def deploy_environment(
     env_name: str,
@@ -131,7 +132,7 @@ def deploy_environment(
     '''
 
     # Step 7: Provision backend infra (one-time) for production + staging
-    print("\n🚀 Provisioning backend infra (production)...")
+    print("\n  backend infra (production)...")
     backend_production = provision_backend_infra(
         BackendProvisionConfig(
             env_name=env_name,
@@ -143,7 +144,7 @@ def deploy_environment(
             apply_changes=not dry_run,
         )
     )
-    print("\n🚀 Provisioning backend infra (staging)...")
+    print("\n Provisioning backend infra (staging)...")
     backend_staging = provision_backend_infra(
         BackendProvisionConfig(
             env_name=env_name,
@@ -169,6 +170,8 @@ def deploy_environment(
         apply_changes=not dry_run,
     )
 
+    csrf_secret = secrets.token_urlsafe(48)
+    deployment_secret_key = secrets.token_urlsafe(48)
     env_path = write_env_config.write_env_config_py(
         _LAUNCHER_ROOT,
         env_name,
@@ -179,14 +182,26 @@ def deploy_environment(
         vite_websocket_url=backend_production.get("websocket", {}).get("websocket_url", ""),
         websocket_connections_staging=backend_staging.get("websocket", {}).get("connections_url", ""),
         vite_websocket_url_staging=backend_staging.get("websocket", {}).get("websocket_url", ""),
+        csrf_session_key=csrf_secret,
+        secret_key=deployment_secret_key,
     )
     result.env_config_path = str(env_path)
-    extension_install_path = write_extension_install_config.write_extension_install_json(
+    environment_json_paths = write_extension_install_config.write_environment_jsons(
         _LAUNCHER_ROOT,
-        env_name,
-        result.bootstrap,
+        bootstrap=result.bootstrap,
+        github_repo=github_repo,
+        env_name=env_name,
+        aws_region=aws_region,
+        cognito=result.cognito,
+        iam_role_arn=str(result.iam_role.get("role_arn", "") or ""),
+        s3_bucket_name=str(result.s3.get("bucket_name", "") or ""),
+        backend_by_stage={
+            k: v for k, v in result.backend.items() if isinstance(v, dict) and k in ("production", "staging")
+        },
     )
-    result.extension_install_path = str(extension_install_path)
+    result.environment_json_paths = {
+        stage_name: str(path) for stage_name, path in environment_json_paths.items()
+    }
     resources_txt_path = write_created_resources.write_created_resources_txt(
         _LAUNCHER_ROOT,
         env_name,
@@ -198,7 +213,7 @@ def deploy_environment(
             "s3": result.s3,
             "backend": result.backend,
             "env_config_path": result.env_config_path,
-            "extension_install_path": result.extension_install_path,
+            "environment_json_paths": result.environment_json_paths,
         },
     )
     result.resources_list_path = str(resources_txt_path)
@@ -261,6 +276,8 @@ def print_deployment_summary(result: DeploymentResult):
             print(f"Alias      : {alias_info.get('alias_name', '')}")
             ws_info = stage_backend.get("websocket", {})
             print(f"WebSocket  : {ws_info.get('websocket_url', '')}")
+            codedeploy_info = stage_backend.get("codedeploy", {})
+            print(f"CodeDeploy : {codedeploy_info.get('deployment_group_name', '')} ({codedeploy_info.get('deployment_config_name', '')})")
 
     if result.opensearch:
         print("\nOpenSearch")
@@ -281,10 +298,11 @@ def print_deployment_summary(result: DeploymentResult):
         print("\ncreated_resources.txt")
         print("-------------")
         print(f"Written: {result.resources_list_path}")
-    if result.extension_install_path:
-        print("\nextension_install.json")
-        print("-------------")
-        print(f"Written: {result.extension_install_path}")
+    if result.environment_json_paths:
+        print("\nEnvironment JSON files")
+        print("----------------------")
+        for stage_name, path in result.environment_json_paths.items():
+            print(f"{stage_name:11}: {path}")
 
 
 def main():
