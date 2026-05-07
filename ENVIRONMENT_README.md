@@ -29,13 +29,35 @@ You should see the profile that points to the cloud you want to deploy this to.
 
 
 #### 4. Run the deploy environment for TT
-This will create the Dynamo tables, create the Cognito user pool, create the IAM policy, create the Role and link everything together. 
+This will create the Dynamo tables, create the Cognito user pool, create the IAM policy, create the Role and link everything together.
+It now also bootstraps GitHub OIDC deploy roles and provisions backend infra (ECR/Lambda/API Gateway/WebSocket) for one tenant at a time.
+Backend infra is provisioned for both `production` and `staging` stages, with a Lambda alias per stage.
+CodeDeploy deployment groups are provisioned too: `production` uses `CodeDeployDefault.LambdaCanary10Percent10Minutes` and `staging` uses `CodeDeployDefault.LambdaAllAtOnce`.
 Replace <environment_name> with the actual name of the environment you want to create. Replace <aws_profile> 
 
 ```
 cd scripts
-python deploy_environment.py <environment_name> --aws-region <aws_region>  --aws-profile <aws_profile>
+python deploy_environment.py <environment_name> --aws-region <aws_region> --aws-profile <aws_profile> --github-repo <org/repo>
 ```
+
+Optional flags:
+
+```
+--disable-staging-role
+--enable-cdk-bootstrap
+--seed-image-uri <account>.dkr.ecr.<region>.amazonaws.com/<repo>:<tag>
+--dry-run
+```
+
+Note on CDK bootstrap:
+- By default, CDK bootstrap is skipped because the current launcher flow provisions infrastructure using SDK scripts.
+- `--enable-cdk-bootstrap` is optional today and intended for forward compatibility, since the target architecture is to migrate fully to CDK deploy flows in the future.
+
+Seed image note:
+- First-time backend Lambda creation requires a valid Lambda container image in ECR.
+- A minimal seed image is provided at `scripts/backend/seed-image/` using `public.ecr.aws/lambda/python:3.12`.
+- `deploy_environment.py` now builds/pushes that seed image automatically when the backend Lambda does not exist.
+- `--seed-image-uri` remains available as an optional override if you want to use a custom seed image.
 
 
 **OpenSearch:** The deploy creates the index automatically. It uses provisioned domain `{env}-search` if it exists, otherwise creates OpenSearch Serverless collection `{env}-collection` with required policies. No manual setup needed.
@@ -82,6 +104,13 @@ Enter the region and cognito ids
 Enter the bucket name
 
     S3_BUCKET_NAME = '<name>-xxxxx'
+
+WebSocket values are now generated automatically:
+
+    WEBSOCKET_CONNECTIONS = 'https://<id>.execute-api.<region>.amazonaws.com/production/'
+    VITE_WEBSOCKET_URL = 'wss://<id>.execute-api.<region>.amazonaws.com/production/'
+    WEBSOCKET_CONNECTIONS_STAGING = 'https://<id>.execute-api.<region>.amazonaws.com/staging/'
+    VITE_WEBSOCKET_URL_STAGING = 'wss://<id>.execute-api.<region>.amazonaws.com/staging/'
 
 If OpenSearch was configured, add:
 

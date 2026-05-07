@@ -105,12 +105,15 @@ def write_created_resources_txt(
         lines.append("")
 
     env_config_path = result.get("env_config_path", "")
-    extension_install_path = result.get("extension_install_path", "")
+    environment_json_paths = result.get("environment_json_paths", {})
     if env_config_path:
         lines.append("Generated Files:")
         lines.append(f"- env_config.py: {env_config_path}")
-        if extension_install_path:
-            lines.append(f"- extension_install.json: {extension_install_path}")
+        if isinstance(environment_json_paths, dict):
+            for stage_name in ("production", "staging"):
+                stage_path = environment_json_paths.get(stage_name, "")
+                if stage_path:
+                    lines.append(f"- {stage_name}.json: {stage_path}")
         lines.append("")
 
     out_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")

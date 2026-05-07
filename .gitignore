@@ -61,3 +61,11 @@ run.sh
 env_config.py
 zappa_settings.json
 
+# Generated IAM policy for sysadmin handoff (account-specific)
+helpers/env_deployment_tt_policy.json
+helpers/*_deployment_tt_policy.json
+helpers/*_deployment_tt_access_keys.json
+# Generated environment config
+env_config.py
+*_created_resources.txt
+*_extension_install.json

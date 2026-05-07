@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import json
 import os
 import shutil
 import subprocess
+import time
 from typing import Any, Optional
 
 import boto3
@@ -15,6 +17,9 @@ import create_websocket_api
 
 
 REGLO_DEPLOYMENT_DESCRIPTION = "Reglo Deployment"
+CODEDEPLOY_MANAGED_ROLE_POLICY_ARN = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+IAM_PROPAGATION_WAIT_SECONDS = 10
+CODEDEPLOY_MAX_ROLE_RETRIES = 4
 
 
 @dataclass
@@ -52,6 +57,22 @@ def _rest_api_name(env_name: str, stage_name: str) -> str:
 
 def _websocket_api_name(env_name: str, stage_name: str) -> str:
     return f"{env_name}-websocket-{stage_name}"
+
+
+def _lambda_alias_name(stage_name: str) -> str:
+    return stage_name
+
+
+def _codedeploy_application_name(env_name: str) -> str:
+    return f"{env_name}-backend-codedeploy"
+
+
+def _codedeploy_deployment_group_name(env_name: str, stage_name: str) -> str:
+    return f"{env_name}-backend-{stage_name}"
+
+
+def _codedeploy_service_role_name(env_name: str) -> str:
+    return f"{env_name}-codedeploy-lambda-role"
 
 
 def _ensure_ecr_repository(session: boto3.Session, repository_name: str, apply_changes: bool) -> dict[str, Any]:
@@ -107,6 +128,193 @@ def _lambda_exists(session: boto3.Session, function_name: str) -> bool:
         return True
     except client.exceptions.ResourceNotFoundException:
         return False
+
+
+def _latest_published_version(client, function_name: str) -> str:
+    paginator = client.get_paginator("list_versions_by_function")
+    latest = 0
+    for page in paginator.paginate(FunctionName=function_name):
+        for item in page.get("Versions", []):
+            version = item.get("Version", "")
+            if version == "$LATEST":
+                continue
+            if version.isdigit():
+                latest = max(latest, int(version))
+    return str(latest) if latest else ""
+
+
+def _ensure_lambda_alias(
+    session: boto3.Session,
+    *,
+    function_name: str,
+    alias_name: str,
+    apply_changes: bool,
+) -> dict[str, Any]:
+    client = session.client("lambda")
+    aliases = client.list_aliases(FunctionName=function_name).get("Aliases", [])
+    existing = next((a for a in aliases if a.get("Name") == alias_name), None)
+    if existing:
+        return {
+            "alias_name": alias_name,
+            "alias_arn": existing.get("AliasArn", ""),
+            "function_version": existing.get("FunctionVersion", ""),
+            "created": False,
+        }
+
+    target_version = _latest_published_version(client, function_name)
+    if not target_version and apply_changes:
+        published = client.publish_version(
+            FunctionName=function_name,
+            Description=f"{REGLO_DEPLOYMENT_DESCRIPTION} alias seed",
+        )
+        target_version = published.get("Version", "")
+
+    if not target_version:
+        return {"alias_name": alias_name, "alias_arn": "", "function_version": "", "created": True}
+
+    if not apply_changes:
+        return {"alias_name": alias_name, "alias_arn": "", "function_version": target_version, "created": True}
+
+    created = client.create_alias(
+        FunctionName=function_name,
+        Name=alias_name,
+        FunctionVersion=target_version,
+        Description=f"{REGLO_DEPLOYMENT_DESCRIPTION} {alias_name} traffic alias",
+    )
+    return {
+        "alias_name": alias_name,
+        "alias_arn": created.get("AliasArn", ""),
+        "function_version": created.get("FunctionVersion", ""),
+        "created": True,
+    }
+
+
+def _ensure_codedeploy_service_role(session: boto3.Session, env_name: str, apply_changes: bool) -> dict[str, Any]:
+    iam = session.client("iam")
+    account_id = session.client("sts").get_caller_identity()["Account"]
+    role_name = _codedeploy_service_role_name(env_name)
+    role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
+    trust_policy = {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {"Service": "codedeploy.amazonaws.com"},
+                "Action": "sts:AssumeRole",
+            }
+        ],
+    }
+    created = False
+    try:
+        iam.get_role(RoleName=role_name)
+        if apply_changes:
+            iam.update_assume_role_policy(RoleName=role_name, PolicyDocument=json.dumps(trust_policy))
+    except iam.exceptions.NoSuchEntityException:
+        if not apply_changes:
+            return {"role_name": role_name, "role_arn": role_arn, "created": True}
+        iam.create_role(
+            RoleName=role_name,
+            AssumeRolePolicyDocument=json.dumps(trust_policy),
+            Description=REGLO_DEPLOYMENT_DESCRIPTION,
+        )
+        created = True
+        time.sleep(IAM_PROPAGATION_WAIT_SECONDS)
+
+    if apply_changes:
+        try:
+            iam.attach_role_policy(RoleName=role_name, PolicyArn=CODEDEPLOY_MANAGED_ROLE_POLICY_ARN)
+        except iam.exceptions.NoSuchEntityException:
+            pass
+        time.sleep(IAM_PROPAGATION_WAIT_SECONDS)
+
+    return {"role_name": role_name, "role_arn": role_arn, "created": created}
+
+
+def _codedeploy_config_for_stage(stage_name: str) -> str:
+    if stage_name == "production":
+        return "CodeDeployDefault.LambdaCanary10Percent10Minutes"
+    return "CodeDeployDefault.LambdaAllAtOnce"
+
+
+def _ensure_codedeploy(
+    session: boto3.Session,
+    *,
+    env_name: str,
+    stage_name: str,
+    apply_changes: bool,
+) -> dict[str, Any]:
+    codedeploy = session.client("codedeploy")
+    app_name = _codedeploy_application_name(env_name)
+    group_name = _codedeploy_deployment_group_name(env_name, stage_name)
+    deployment_config_name = _codedeploy_config_for_stage(stage_name)
+
+    app_created = False
+    try:
+        codedeploy.get_application(applicationName=app_name)
+    except codedeploy.exceptions.ApplicationDoesNotExistException:
+        if apply_changes:
+            codedeploy.create_application(applicationName=app_name, computePlatform="Lambda")
+            app_created = True
+        else:
+            return {
+                "application_name": app_name,
+                "deployment_group_name": group_name,
+                "deployment_config_name": deployment_config_name,
+                "service_role_arn": "",
+                "created": True,
+            }
+
+    service_role = _ensure_codedeploy_service_role(session, env_name, apply_changes)
+    role_arn = service_role.get("role_arn", "")
+    create_payload = {
+        "applicationName": app_name,
+        "deploymentGroupName": group_name,
+        "serviceRoleArn": role_arn,
+        "deploymentConfigName": deployment_config_name,
+        "deploymentStyle": {
+            "deploymentType": "BLUE_GREEN",
+            "deploymentOption": "WITH_TRAFFIC_CONTROL",
+        },
+        "autoRollbackConfiguration": {"enabled": False},
+        "triggerConfigurations": [],
+    }
+    update_payload = {
+        "applicationName": app_name,
+        "currentDeploymentGroupName": group_name,
+        "serviceRoleArn": role_arn,
+        "deploymentConfigName": deployment_config_name,
+        "deploymentStyle": {
+            "deploymentType": "BLUE_GREEN",
+            "deploymentOption": "WITH_TRAFFIC_CONTROL",
+        },
+        "autoRollbackConfiguration": {"enabled": False},
+        "triggerConfigurations": [],
+    }
+
+    group_created = False
+    try:
+        codedeploy.get_deployment_group(applicationName=app_name, deploymentGroupName=group_name)
+        if apply_changes:
+            codedeploy.update_deployment_group(**update_payload)
+    except codedeploy.exceptions.DeploymentGroupDoesNotExistException:
+        if apply_changes:
+            for attempt in range(CODEDEPLOY_MAX_ROLE_RETRIES):
+                try:
+                    codedeploy.create_deployment_group(**create_payload)
+                    group_created = True
+                    break
+                except codedeploy.exceptions.InvalidRoleException:
+                    if attempt == CODEDEPLOY_MAX_ROLE_RETRIES - 1:
+                        raise
+                    time.sleep(IAM_PROPAGATION_WAIT_SECONDS * (attempt + 1))
+
+    return {
+        "application_name": app_name,
+        "deployment_group_name": group_name,
+        "deployment_config_name": deployment_config_name,
+        "service_role_arn": role_arn,
+        "created": app_created or group_created,
+    }
 
 
 def _build_and_push_seed_image(
@@ -186,61 +394,54 @@ def _ensure_rest_api(
     api_name: str,
     region: str,
     stage_name: str,
-    function_arn: str,
+    alias_arn: str,
+    alias_name: str,
     function_name: str,
     apply_changes: bool,
 ) -> dict[str, Any]:
     apigw = session.client("apigateway")
     lambda_client = session.client("lambda")
 
-    def ensure_chat_resource_and_method(api_id: str) -> None:
+    def ensure_proxy_routes(api_id: str) -> None:
         resources = apigw.get_resources(restApiId=api_id, limit=500).get("items", [])
         root_id = next((r["id"] for r in resources if r.get("path") == "/"), "")
         if not root_id:
             return
 
-        chat_resource = next((r for r in resources if r.get("pathPart") == "_chat"), None)
-        if chat_resource is None and apply_changes:
-            chat_resource = apigw.create_resource(restApiId=api_id, parentId=root_id, pathPart="_chat")
-        elif chat_resource is None:
+        proxy_resource = next((r for r in resources if r.get("pathPart") == "{proxy+}"), None)
+        if proxy_resource is None and apply_changes:
+            proxy_resource = apigw.create_resource(restApiId=api_id, parentId=root_id, pathPart="{proxy+}")
+        elif proxy_resource is None:
             return
 
-        message_resource = next((r for r in resources if r.get("pathPart") == "message"), None)
-        if message_resource is None and apply_changes:
-            message_resource = apigw.create_resource(
-                restApiId=api_id,
-                parentId=chat_resource["id"],
-                pathPart="message",
-            )
-        elif message_resource is None:
-            return
-
-        resource_id = message_resource["id"]
         if apply_changes:
-            try:
-                apigw.put_method(
+            integration_uri = f"arn:aws:apigateway:{region}:lambda:path/2015-03-31/functions/{alias_arn}/invocations"
+            for resource_id in (root_id, proxy_resource["id"]):
+                try:
+                    apigw.put_method(
+                        restApiId=api_id,
+                        resourceId=resource_id,
+                        httpMethod="ANY",
+                        authorizationType="NONE",
+                    )
+                except apigw.exceptions.ConflictException:
+                    pass
+
+                apigw.put_integration(
                     restApiId=api_id,
                     resourceId=resource_id,
-                    httpMethod="POST",
-                    authorizationType="NONE",
+                    httpMethod="ANY",
+                    type="AWS_PROXY",
+                    integrationHttpMethod="POST",
+                    uri=integration_uri,
+                    passthroughBehavior="WHEN_NO_MATCH",
                 )
-            except apigw.exceptions.ConflictException:
-                pass
 
-            integration_uri = (
-                f"arn:aws:apigateway:{region}:lambda:path/2015-03-31/functions/{function_arn}/invocations"
+            source_arn = (
+                f"arn:aws:execute-api:{region}:{session.client('sts').get_caller_identity()['Account']}:"
+                f"{api_id}/*/*"
             )
-            apigw.put_integration(
-                restApiId=api_id,
-                resourceId=resource_id,
-                httpMethod="POST",
-                type="AWS_PROXY",
-                integrationHttpMethod="POST",
-                uri=integration_uri,
-                passthroughBehavior="WHEN_NO_MATCH",
-            )
-            source_arn = f"arn:aws:execute-api:{region}:{session.client('sts').get_caller_identity()['Account']}:{api_id}/*/POST/_chat/message"
-            statement_id = f"{function_name}-rest-apigw"
+            statement_id = f"{function_name}-rest-apigw-any"
             try:
                 lambda_client.add_permission(
                     FunctionName=function_name,
@@ -248,6 +449,7 @@ def _ensure_rest_api(
                     Action="lambda:InvokeFunction",
                     Principal="apigateway.amazonaws.com",
                     SourceArn=source_arn,
+                    Qualifier=alias_name,
                 )
             except lambda_client.exceptions.ResourceConflictException:
                 pass
@@ -257,7 +459,7 @@ def _ensure_rest_api(
     for api in existing:
         if api.get("name") == api_name:
             api_id = api.get("id", "")
-            ensure_chat_resource_and_method(api_id)
+            ensure_proxy_routes(api_id)
             return {
                 "api_name": api_name,
                 "api_id": api_id,
@@ -268,7 +470,7 @@ def _ensure_rest_api(
         return {"api_name": api_name, "api_id": "", "invoke_url": "", "created": True}
     api = apigw.create_rest_api(name=api_name, description=REGLO_DEPLOYMENT_DESCRIPTION)
     api_id = api["id"]
-    ensure_chat_resource_and_method(api_id)
+    ensure_proxy_routes(api_id)
     return {
         "api_name": api_name,
         "api_id": api_id,
@@ -283,6 +485,7 @@ def run(config: BackendProvisionConfig) -> dict[str, Any]:
     function_name = _lambda_function_name(config.env_name, config.stage_name)
     rest_api_name = _rest_api_name(config.env_name, config.stage_name)
     websocket_name = _websocket_api_name(config.env_name, config.stage_name)
+    alias_name = _lambda_alias_name(config.stage_name)
 
     ecr_result = _ensure_ecr_repository(session, repository_name, config.apply_changes)
     seed_image_uri = (config.seed_image_uri or "").strip()
@@ -304,12 +507,19 @@ def run(config: BackendProvisionConfig) -> dict[str, Any]:
         memory_mb=config.memory_mb,
         apply_changes=config.apply_changes,
     )
+    alias_result = _ensure_lambda_alias(
+        session,
+        function_name=function_name,
+        alias_name=alias_name,
+        apply_changes=config.apply_changes,
+    )
     rest_result = _ensure_rest_api(
         session,
         api_name=rest_api_name,
         region=config.aws_region,
         stage_name=config.stage_name,
-        function_arn=lambda_result.get("function_arn", ""),
+        alias_arn=alias_result.get("alias_arn", ""),
+        alias_name=alias_name,
         function_name=function_name,
         apply_changes=config.apply_changes,
     )
@@ -323,11 +533,20 @@ def run(config: BackendProvisionConfig) -> dict[str, Any]:
             config.stage_name,
             config.aws_profile,
             config.aws_region,
+            apply_changes=config.apply_changes,
         )
+    codedeploy_result = _ensure_codedeploy(
+        session,
+        env_name=config.env_name,
+        stage_name=config.stage_name,
+        apply_changes=config.apply_changes,
+    )
 
     return {
         "ecr": ecr_result,
         "lambda": lambda_result,
+        "alias": alias_result,
         "rest_api": rest_result,
         "websocket": websocket_result,
+        "codedeploy": codedeploy_result,
     }
