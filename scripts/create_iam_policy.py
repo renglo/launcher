@@ -60,6 +60,7 @@ def create_iam_policy(env_name, cognito_user_pool_id, aws_region, aws_profile):
                     f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_data",
                     f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_chat",
                     f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_chat/index/entity_index",
+                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_session",
                     f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_entities",
                     f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_rel",
                     f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/{env_name}_data/index/path_index"
