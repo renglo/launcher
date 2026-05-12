@@ -34,8 +34,10 @@ class DeploymentResult:
         self.status_blueprints: Dict[str, str] = {}
         self.bootstrap: Dict[str, Any] = {}
         self.backend: Dict[str, Any] = {}
+        self.state_dir: str = ""
         self.env_config_path: str = ""
         self.resources_list_path: str = ""
+        self.resources_json_path: str = ""
         self.environment_json_paths: Dict[str, str] = {}
 
 def deploy_environment(
@@ -170,10 +172,14 @@ def deploy_environment(
         apply_changes=not dry_run,
     )
 
+    state_dir = _LAUNCHER_ROOT / "state" / env_name
+    state_dir.mkdir(parents=True, exist_ok=True)
+    result.state_dir = str(state_dir)
+
     csrf_secret = secrets.token_urlsafe(48)
     deployment_secret_key = secrets.token_urlsafe(48)
     env_path = write_env_config.write_env_config_py(
-        _LAUNCHER_ROOT,
+        state_dir,
         env_name,
         aws_region,
         result.cognito,
@@ -187,7 +193,8 @@ def deploy_environment(
     )
     result.env_config_path = str(env_path)
     environment_json_paths = write_extension_install_config.write_environment_jsons(
-        _LAUNCHER_ROOT,
+        state_dir,
+        launcher_root=_LAUNCHER_ROOT,
         bootstrap=result.bootstrap,
         github_repo=github_repo,
         env_name=env_name,
@@ -202,21 +209,30 @@ def deploy_environment(
     result.environment_json_paths = {
         stage_name: str(path) for stage_name, path in environment_json_paths.items()
     }
+    _resources_payload = {
+        "bootstrap": result.bootstrap,
+        "dynamodb_tables": result.dynamodb_tables,
+        "cognito": result.cognito,
+        "iam_policy": result.iam_policy,
+        "iam_role": result.iam_role,
+        "s3": result.s3,
+        "backend": result.backend,
+        "env_config_path": result.env_config_path,
+        "environment_json_paths": result.environment_json_paths,
+    }
     resources_txt_path = write_created_resources.write_created_resources_txt(
-        _LAUNCHER_ROOT,
+        state_dir,
         env_name,
-        {
-            "dynamodb_tables": result.dynamodb_tables,
-            "cognito": result.cognito,
-            "iam_policy": result.iam_policy,
-            "iam_role": result.iam_role,
-            "s3": result.s3,
-            "backend": result.backend,
-            "env_config_path": result.env_config_path,
-            "environment_json_paths": result.environment_json_paths,
-        },
+        _resources_payload,
     )
     result.resources_list_path = str(resources_txt_path)
+    resources_json_path = write_created_resources.write_created_resources_json(
+        state_dir,
+        env_name,
+        aws_region,
+        _resources_payload,
+    )
+    result.resources_json_path = str(resources_json_path)
 
     return result
 
@@ -290,14 +306,22 @@ def print_deployment_summary(result: DeploymentResult):
     print(f"Success : {len(result.status_blueprints['success'])} blueprints")
     print(f"Failed  : {len(result.status_blueprints['failed'])} blueprints")
 
+    if result.state_dir:
+        print("\nState Directory")
+        print("---------------")
+        print(f"Path: {result.state_dir}")
     if result.env_config_path:
         print("\nenv_config.py")
         print("-------------")
         print(f"Written: {result.env_config_path}")
     if result.resources_list_path:
         print("\ncreated_resources.txt")
-        print("-------------")
+        print("---------------------")
         print(f"Written: {result.resources_list_path}")
+    if result.resources_json_path:
+        print("\ncreated_resources.json")
+        print("----------------------")
+        print(f"Written: {result.resources_json_path}")
     if result.environment_json_paths:
         print("\nEnvironment JSON files")
         print("----------------------")

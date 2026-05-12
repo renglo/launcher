@@ -108,13 +108,15 @@ def _merge_overrides(app_vars: dict[str, str], overrides: Mapping[str, str] | No
             app_vars[k] = str(v)
 
 
-def merge_app_vars_from_vars_json_example(launcher_root: Path, app_vars: dict[str, str]) -> None:
+def merge_app_vars_from_vars_json_example(launcher_root: Path | None, app_vars: dict[str, str]) -> None:
     """
     Optionally fill empty VARS entries from helpers/inyect_env_vars/vars.json
     (same shape as inject_github_env_vars). Does not overwrite non-empty deploy
     values — so staging/production BASE_URL REST URLs stay distinct.
     ECS keys present in vars.json but not listed in _APP_VARS_KEY_ORDER are ignored.
     """
+    if launcher_root is None:
+        return
 
     example = launcher_root / "helpers" / "inyect_env_vars" / "vars.json"
     if not example.exists():
@@ -150,8 +152,9 @@ def _ordered_vars_payload(app_vars: dict[str, str], bootstrap_payload: Mapping[s
 
 
 def write_environment_jsons(
-    launcher_root: Path,
+    output_dir: Path,
     *,
+    launcher_root: Path | None = None,
     bootstrap: Mapping[str, Any],
     github_repo: str,
     env_name: str,
@@ -163,8 +166,9 @@ def write_environment_jsons(
     app_var_overrides: Mapping[str, str] | None = None,
     merge_launcher_example_vars_json: bool = True,
 ) -> dict[str, Path]:
-    """Write production.json / staging.json (GITHUB_REPOSITORY, VARS, SECRETS); env name is filename stem."""
+    """Write production.json / staging.json (GITHUB_REPOSITORY, VARS, SECRETS) to output_dir."""
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     outputs: dict[str, Path] = {}
     role_by_environment = {
         "production": str(bootstrap.get("role_arn_production", "") or ""),
@@ -198,7 +202,7 @@ def write_environment_jsons(
                 "AWS_GITHUB_OIDC_ROLE_ARN": role_arn.strip(),
             },
         }
-        path = launcher_root / f"{environment}.json"
+        path = output_dir / f"{environment}.json"
         path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
         outputs[environment] = path
     return outputs

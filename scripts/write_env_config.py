@@ -8,7 +8,7 @@ from typing import Any, Mapping
 
 
 def write_env_config_py(
-    launcher_root: Path,
+    output_dir: Path,
     env_name: str,
     aws_region: str,
     cognito: Mapping[str, Any],
@@ -20,7 +20,8 @@ def write_env_config_py(
     csrf_session_key: str | None = None,
     secret_key: str | None = None,
 ) -> Path:
-    """Create or overwrite env_config.py at launcher repo root."""
+    """Create or overwrite env_config.py in output_dir (launcher/state/<env>/)."""
+    output_dir.mkdir(parents=True, exist_ok=True)
     csrf = csrf_session_key if csrf_session_key is not None else secrets.token_urlsafe(48)
     secret = secret_key if secret_key is not None else secrets.token_urlsafe(48)
 
@@ -52,6 +53,6 @@ def write_env_config_py(
         f"# OPENSEARCH_INDEX = {repr(f'{env_name}-documents')}",
         "",
     ]
-    path = launcher_root / "env_config.py"
+    path = output_dir / "env_config.py"
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
