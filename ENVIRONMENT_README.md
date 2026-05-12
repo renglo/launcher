@@ -13,10 +13,10 @@ source launch-venv/bin/activate
 #### 2. Install dependencies
 
 ```
-pip install boto3 opensearch-py
+pip install -r requirements.txt
 ```
 
-(opensearch-py is required only if you use the OpenSearch index step)
+(`opensearch-py` is required only if you use the OpenSearch index step; `boto3` is always needed)
 
 
 #### 3. List available AWS profiles. There should be at least one
