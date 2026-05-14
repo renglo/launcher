@@ -4,10 +4,12 @@ Reads launcher/state/<env>/created_resources.json (written by deploy_environment
 and deletes resources in reverse provisioning order.
 
 Usage:
-    python teardown_environment.py <extension> \\
+    python teardown_environment.py <environment_name> \\
         --aws-profile acd-arbitium-tt-dev \\
         --aws-region us-east-1 \\
-        [--yes] [--skip-tables] [--skip-cognito]
+        [--yes] [--skip-tables] [--skip-cognito] [--keep-logs]
+
+The OIDC provider token.actions.githubusercontent.com is not removed (often shared across tenants).
 """
 
 from __future__ import annotations
@@ -110,7 +112,26 @@ def _delete_lambdas(session: boto3.Session, backend: dict[str, Any]) -> None:
             )
 
 
-def _delete_rest_apis(session: boto3.Session, backend: dict[str, Any]) -> None:
+def _delete_lambda_log_groups(
+    session: boto3.Session, backend: dict[str, Any], keep_logs: bool
+) -> None:
+    if keep_logs:
+        print("  - Skipping Lambda CloudWatch log groups (--keep-logs)")
+        return
+    logs = session.client("logs")
+    for stage_name in ("production", "staging"):
+        stage = backend.get(stage_name)
+        if not isinstance(stage, dict):
+            continue
+        fn_name = stage.get("lambda_function_name", "")
+        if not fn_name:
+            continue
+        lg_name = f"/aws/lambda/{fn_name}"
+
+        def _del_lg(name: str = lg_name) -> None:
+            logs.delete_log_group(logGroupName=name)
+
+        _safe(f"Delete CloudWatch log group {lg_name}", _del_lg)
     apigw = session.client("apigateway")
     for stage_name in ("production", "staging"):
         stage = backend.get(stage_name)
@@ -272,6 +293,7 @@ def teardown_environment(
     aws_region: str,
     skip_tables: bool = False,
     skip_cognito: bool = False,
+    keep_logs: bool = False,
 ) -> None:
     manifest, state_dir = _load_manifest(env_name, aws_region)
     region = manifest.get("aws_region") or aws_region
@@ -287,38 +309,41 @@ def teardown_environment(
     print(f"\nTearing down environment: {env_name} (region: {region})")
     print("=" * 60)
 
-    print("\n[1/8] CodeDeploy (deployment groups + application)")
+    print("\n[1/9] CodeDeploy (deployment groups + application)")
     _delete_codedeploy(session, backend)
 
-    print("\n[2/8] Lambda functions")
+    print("\n[2/9] Lambda functions")
     _delete_lambdas(session, backend)
 
-    print("\n[3/8] REST API Gateways")
+    print("\n[3/9] Lambda CloudWatch log groups")
+    _delete_lambda_log_groups(session, backend, keep_logs)
+
+    print("\n[4/9] REST API Gateways")
     _delete_rest_apis(session, backend)
 
-    print("\n[4/8] WebSocket API Gateways")
+    print("\n[5/9] WebSocket API Gateways")
     _delete_websocket_apis(session, backend)
 
-    print("\n[5/8] ECR repository")
+    print("\n[6/9] ECR repository")
     _delete_ecr(session, backend)
 
-    print("\n[6/8] IAM role + policy")
+    print("\n[7/9] IAM role + policy")
     _delete_iam_resources(session, iam_data)
 
-    print("\n[7/8] S3 bucket")
+    print("\n[8/9] S3 bucket")
     _delete_s3(session, s3_data)
 
     if not skip_cognito:
-        print("\n[8a/8] Cognito user pool")
+        print("\n[9a/9] Cognito user pool")
         _delete_cognito(session, cognito_data)
     else:
-        print("\n[8a/8] Cognito user pool — SKIPPED (--skip-cognito)")
+        print("\n[9a/9] Cognito user pool — SKIPPED (--skip-cognito)")
 
     if not skip_tables:
-        print("\n[8b/8] DynamoDB tables")
+        print("\n[9b/9] DynamoDB tables")
         _delete_dynamodb_tables(session, dynamodb_data)
     else:
-        print("\n[8b/8] DynamoDB tables — SKIPPED (--skip-tables)")
+        print("\n[9b/9] DynamoDB tables — SKIPPED (--skip-tables)")
 
     print("\n[+] GitHub OIDC deploy roles")
     _delete_github_oidc_roles(session, oidc_data)
@@ -355,6 +380,11 @@ def main() -> None:
         action="store_true",
         help="Skip Cognito user pool deletion (preserves users)",
     )
+    parser.add_argument(
+        "--keep-logs",
+        action="store_true",
+        help="Do not delete /aws/lambda/<function> CloudWatch log groups for backend Lambdas",
+    )
     args = parser.parse_args()
 
     if not args.yes:
@@ -363,6 +393,8 @@ def main() -> None:
             print("  DynamoDB tables will be preserved (--skip-tables).")
         if args.skip_cognito:
             print("  Cognito user pool will be preserved (--skip-cognito).")
+        if args.keep_logs:
+            print("  Lambda CloudWatch log groups will be preserved (--keep-logs).")
         confirm = input("\nType the environment name to confirm: ").strip()
         if confirm != args.environment_name:
             print("Aborted.")
@@ -375,6 +407,7 @@ def main() -> None:
             aws_region=args.aws_region,
             skip_tables=args.skip_tables,
             skip_cognito=args.skip_cognito,
+            keep_logs=args.keep_logs,
         )
     except FileNotFoundError as exc:
         print(f"\nError: {exc}")
