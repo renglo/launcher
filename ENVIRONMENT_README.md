@@ -59,6 +59,16 @@ Seed image note:
 - `deploy_environment.py` now builds/pushes that seed image automatically when the backend Lambda does not exist.
 - `--seed-image-uri` remains available as an optional override if you want to use a custom seed image.
 
+#### Tear down (remove environment)
+
+To destroy AWS resources created for an environment, use `teardown_environment.py`. It reads **`launcher/state/<environment_name>/created_resources.json`** (written by deploy) and deletes resources in safe order.
+
+```bash
+cd scripts
+python teardown_environment.py <environment_name> --aws-profile <aws_profile> --aws-region <aws_region> --yes
+```
+
+Optional flags: `--skip-tables`, `--skip-cognito`, `--keep-logs` (preserve Lambda CloudWatch log groups). Without `--yes`, you must type the environment name to confirm. The local `launcher/state/<environment_name>/` directory is removed after a successful run.
 
 **OpenSearch:** The deploy creates the index automatically. It uses provisioned domain `{env}-search` if it exists, otherwise creates OpenSearch Serverless collection `{env}-collection` with required policies. No manual setup needed.
 

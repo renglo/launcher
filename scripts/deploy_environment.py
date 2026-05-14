@@ -36,7 +36,6 @@ class DeploymentResult:
         self.backend: Dict[str, Any] = {}
         self.state_dir: str = ""
         self.env_config_path: str = ""
-        self.resources_list_path: str = ""
         self.resources_json_path: str = ""
         self.environment_json_paths: Dict[str, str] = {}
 
@@ -220,12 +219,6 @@ def deploy_environment(
         "env_config_path": result.env_config_path,
         "environment_json_paths": result.environment_json_paths,
     }
-    resources_txt_path = write_created_resources.write_created_resources_txt(
-        state_dir,
-        env_name,
-        _resources_payload,
-    )
-    result.resources_list_path = str(resources_txt_path)
     resources_json_path = write_created_resources.write_created_resources_json(
         state_dir,
         env_name,
@@ -314,10 +307,6 @@ def print_deployment_summary(result: DeploymentResult):
         print("\nenv_config.py")
         print("-------------")
         print(f"Written: {result.env_config_path}")
-    if result.resources_list_path:
-        print("\ncreated_resources.txt")
-        print("---------------------")
-        print(f"Written: {result.resources_list_path}")
     if result.resources_json_path:
         print("\ncreated_resources.json")
         print("----------------------")
