@@ -58,7 +58,7 @@ def deploy_environment(
     result.aws_region = aws_region
 
     # Step 1: Bootstrap GitHub OIDC + deploy roles
-    print("\n🔐 Bootstrapping GitHub OIDC + deploy roles...")
+    print("\nBootstrapping GitHub OIDC + deploy roles...")
     result.bootstrap = bootstrap_github_oidc(
         BootstrapConfig(
             env_name=env_name,
@@ -72,7 +72,7 @@ def deploy_environment(
     )
 
     # Step 2: Create DynamoDB Tables
-    print("\n📦 Creating DynamoDB tables...")
+    print("\nCreating DynamoDB tables...")
     result.dynamodb_tables = create_dynamodb_tables.run(
         env_name=env_name,
         aws_profile=aws_profile,
@@ -81,7 +81,7 @@ def deploy_environment(
     )
 
     # Step 3: Create Cognito User Pool
-    print("\n👥 Creating Cognito User Pool...")
+    print("\nCreating Cognito User Pool...")
     result.cognito = create_cognito_user_pool.run(
         env_name=env_name,
         aws_profile=aws_profile,
@@ -90,7 +90,7 @@ def deploy_environment(
     )
 
     # Step 4: Create IAM Policy
-    print("\n🔒 Creating IAM Policy...")
+    print("\nCreating IAM Policy...")
     result.iam_policy = create_iam_policy.run(
         env_name=env_name,
         cognito_user_pool_id=result.cognito['user_pool_id'],
@@ -100,7 +100,7 @@ def deploy_environment(
     )
 
     # Step 5: Create S3 Bucket
-    print("\n🪣 Creating S3 Bucket...")
+    print("\nCreating S3 Bucket...")
     bucket_name = result.iam_policy.get("s3_bucket_name", result.iam_policy["s3_bucket_arn"])
     result.s3 = create_s3_bucket.run(
         bucket_name=bucket_name,
@@ -110,7 +110,7 @@ def deploy_environment(
     )
 
     # Step 6: Create IAM Role
-    print("\n👔 Creating IAM Role...")
+    print("\nCreating IAM Role...")
     result.iam_role = create_iam_role.run(
         env_name=env_name,
         aws_profile=aws_profile,
@@ -119,7 +119,7 @@ def deploy_environment(
     )
 
     '''# Step 6: Create OpenSearch index (domain {env}-search or collection {env}-collection)
-    print("\n🔍 Creating OpenSearch index...")
+    print("\nCreating OpenSearch index...")
     try:
         result.opensearch = create_opensearch_index.run(
             env_name=env_name,

@@ -26,7 +26,7 @@ def create_cognito_user_pool(env_name, aws_profile, aws_region, apply_changes: b
     session = boto3.Session(profile_name=aws_profile, region_name=aws_region)
     cognito_client = session.client("cognito-idp")
 
-    print(f"🛠️ Ensuring Cognito User Pool for environment: {env_name}...")
+    print(f"Ensuring Cognito User Pool for environment: {env_name}...")
     existing_pool = _find_user_pool_by_name(cognito_client, env_name)
     if existing_pool:
         user_pool_id = existing_pool["Id"]
@@ -53,7 +53,7 @@ def create_cognito_user_pool(env_name, aws_profile, aws_region, apply_changes: b
         print(f"✅ User Pool Created! ID: {user_pool_id}")
 
     # Step 2: Create App Client (Single Page Application, USER_PASSWORD_AUTH)
-    print(f"🛠️ Creating App Client for User Pool {user_pool_id}...")
+    print(f"Creating App Client for User Pool {user_pool_id}...")
     client_name = f"{env_name}_app"
     existing_client = _find_app_client(cognito_client, user_pool_id, client_name)
     if existing_client:

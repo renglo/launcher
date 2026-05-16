@@ -41,9 +41,9 @@ def create_table(dynamodb, table_name, partition_key, sort_key=None, local_secon
         return
 
     if not apply_changes:
-        print(f"🧪 Dry-run: table '{table_name}' would be created.")
+        print(f"Dry-run: table '{table_name}' would be created.")
         return
-    print(f"🛠️  Creating table: {table_name}...")
+    print(f"Creating table: {table_name}...")
     
     key_schema = [{"AttributeName": partition_key, "KeyType": "HASH"}]  # Partition Key
     attribute_definitions = [{"AttributeName": partition_key, "AttributeType": "S"}]  # String type

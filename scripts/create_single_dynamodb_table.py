@@ -54,7 +54,7 @@ def create_empty_table(
         print(f"✅ Table '{table_name}' already exists. Skipping creation.")
         return
 
-    print(f"🛠️  Creating table: {table_name}...")
+    print(f"Creating table: {table_name}...")
 
     key_schema = [{"AttributeName": partition_key, "KeyType": "HASH"}]  # Partition Key
     attribute_definitions = [{"AttributeName": partition_key, "AttributeType": "S"}]  # String type
