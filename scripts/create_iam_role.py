@@ -44,7 +44,7 @@ def create_iam_role(env_name, aws_region, aws_profile, apply_changes: bool = Tru
     }
 
     # Step 1: Create the Role
-    print(f"🛠️ Ensuring IAM Role: {role_name}...")
+    print(f"Ensuring IAM Role: {role_name}...")
     try:
         if not apply_changes:
             try:

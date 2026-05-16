@@ -132,6 +132,9 @@ def _delete_lambda_log_groups(
             logs.delete_log_group(logGroupName=name)
 
         _safe(f"Delete CloudWatch log group {lg_name}", _del_lg)
+
+
+def _delete_rest_apis(session: boto3.Session, backend: dict[str, Any]) -> None:
     apigw = session.client("apigateway")
     for stage_name in ("production", "staging"):
         stage = backend.get(stage_name)
@@ -410,8 +413,10 @@ def main() -> None:
             keep_logs=args.keep_logs,
         )
     except FileNotFoundError as exc:
-        print(f"\nError: {exc}")
-        raise SystemExit(1)
+        # Idempotent: re-run uninstall after launcher state was already removed.
+        print(f"\n{exc}")
+        print("Launcher teardown skipped — nothing to do (already torn down or never deployed here).")
+        raise SystemExit(0)
     except Exception as exc:
         print(f"\nTeardown failed: {exc}")
         raise

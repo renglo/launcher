@@ -55,7 +55,7 @@ def create_s3_bucket(
     candidate = bucket_name
     for attempt in range(0, 5):
         try:
-            print(f"🛠️  Creating S3 bucket: {candidate}...")
+            print(f"Creating S3 bucket: {candidate}...")
             if aws_region == "us-east-1":
                 s3_client.create_bucket(Bucket=candidate)
             else:
