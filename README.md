@@ -4,6 +4,8 @@ If you want to install a new Renglo Environment use this:
 
 [ENVIRONMENT_README.md](ENVIRONMENT_README.md)
 
+IAM policy helpers (`generate_env_deployment_tt_policy`, `provision_env_deployment_tt_identity`) and GitHub env injection (`inject_github_env_vars`) live under **`../bootstrap/helpers/`** — see [bootstrap/README.md](../bootstrap/README.md).
+
 ## Deploy
 
 From `launcher/scripts/`:

@@ -7,12 +7,13 @@ from pathlib import Path
 from typing import Any, Mapping
 
 
-# Mirrors helpers/inyect_env_vars vars.json application VARS; ECS block intentionally omitted.
+# Optional bootstrap/state/<env>/vars.json template for VARS; ECS block intentionally omitted.
 _APP_VARS_KEY_ORDER = [
     "WL_NAME",
     "BASE_URL",
     "API_GATEWAY_ARN",
     "LAMBDA_BACKEND_ARN",
+    "LAMBDA_EXTERNAL_HANDLERS_ARN",
     "ROLE_ARN",
     "DYNAMODB_ENTITY_TABLE",
     "DYNAMODB_BLUEPRINT_TABLE",
@@ -108,17 +109,19 @@ def _merge_overrides(app_vars: dict[str, str], overrides: Mapping[str, str] | No
             app_vars[k] = str(v)
 
 
-def merge_app_vars_from_vars_json_example(launcher_root: Path | None, app_vars: dict[str, str]) -> None:
+def merge_app_vars_from_vars_json_example(
+    bootstrap_state_dir: Path | None, app_vars: dict[str, str]
+) -> None:
     """
-    Optionally fill empty VARS entries from helpers/inyect_env_vars/vars.json
+    Optionally fill empty VARS entries from bootstrap/state/<env>/vars.json
     (same shape as inject_github_env_vars). Does not overwrite non-empty deploy
     values — so staging/production BASE_URL REST URLs stay distinct.
     ECS keys present in vars.json but not listed in _APP_VARS_KEY_ORDER are ignored.
     """
-    if launcher_root is None:
+    if bootstrap_state_dir is None:
         return
 
-    example = launcher_root / "helpers" / "inyect_env_vars" / "vars.json"
+    example = bootstrap_state_dir / "vars.json"
     if not example.exists():
         return
     try:
@@ -154,7 +157,7 @@ def _ordered_vars_payload(app_vars: dict[str, str], bootstrap_payload: Mapping[s
 def write_environment_jsons(
     output_dir: Path,
     *,
-    launcher_root: Path | None = None,
+    bootstrap_state_dir: Path | None = None,
     bootstrap: Mapping[str, Any],
     github_repo: str,
     env_name: str,
@@ -191,7 +194,7 @@ def write_environment_jsons(
             stage_name=environment,
         )
         if merge_launcher_example_vars_json:
-            merge_app_vars_from_vars_json_example(launcher_root, app_vars)
+            merge_app_vars_from_vars_json_example(bootstrap_state_dir, app_vars)
         _merge_overrides(app_vars, app_var_overrides)
         vars_payload = _ordered_vars_payload(app_vars, bootstrap)
         payload = {

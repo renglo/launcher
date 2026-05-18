@@ -191,9 +191,10 @@ def deploy_environment(
         secret_key=deployment_secret_key,
     )
     result.env_config_path = str(env_path)
+    bootstrap_state_dir_for_vars = (_LAUNCHER_ROOT.parent / "bootstrap" / "state" / env_name).resolve()
     environment_json_paths = write_extension_install_config.write_environment_jsons(
         state_dir,
-        launcher_root=_LAUNCHER_ROOT,
+        bootstrap_state_dir=bootstrap_state_dir_for_vars,
         bootstrap=result.bootstrap,
         github_repo=github_repo,
         env_name=env_name,
