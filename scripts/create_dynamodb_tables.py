@@ -4,6 +4,12 @@ import os
 import configparser
 from typing import Dict
 
+'''
+python3 dev/launcher/scripts/create_dynamodb_tables.py <environment_name> --aws-profile <profile> --region us-east-1
+python3 dev/launcher/scripts/create_dynamodb_tables.py productora --aws-profile default --region us-east-1
+
+'''
+
 def get_available_aws_profiles():
     """Retrieve available AWS profiles from ~/.aws/credentials and ~/.aws/config."""
     profiles = []
@@ -96,6 +102,7 @@ def run(env_name: str, aws_profile: str, region: str = "us-east-1") -> Dict[str,
         {"name": f"{env_name}_rel", "partition_key": "index", "sort_key": "rel"},
         {"name": f"{env_name}_chat", "partition_key": "index", "sort_key": "entity_index"},
         {"name": f"{env_name}_session", "partition_key": "index", "sort_key": "entity_index"},
+        {"name": f"{env_name}_search", "partition_key": "index", "sort_key": "search_index"},
     ]
 
     # Create tables and collect ARNs
