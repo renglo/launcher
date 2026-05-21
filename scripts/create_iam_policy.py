@@ -42,6 +42,49 @@ def _policy_json_equal(a: Any, b: Any) -> bool:
     return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
 
 
+def _ecs_handlers_handshake_statements(
+    env_name: str,
+    aws_region: str,
+    aws_account_id: str,
+    *,
+    ecs_results_bucket: str | None = None,
+) -> list[dict]:
+    """
+    ECS RunTask + PassRole + S3 handshake for handlers listed in EXTERNAL_HANDLERS_ECS_HANDLERS.
+    Mirrors extensions-service/scripts/setup_iam_role.sh (ArbitiumrsHandlersPolicy).
+    """
+    bucket = ecs_results_bucket or f"{env_name}-handlers-ecs-{aws_account_id}"
+    return [
+        {
+            "Sid": "ECSRunTask",
+            "Effect": "Allow",
+            "Action": ["ecs:RunTask"],
+            "Resource": (
+                f"arn:aws:ecs:{aws_region}:{aws_account_id}:task-definition/"
+                f"{env_name}-handlers-ecs:*"
+            ),
+        },
+        {
+            "Sid": "ECSPassRole",
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": [
+                f"arn:aws:iam::{aws_account_id}:role/{env_name}-handlers-ecs-execution",
+                f"arn:aws:iam::{aws_account_id}:role/{env_name}-handlers-ecs-task",
+            ],
+            "Condition": {
+                "StringEquals": {"iam:PassedToService": "ecs-tasks.amazonaws.com"},
+            },
+        },
+        {
+            "Sid": "ECSHandshakeS3",
+            "Effect": "Allow",
+            "Action": ["s3:PutObject", "s3:GetObject"],
+            "Resource": f"arn:aws:s3:::{bucket}/*",
+        },
+    ]
+
+
 def _build_tt_runtime_policy_document(
     env_name: str,
     aws_region: str,
@@ -185,6 +228,7 @@ def _build_tt_runtime_policy_document(
                 "Action": "aoss:APIAccessAll",
                 "Resource": "*",
             },
+            *_ecs_handlers_handshake_statements(env_name, aws_region, aws_account_id),
         ],
     }
 
