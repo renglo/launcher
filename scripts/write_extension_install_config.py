@@ -23,6 +23,8 @@ _APP_VARS_KEY_ORDER = [
     "DYNAMODB_RINGDATA_TABLE",
     "DYNAMODB_REL_TABLE",
     "DYNAMODB_CHAT_TABLE",
+    "DYNAMODB_SESSION_TABLE",
+    "DYNAMODB_SEARCH_TABLE",
     "COGNITO_REGION",
     "COGNITO_USERPOOL_ID",
     "COGNITO_APP_CLIENT_ID",
@@ -35,7 +37,7 @@ _APP_VARS_KEY_ORDER = [
     "CODEDEPLOY_DEPLOYMENT_CONFIG_NAME",
 ]
 
-_BOOTSTRAP_VAR_KEY_ORDER = ["AWS_REGION", "AWS_ECR_REPOSITORY"]
+_BOOTSTRAP_VAR_KEY_ORDER = ["AWS_REGION", "AWS_DEFAULT_REGION", "AWS_ECR_REPOSITORY"]
 
 
 def _websocket_vars_from_stage(stage_backend: Mapping[str, Any]) -> dict[str, str]:
@@ -110,6 +112,8 @@ def _app_vars_from_deploy(
         "DYNAMODB_RINGDATA_TABLE": f"{env_name}_data",
         "DYNAMODB_REL_TABLE": f"{env_name}_rel",
         "DYNAMODB_CHAT_TABLE": f"{env_name}_chat",
+        "DYNAMODB_SESSION_TABLE": f"{env_name}_session",
+        "DYNAMODB_SEARCH_TABLE": f"{env_name}_search",
         "COGNITO_REGION": aws_region,
         "COGNITO_USERPOOL_ID": str(cognito.get("user_pool_id", "")),
         "COGNITO_APP_CLIENT_ID": str(cognito.get("app_client_id", "")),
@@ -169,7 +173,9 @@ def merge_app_vars_from_vars_json_example(
 
 def _ordered_vars_payload(app_vars: dict[str, str], bootstrap_payload: Mapping[str, Any]) -> dict[str, str]:
     merged: dict[str, str] = {k: app_vars.get(k, "") for k in _APP_VARS_KEY_ORDER}
-    merged["AWS_REGION"] = str(bootstrap_payload.get("region", "") or "")
+    region = str(bootstrap_payload.get("region", "") or "").strip()
+    merged["AWS_REGION"] = region
+    merged["AWS_DEFAULT_REGION"] = region
     merged["AWS_ECR_REPOSITORY"] = str(bootstrap_payload.get("ecr_repository", "") or "")
     ordered: dict[str, str] = {}
     for k in _APP_VARS_KEY_ORDER:

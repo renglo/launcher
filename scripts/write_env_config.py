@@ -33,6 +33,8 @@ def write_env_config_py(
         f"DYNAMODB_RINGDATA_TABLE = {repr(f'{env_name}_data')}",
         f"DYNAMODB_REL_TABLE = {repr(f'{env_name}_rel')}",
         f"DYNAMODB_CHAT_TABLE = {repr(f'{env_name}_chat')}",
+        f"DYNAMODB_SESSION_TABLE = {repr(f'{env_name}_session')}",
+        f"DYNAMODB_SEARCH_TABLE = {repr(f'{env_name}_search')}",
         "",
         f"CSRF_SESSION_KEY = {repr(csrf)}",
         f"SECRET_KEY = {repr(secret)}",
