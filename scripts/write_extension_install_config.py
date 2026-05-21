@@ -13,7 +13,6 @@ _APP_VARS_KEY_ORDER = [
     "BASE_URL",
     "WEBSOCKET_CONNECTIONS",
     "WEBSOCKET_URL",
-    "VITE_WEBSOCKET_URL",
     "API_GATEWAY_ARN",
     "LAMBDA_BACKEND_ARN",
     "LAMBDA_EXTERNAL_HANDLERS_ARN",
@@ -44,7 +43,7 @@ def _websocket_vars_from_stage(stage_backend: Mapping[str, Any]) -> dict[str, st
     """
   Per-stage WebSocket URLs from provision_backend_infra / create_websocket_api.
   WEBSOCKET_CONNECTIONS = https management API base (post_to_connection).
-  WEBSOCKET_URL = wss client URL; VITE_WEBSOCKET_URL kept for frontend env parity.
+  WEBSOCKET_URL = wss client URL.
   """
     ws = stage_backend.get("websocket") or {}
     if not isinstance(ws, dict):
@@ -56,7 +55,6 @@ def _websocket_vars_from_stage(stage_backend: Mapping[str, Any]) -> dict[str, st
         out["WEBSOCKET_CONNECTIONS"] = connections.rstrip("/")
     if wss_url:
         out["WEBSOCKET_URL"] = wss_url.rstrip("/")
-        out["VITE_WEBSOCKET_URL"] = wss_url.rstrip("/")
     return out
 
 
