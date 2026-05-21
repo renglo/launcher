@@ -11,6 +11,9 @@ from typing import Any, Mapping
 _APP_VARS_KEY_ORDER = [
     "WL_NAME",
     "BASE_URL",
+    "WEBSOCKET_CONNECTIONS",
+    "WEBSOCKET_URL",
+    "VITE_WEBSOCKET_URL",
     "API_GATEWAY_ARN",
     "LAMBDA_BACKEND_ARN",
     "LAMBDA_EXTERNAL_HANDLERS_ARN",
@@ -33,6 +36,26 @@ _APP_VARS_KEY_ORDER = [
 ]
 
 _BOOTSTRAP_VAR_KEY_ORDER = ["AWS_REGION", "AWS_ECR_REPOSITORY"]
+
+
+def _websocket_vars_from_stage(stage_backend: Mapping[str, Any]) -> dict[str, str]:
+    """
+  Per-stage WebSocket URLs from provision_backend_infra / create_websocket_api.
+  WEBSOCKET_CONNECTIONS = https management API base (post_to_connection).
+  WEBSOCKET_URL = wss client URL; VITE_WEBSOCKET_URL kept for frontend env parity.
+  """
+    ws = stage_backend.get("websocket") or {}
+    if not isinstance(ws, dict):
+        return {}
+    connections = str(ws.get("connections_url") or "").strip()
+    wss_url = str(ws.get("websocket_url") or "").strip()
+    out: dict[str, str] = {}
+    if connections:
+        out["WEBSOCKET_CONNECTIONS"] = connections.rstrip("/")
+    if wss_url:
+        out["WEBSOCKET_URL"] = wss_url.rstrip("/")
+        out["VITE_WEBSOCKET_URL"] = wss_url.rstrip("/")
+    return out
 
 
 def _codedeploy_var_values(
@@ -76,7 +99,7 @@ def _app_vars_from_deploy(
 
     cd_app, cd_group, cd_config = _codedeploy_var_values(env_name, stage_backend, stage_name)
 
-    return {
+    vars_out = {
         "WL_NAME": env_name,
         "BASE_URL": invoke_url,
         "API_GATEWAY_ARN": api_gw_arn,
@@ -98,6 +121,8 @@ def _app_vars_from_deploy(
         "CODEDEPLOY_DEPLOYMENT_GROUP_NAME": cd_group,
         "CODEDEPLOY_DEPLOYMENT_CONFIG_NAME": cd_config,
     }
+    vars_out.update(_websocket_vars_from_stage(stage_backend))
+    return vars_out
 
 
 def _merge_overrides(app_vars: dict[str, str], overrides: Mapping[str, str] | None) -> None:
