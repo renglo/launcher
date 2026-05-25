@@ -75,16 +75,89 @@ def _codedeploy_service_role_name(env_name: str) -> str:
     return f"{env_name}-codedeploy-lambda-role"
 
 
+def _ecr_lambda_repository_policy(account_id: str, region: str) -> dict[str, Any]:
+    """Allow Lambda to pull container images from this ECR repo (required for CreateFunction PackageType=Image)."""
+    return {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "LambdaECRImageRetrievalPolicy",
+                "Effect": "Allow",
+                "Principal": {"Service": "lambda.amazonaws.com"},
+                "Action": [
+                    "ecr:BatchGetImage",
+                    "ecr:DeleteRepositoryPolicy",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:GetRepositoryPolicy",
+                    "ecr:SetRepositoryPolicy",
+                ],
+                "Condition": {
+                    "StringLike": {
+                        "aws:sourceArn": f"arn:aws:lambda:{region}:{account_id}:function:*",
+                    }
+                },
+            }
+        ],
+    }
+
+
+def _ensure_ecr_lambda_pull_policy(
+    session: boto3.Session,
+    repository_name: str,
+    *,
+    apply_changes: bool,
+) -> None:
+    if not apply_changes:
+        return
+    account_id = session.client("sts").get_caller_identity()["Account"]
+    region = session.region_name or "us-east-1"
+    ecr = session.client("ecr")
+    policy_text = json.dumps(_ecr_lambda_repository_policy(account_id, region))
+    try:
+        ecr.set_repository_policy(repositoryName=repository_name, policyText=policy_text)
+    except ecr.exceptions.RepositoryNotFoundException:
+        raise
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to set ECR repository policy on {repository_name!r} for Lambda image pull: {exc}"
+        ) from exc
+
+
 def _ensure_ecr_repository(session: boto3.Session, repository_name: str, apply_changes: bool) -> dict[str, Any]:
     ecr = session.client("ecr")
+    created = False
     try:
         repo = ecr.describe_repositories(repositoryNames=[repository_name])["repositories"][0]
-        return {"repository_name": repository_name, "repository_arn": repo.get("repositoryArn", ""), "created": False}
     except ecr.exceptions.RepositoryNotFoundException:
         if not apply_changes:
             return {"repository_name": repository_name, "repository_arn": "", "created": True}
         repo = ecr.create_repository(repositoryName=repository_name)["repository"]
-        return {"repository_name": repository_name, "repository_arn": repo.get("repositoryArn", ""), "created": True}
+        created = True
+    _ensure_ecr_lambda_pull_policy(session, repository_name, apply_changes=apply_changes)
+    return {"repository_name": repository_name, "repository_arn": repo.get("repositoryArn", ""), "created": created}
+
+
+def _ensure_lambda_role_ready(session: boto3.Session, role_arn: str, apply_changes: bool) -> None:
+    """Verify execution role exists and wait for IAM propagation before CreateFunction."""
+    if not apply_changes:
+        return
+    role_name = role_arn.rsplit("/", 1)[-1]
+    iam = session.client("iam")
+    try:
+        iam.get_role(RoleName=role_name)
+    except iam.exceptions.NoSuchEntityException as exc:
+        raise ValueError(
+            f"Lambda execution role {role_name!r} does not exist. "
+            f"Re-run deploy_environment.py so create_iam_role creates {role_name!r} "
+            f"and attaches {role_name.replace('_tt_role', '_tt_policy')} before backend provisioning."
+        ) from exc
+    attached = iam.list_attached_role_policies(RoleName=role_name).get("AttachedPolicies", [])
+    if not attached:
+        raise ValueError(
+            f"Lambda execution role {role_name!r} has no attached policies. "
+            f"Re-run create_iam_policy + create_iam_role (or full deploy_environment.py)."
+        )
+    time.sleep(IAM_PROPAGATION_WAIT_SECONDS)
 
 
 def _ensure_lambda_function(
@@ -107,6 +180,7 @@ def _ensure_lambda_function(
             return {"function_name": function_name, "function_arn": "", "created": True}
         if not image_uri.strip():
             raise ValueError("Lambda does not exist and no image URI is available for create_function.")
+        _ensure_lambda_role_ready(session, role_arn, apply_changes=apply_changes)
         config = client.create_function(
             FunctionName=function_name,
             Role=role_arn,

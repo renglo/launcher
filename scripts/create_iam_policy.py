@@ -103,6 +103,9 @@ def _build_tt_runtime_policy_document(
         f"arn:aws:logs:{aws_region}:{aws_account_id}:log-group:/aws/lambda/{env_name}*"
         ":log-stream:*"
     )
+    backend_ecr_arn = (
+        f"arn:aws:ecr:{aws_region}:{aws_account_id}:repository/{env_name}_backend"
+    )
 
     return {
         "Version": "2012-10-17",
@@ -156,6 +159,22 @@ def _build_tt_runtime_policy_document(
                     "logs:GetLogEvents",
                 ],
                 "Resource": [log_group_arn, log_stream_arn],
+            },
+            {
+                "Sid": "EcrPullBackendImage",
+                "Effect": "Allow",
+                "Action": [
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchCheckLayerAvailability",
+                ],
+                "Resource": backend_ecr_arn,
+            },
+            {
+                "Sid": "EcrAuthToken",
+                "Effect": "Allow",
+                "Action": "ecr:GetAuthorizationToken",
+                "Resource": "*",
             },
             {
                 "Effect": "Allow",
@@ -372,8 +391,8 @@ def main():
     result = run(
         args.environment_name,
         args.cognito_user_pool_id,
-        args.aws_region,
-        args.aws_profile,
+        aws_profile=args.aws_profile,
+        aws_region=args.aws_region,
     )
 
     print("\n🎯 IAM Policy Created Successfully!\n")

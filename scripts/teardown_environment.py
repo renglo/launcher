@@ -175,7 +175,29 @@ def _delete_ecr(session: boto3.Session, backend: dict[str, Any]) -> None:
         )
 
 
-def _delete_iam_resources(session: boto3.Session, iam_data: dict[str, Any]) -> None:
+def _detach_managed_policy_from_roles(
+    iam: Any, policy_arn: str, env_name: str
+) -> None:
+    """Detach platform managed policy from roles that may still reference it."""
+    for role_name in (
+        f"{env_name}_tt_role",
+        f"{env_name}-handlers-role",
+        f"{env_name}-handlers-ecs-task",
+    ):
+        try:
+            attached = iam.list_attached_role_policies(RoleName=role_name).get(
+                "AttachedPolicies", []
+            )
+            if any(p.get("PolicyArn") == policy_arn for p in attached):
+                iam.detach_role_policy(RoleName=role_name, PolicyArn=policy_arn)
+                print(f"  + Detached policy from {role_name}")
+        except iam.exceptions.NoSuchEntityException:
+            pass
+
+
+def _delete_iam_resources(
+    session: boto3.Session, iam_data: dict[str, Any], env_name: str
+) -> None:
     iam = session.client("iam")
     role_name = iam_data.get("role_name", "")
     policy_arn = iam_data.get("policy_arn", "")
@@ -190,6 +212,7 @@ def _delete_iam_resources(session: boto3.Session, iam_data: dict[str, Any]) -> N
 
     if policy_arn:
         def _del_policy(pa: str = policy_arn) -> None:
+            _detach_managed_policy_from_roles(iam, pa, env_name)
             versions = iam.list_policy_versions(PolicyArn=pa).get("Versions", [])
             for v in versions:
                 if not v.get("IsDefaultVersion"):
@@ -331,7 +354,7 @@ def teardown_environment(
     _delete_ecr(session, backend)
 
     print("\n[7/9] IAM role + policy")
-    _delete_iam_resources(session, iam_data)
+    _delete_iam_resources(session, iam_data, env_name)
 
     print("\n[8/9] S3 bucket")
     _delete_s3(session, s3_data)

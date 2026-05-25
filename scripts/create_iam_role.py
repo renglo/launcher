@@ -1,8 +1,11 @@
 import boto3
 import argparse
 import json
+import time
 from typing import Dict
 from botocore.exceptions import ClientError
+
+IAM_PROPAGATION_WAIT_SECONDS = 10
 
 def get_aws_account_id(session):
     """Retrieve the AWS account number dynamically."""
@@ -68,6 +71,7 @@ def create_iam_role(env_name, aws_region, aws_profile, apply_changes: bool = Tru
             attached = iam_client.list_attached_role_policies(RoleName=role_name).get("AttachedPolicies", [])
             if not any(p.get("PolicyArn") == policy_arn for p in attached):
                 iam_client.attach_role_policy(RoleName=role_name, PolicyArn=policy_arn)
+                time.sleep(IAM_PROPAGATION_WAIT_SECONDS)
         return role_name, role_arn
 
     # Get role ARN
@@ -82,8 +86,13 @@ def create_iam_role(env_name, aws_region, aws_profile, apply_changes: bool = Tru
             PolicyArn=policy_arn
         )
         print("✅ Policy attached successfully!")
+        time.sleep(IAM_PROPAGATION_WAIT_SECONDS)
+    except iam_client.exceptions.NoSuchEntityException as e:
+        raise RuntimeError(
+            f"Policy {policy_arn} not found. Run create_iam_policy for {env_name!r} before create_iam_role."
+        ) from e
     except Exception as e:
-        print(f"❌ Failed to attach policy: {str(e)}")
+        raise RuntimeError(f"Failed to attach policy {policy_arn} to role {role_name}: {e}") from e
 
     return role_name, role_arn
 
