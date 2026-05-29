@@ -335,7 +335,7 @@ def _create_opensearch_client(
 INDEX_MAPPING = {
     "mappings": {
         "properties": {
-            "tenant_id": {"type": "keyword"},
+            "org": {"type": "keyword"},
             "datatype": {"type": "keyword"},
             "portfolio": {"type": "keyword"},
             "doc_id": {"type": "keyword"},
