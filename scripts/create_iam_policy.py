@@ -58,11 +58,20 @@ def _ecs_handlers_handshake_statements(
         {
             "Sid": "ECSRunTask",
             "Effect": "Allow",
-            "Action": ["ecs:RunTask"],
-            "Resource": (
-                f"arn:aws:ecs:{aws_region}:{aws_account_id}:task-definition/"
-                f"{env_name}-handlers-ecs:*"
-            ),
+            "Action": [
+                "ecs:RunTask",
+                "ecs:DescribeTasks",
+                "ecs:ListTasks",
+                "ecs:DescribeClusters",
+            ],
+            "Resource": [
+                f"arn:aws:ecs:{aws_region}:{aws_account_id}:cluster/{env_name}-handlers",
+                (
+                    f"arn:aws:ecs:{aws_region}:{aws_account_id}:task-definition/"
+                    f"{env_name}-handlers-ecs:*"
+                ),
+                f"arn:aws:ecs:{aws_region}:{aws_account_id}:task/{env_name}-handlers/*",
+            ],
         },
         {
             "Sid": "ECSPassRole",
