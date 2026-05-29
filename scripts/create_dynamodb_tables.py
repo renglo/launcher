@@ -127,6 +127,21 @@ def run(env_name: str, aws_profile: str, region: str = "us-east-1") -> Dict[str,
     response = dynamodb.describe_table(TableName=data_table_name)
     table_arns[data_table_name] = response["Table"]["TableArn"]
 
+    # Create graph table with backward traversal LSI.
+    graph_table_name = f"{env_name}_graph"
+    graph_table_lsis = [
+        {"IndexName": "backward_index", "SortKey": "backward_index", "ProjectionType": "ALL"},
+    ]
+    create_table(
+        dynamodb,
+        graph_table_name,
+        "graph_index",
+        "forward_index",
+        local_secondary_indexes=graph_table_lsis,
+    )
+    response = dynamodb.describe_table(TableName=graph_table_name)
+    table_arns[graph_table_name] = response["Table"]["TableArn"]
+
     return table_arns
 
 def main():
