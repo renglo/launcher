@@ -1,0 +1,362 @@
+{
+  "/arbitiumrs-api": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiProxyResourceProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiProxyResourceProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiMethodAnyRootProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiMethodAnyRootProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiMethodAnyProxyProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiMethodAnyProxyProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiDeploymentProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiDeploymentProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsApiProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsApiProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsIntegrationProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsIntegrationProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsRouteProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsRouteProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsStageProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsStageProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiProxyResourceStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiProxyResourceStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiMethodAnyRootStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiMethodAnyRootStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiMethodAnyProxyStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiMethodAnyProxyStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiDeploymentStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiDeploymentStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsApiStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsApiStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsIntegrationStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsIntegrationStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsRouteStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsRouteStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WsStageStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WsStageStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WebSocketUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WebSocketConnectionsUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketConnectionsUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/RestApiUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WebSocketUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/WebSocketConnectionsUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketConnectionsUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-api/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

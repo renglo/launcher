@@ -1,0 +1,515 @@
+{
+  "/arbitiumrs-compute": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersCluster": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersCluster"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/VpcId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/SubnetIds": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetIds"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/EcsOptimizedAmi": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsOptimizedAmi"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersAsgInstanceProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersAsgInstanceProfile"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersAsgInstanceSecurityGroup": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersAsgInstanceSecurityGroup"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersAsgLaunchTemplate": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersAsgLaunchTemplate"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersAsg": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersAsg"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersCapacityProvider": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersCapacityProvider"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersClusterCapacityProviders": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersClusterCapacityProviders"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersEcrRepoName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersEcrRepoName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersEcrRepoUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersEcrRepoUri"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersEcsClusterName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersEcsClusterName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersResultsBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersResultsBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersExecutionRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersExecutionRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersTaskRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersTaskRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersLambdaRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersLambdaLogGroupName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaLogGroupName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersTaskFamily": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersTaskFamily"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersLambdaFunctionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaFunctionName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersOidcDeployRoleArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersOidcDeployRoleArnProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersOidcDeployRoleArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersOidcDeployRoleArnStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/ResultsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResultsBucketA95A2103"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersEcrRepo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersEcrRepoDA0AE764"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/EcsExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsExecutionRoleFD93B7A2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/EcsTaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsTaskRole8DFA0181"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersPolicy54D884E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersLambdaRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaRoleF3E685C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersLambdaLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaLogGroupF075597D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLogGroupA2E7CF96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersTaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersTaskDef6395D88F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersTaskDef/handler": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'. [ack: @aws-cdk/aws-ecs:ecrImageRequiresPolicy]",
+      "trace": [
+        "Annotations.addMessage (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:3441)",
+        "Annotations.addWarningV2 (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:2129)",
+        "RepositoryImage.bind (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\aws-ecs\\lib\\images\\repository.js:1:1404)",
+        "new ContainerDefinition2 (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\aws-ecs\\lib\\container-definition.js:1:8044)",
+        "new ContainerDefinition2 (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\core\\lib\\no-box-stack-traces.js:1:345)",
+        "new ContainerDefinition2 (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\core\\lib\\prop-injectable.js:1:855)",
+        "WrappedClass.addContainer (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\aws-ecs\\lib\\base\\task-definition.js:1:20680)",
+        "WrappedClass.<anonymous> (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-aWpson\\node_modules\\aws-cdk-lib\\core\\lib\\metadata-resource.js:1:2059)",
+        "C:\\Users\\actua\\AppData\\Local\\Temp\\tmp0g23fowx\\lib\\program.js:1:55650",
+        "Kernel._Kernel_ensureSync (C:\\Users\\actua\\AppData\\Local\\Temp\\tmp0g23fowx\\lib\\program.js:1:71267)",
+        "Kernel.invoke (C:\\Users\\actua\\AppData\\Local\\Temp\\tmp0g23fowx\\lib\\program.js:1:55595)",
+        "KernelHost.processRequest (C:\\Users\\actua\\AppData\\Local\\Temp\\tmp0g23fowx\\lib\\program.js:1:228006)",
+        "KernelHost.run (C:\\Users\\actua\\AppData\\Local\\Temp\\tmp0g23fowx\\lib\\program.js:1:226990)",
+        "Immediate._onImmediate (C:\\Users\\actua\\AppData\\Local\\Temp\\tmp0g23fowx\\lib\\program.js:1:227034)",
+        "process.processImmediate (node:internal/timers:485:21)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersAsgInstanceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersAsgInstanceRoleD1574207"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersOidcDeployRoleProduction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersOidcDeployRoleProduction0857D33F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/HandlersOidcDeployRoleStaging/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersOidcDeployRoleStaging9CFCE64F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-compute/EcsExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsExecutionRoleDefaultPolicy9114F99B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

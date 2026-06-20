@@ -1,0 +1,422 @@
+{
+  "/arbitiumrs-runtime": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:3441)",
+        "Annotations.addWarningV2 (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\annotations.js:1:2129)",
+        "resolveValue (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\private\\refs.js:1:6065)",
+        "resolveReferences (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\private\\refs.js:1:4778)",
+        "prepareApp (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\private\\prepare-app.js:1:1514)",
+        "synthesize (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:1:3580)",
+        "App.synth (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\stage.js:1:4636)",
+        "App.synth (C:\\Users\\actua\\AppData\\Local\\Temp\\jsii-kernel-Tbw82U\\node_modules\\aws-cdk-lib\\core\\lib\\app.js:1:4814)",
+        "C:\\Users\\actua\\AppData\\Local\\Temp\\tmpegu0qsh5\\lib\\program.js:1:55650",
+        "Kernel._Kernel_ensureSync (C:\\Users\\actua\\AppData\\Local\\Temp\\tmpegu0qsh5\\lib\\program.js:1:71267)",
+        "Kernel.invoke (C:\\Users\\actua\\AppData\\Local\\Temp\\tmpegu0qsh5\\lib\\program.js:1:55595)",
+        "KernelHost.processRequest (C:\\Users\\actua\\AppData\\Local\\Temp\\tmpegu0qsh5\\lib\\program.js:1:228006)",
+        "KernelHost.run (C:\\Users\\actua\\AppData\\Local\\Temp\\tmpegu0qsh5\\lib\\program.js:1:226990)",
+        "Immediate._onImmediate (C:\\Users\\actua\\AppData\\Local\\Temp\\tmpegu0qsh5\\lib\\program.js:1:227034)",
+        "process.processImmediate (node:internal/timers:485:21)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CodeDeployApp": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeDeployApp"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CodeDeployGroupProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeDeployGroupProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CodeDeployGroupStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeDeployGroupStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendEcrRepoName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendEcrRepoName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendEcrRepoUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendEcrRepoUri"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaFunctionNameProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaFunctionNameProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaAliasArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaAliasArnProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaArchitecture": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaArchitecture"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaExecutionRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaExecutionRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaLogGroupNameProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaLogGroupNameProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/TenantPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TenantPolicyArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/TenantRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TenantRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CodeDeployAppName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeDeployAppName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/OidcProviderArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcProviderArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/OidcDeployRoleArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcDeployRoleArnProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaFunctionNameStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaFunctionNameStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaAliasArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaAliasArnStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaLogGroupNameStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaLogGroupNameStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/OidcDeployRoleArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcDeployRoleArnStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendEcrRepo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendEcrRepo19564360"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/TenantPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TenantPolicyA9D20965"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/TenantRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TenantRole75C06F3F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaLogGroupProduction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaLogGroupProduction44CF48AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/BackendLambdaLogGroupStaging/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaLogGroupStagingB499533A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CodeDeployServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeDeployServiceRole897ED2CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/OidcDeployRoleProduction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcDeployRoleProduction0D41AC96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/OidcDeployRoleStaging/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcDeployRoleStaging9EC7C977"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitiumrs-runtime/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

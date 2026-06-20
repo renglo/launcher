@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "f899868ef70e38be983774fde8337172fbe0f66a951576f6a8958b793dc8d18d": {
+      "displayName": "arbitiumrs-auth Template",
+      "source": {
+        "path": "arbitiumrs-auth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "982081058012-us-east-1-47808984": {
+          "bucketName": "cdk-hnb659fds-assets-982081058012-us-east-1",
+          "objectKey": "f899868ef70e38be983774fde8337172fbe0f66a951576f6a8958b793dc8d18d.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::982081058012:role/cdk-hnb659fds-file-publishing-role-982081058012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,832 @@
+{
+ "Resources": {
+  "BackendEcrRepo19564360": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":10},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "arbitiumrs_backend",
+    "RepositoryPolicyText": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchGetImage",
+        "ecr:DeleteRepositoryPolicy",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:SetRepositoryPolicy"
+       ],
+       "Condition": {
+        "StringLike": {
+         "aws:sourceArn": "arn:aws:lambda:us-east-1:982081058012:function:*"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Sid": "LambdaECRPull"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/BackendEcrRepo/Resource"
+   }
+  },
+  "TenantPolicyA9D20965": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "ManagedPolicyName": "arbitiumrs_tt_policy",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs*",
+        "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs*:*"
+       ]
+      },
+      {
+       "Action": [
+        "apigateway:DELETE",
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:apigateway:us-east-1::/apis/*",
+        "arn:aws:apigateway:us-east-1::/restapis/*"
+       ]
+      },
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::arbitiumrs-*",
+        "arn:aws:s3:::arbitiumrs-982081058012-us-east-1"
+       ],
+       "Sid": "S3ListEnvBucket"
+      },
+      {
+       "Action": [
+        "s3:DeleteObject",
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::arbitiumrs-*/*",
+        "arn:aws:s3:::arbitiumrs-982081058012-us-east-1/*"
+       ],
+       "Sid": "S3ObjectsEnvBucket"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:GetLogEvents",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:logs:us-east-1:982081058012:log-group:/aws/lambda/arbitiumrs*",
+        "arn:aws:logs:us-east-1:982081058012:log-group:/aws/lambda/arbitiumrs*:log-stream:*"
+       ]
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ecr:us-east-1:982081058012:repository/arbitiumrs_backend",
+       "Sid": "EcrPullBackendImage"
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "EcrAuthToken"
+      },
+      {
+       "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:dynamodb:us-east-1:982081058012:table/arbitiumrs_*",
+        "arn:aws:dynamodb:us-east-1:982081058012:table/arbitiumrs_*/index/*"
+       ]
+      },
+      {
+       "Action": [
+        "aoss:APIAccessAll",
+        "ses:SendEmail"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminInitiateAuth",
+        "cognito-idp:AdminSetUserPassword",
+        "cognito-idp:ListUsers",
+        "cognito-idp:RespondToAuthChallenge"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:cognito-idp:us-east-1:982081058012:userpool/",
+          {
+           "Fn::ImportValue": "arbitiumrs-auth:ExportsOutputRefUserPool6BA7E5F296FD7236"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:ListRules",
+        "events:ListTargetsByRule",
+        "events:PutRule",
+        "events:PutTargets",
+        "events:RemoveTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:events:us-east-1:982081058012:rule/arbitiumrs*"
+      },
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": "arn:aws:events:us-east-1:982081058012:event-bus/default"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "events.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "arn:aws:iam::982081058012:role/arbitiumrs_tt_role"
+      },
+      {
+       "Action": [
+        "execute-api:Invoke",
+        "execute-api:ManageConnections"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:execute-api:us-east-1:982081058012:*/*/POST/@connections/*",
+        "arn:aws:execute-api:us-east-1:982081058012:*/stage/POST/_schd/ping"
+       ]
+      },
+      {
+       "Action": [
+        "ecs:DescribeClusters",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:RunTask"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:ecs:us-east-1:982081058012:cluster/arbitiumrs-handlers",
+        "arn:aws:ecs:us-east-1:982081058012:task-definition/arbitiumrs-handlers-ecs:*",
+        "arn:aws:ecs:us-east-1:982081058012:task/arbitiumrs-handlers/*"
+       ],
+       "Sid": "ECSRunTask"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:iam::982081058012:role/arbitiumrs-handlers-ecs-execution",
+        "arn:aws:iam::982081058012:role/arbitiumrs-handlers-ecs-task"
+       ],
+       "Sid": "ECSPassRole"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::arbitiumrs-handlers-ecs-982081058012/*",
+       "Sid": "ECSHandshakeS3"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/TenantPolicy/Resource"
+   }
+  },
+  "TenantRole75C06F3F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Ref": "TenantPolicyA9D20965"
+     }
+    ],
+    "RoleName": "arbitiumrs_tt_role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/TenantRole/Resource"
+   }
+  },
+  "BackendLambdaLogGroupProduction44CF48AD": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/arbitiumrs-backend-production",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/BackendLambdaLogGroupProduction/Resource"
+   }
+  },
+  "BackendLambdaLogGroupStagingB499533A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/arbitiumrs-backend-staging",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/BackendLambdaLogGroupStaging/Resource"
+   }
+  },
+  "CodeDeployServiceRole897ED2CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "arbitiumrs-codedeploy-lambda-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/CodeDeployServiceRole/Resource"
+   }
+  },
+  "CodeDeployApp": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ApplicationName": "arbitiumrs-backend-codedeploy",
+    "ComputePlatform": "Lambda"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/CodeDeployApp"
+   }
+  },
+  "CodeDeployGroupProduction": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": "arbitiumrs-backend-codedeploy",
+    "DeploymentConfigName": "CodeDeployDefault.LambdaCanary10Percent10Minutes",
+    "DeploymentGroupName": "arbitiumrs-backend-production",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "CodeDeployServiceRole897ED2CE",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/CodeDeployGroupProduction"
+   }
+  },
+  "CodeDeployGroupStaging": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": "arbitiumrs-backend-codedeploy",
+    "DeploymentConfigName": "CodeDeployDefault.LambdaAllAtOnce",
+    "DeploymentGroupName": "arbitiumrs-backend-staging",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "CodeDeployServiceRole897ED2CE",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/CodeDeployGroupStaging"
+   }
+  },
+  "OidcDeployRoleProduction0D41AC96": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+         "token.actions.githubusercontent.com:sub": "repo:Arbitium/releases:environment:production"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": "arn:aws:iam::982081058012:oidc-provider/token.actions.githubusercontent.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:GetCallerIdentity",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ReadIdentity"
+        },
+        {
+         "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+         ],
+         "Effect": "Allow",
+         "Resource": "arn:aws:ecr:us-east-1:982081058012:repository/arbitiumrs_backend",
+         "Sid": "EcrPushPull"
+        },
+        {
+         "Action": "ecr:GetAuthorizationToken",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcrAuthToken"
+        },
+        {
+         "Action": [
+          "lambda:AddPermission",
+          "lambda:CreateAlias",
+          "lambda:CreateFunction",
+          "lambda:GetAlias",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:PublishVersion",
+          "lambda:UpdateAlias",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production",
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production:*",
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging",
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging:*"
+         ],
+         "Sid": "BackendLambdaDeploy"
+        },
+        {
+         "Action": [
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetApplication",
+          "codedeploy:GetDeployment",
+          "codedeploy:GetDeploymentConfig",
+          "codedeploy:GetDeploymentGroup",
+          "codedeploy:RegisterApplicationRevision"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "arn:aws:codedeploy:us-east-1:982081058012:application:arbitiumrs-backend-codedeploy",
+          "arn:aws:codedeploy:us-east-1:982081058012:deploymentconfig:*",
+          "arn:aws:codedeploy:us-east-1:982081058012:deploymentgroup:arbitiumrs-backend-codedeploy/*"
+         ],
+         "Sid": "CodeDeployLambdaRelease"
+        },
+        {
+         "Action": "iam:PassRole",
+         "Condition": {
+          "StringEquals": {
+           "iam:PassedToService": "lambda.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "arn:aws:iam::982081058012:role/arbitiumrs_tt_role",
+         "Sid": "PassExecutionRole"
+        },
+        {
+         "Action": "cloudformation:DescribeStacks",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CloudFormationDescribe"
+        },
+        {
+         "Action": [
+          "s3:GetObject",
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": "arn:aws:s3:::arbitiumrs-982081058012-us-east-1/params/*",
+         "Sid": "S3WriteState"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "GitHubActionsDeployPolicy-arbitiumrs-production"
+     }
+    ],
+    "RoleName": "GitHubActionsDeployRole-arbitiumrs-production"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/OidcDeployRoleProduction/Resource"
+   }
+  },
+  "OidcDeployRoleStaging9EC7C977": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+         "token.actions.githubusercontent.com:sub": "repo:Arbitium/releases:environment:staging"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": "arn:aws:iam::982081058012:oidc-provider/token.actions.githubusercontent.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:GetCallerIdentity",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ReadIdentity"
+        },
+        {
+         "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+         ],
+         "Effect": "Allow",
+         "Resource": "arn:aws:ecr:us-east-1:982081058012:repository/arbitiumrs_backend",
+         "Sid": "EcrPushPull"
+        },
+        {
+         "Action": "ecr:GetAuthorizationToken",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcrAuthToken"
+        },
+        {
+         "Action": [
+          "lambda:AddPermission",
+          "lambda:CreateAlias",
+          "lambda:CreateFunction",
+          "lambda:GetAlias",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:PublishVersion",
+          "lambda:UpdateAlias",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production",
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production:*",
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging",
+          "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging:*"
+         ],
+         "Sid": "BackendLambdaDeploy"
+        },
+        {
+         "Action": [
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetApplication",
+          "codedeploy:GetDeployment",
+          "codedeploy:GetDeploymentConfig",
+          "codedeploy:GetDeploymentGroup",
+          "codedeploy:RegisterApplicationRevision"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "arn:aws:codedeploy:us-east-1:982081058012:application:arbitiumrs-backend-codedeploy",
+          "arn:aws:codedeploy:us-east-1:982081058012:deploymentconfig:*",
+          "arn:aws:codedeploy:us-east-1:982081058012:deploymentgroup:arbitiumrs-backend-codedeploy/*"
+         ],
+         "Sid": "CodeDeployLambdaRelease"
+        },
+        {
+         "Action": "iam:PassRole",
+         "Condition": {
+          "StringEquals": {
+           "iam:PassedToService": "lambda.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "arn:aws:iam::982081058012:role/arbitiumrs_tt_role",
+         "Sid": "PassExecutionRole"
+        },
+        {
+         "Action": "cloudformation:DescribeStacks",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CloudFormationDescribe"
+        },
+        {
+         "Action": [
+          "s3:GetObject",
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": "arn:aws:s3:::arbitiumrs-982081058012-us-east-1/params/*",
+         "Sid": "S3WriteState"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "GitHubActionsDeployPolicy-arbitiumrs-staging"
+     }
+    ],
+    "RoleName": "GitHubActionsDeployRole-arbitiumrs-staging"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/OidcDeployRoleStaging/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WM3QrCMAxGn8X7Ls4J3ouCN4oyH0BqF2dc15T+IKP03WUbIl4lOd/JV0G1KaFcyLcvVNMVmu6QrkGqTsi3vyVUDlKNlj0FdoPYPczvyoJkD+kkjWyxubAmNRn/oGaN0x9rzEJz6yEduT04jnbk3z0LxQ02aDUPkHYPs7VWk5KB2Izefkp6NGHWs6jRc3Rqaj/HYGPI4jKEJ5vlGlYVlIuXJypcNIF6hHqeH/sYSgfzAAAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-runtime/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "BackendEcrRepoName": {
+   "Value": {
+    "Ref": "BackendEcrRepo19564360"
+   }
+  },
+  "BackendEcrRepoUri": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "BackendEcrRepo19564360",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "BackendEcrRepo19564360",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "BackendEcrRepo19564360"
+      }
+     ]
+    ]
+   }
+  },
+  "BackendLambdaFunctionNameProduction": {
+   "Value": "arbitiumrs-backend-production"
+  },
+  "BackendLambdaAliasArnProduction": {
+   "Value": "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production:production"
+  },
+  "BackendLambdaArchitecture": {
+   "Value": "x86_64"
+  },
+  "BackendLambdaExecutionRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TenantRole75C06F3F",
+     "Arn"
+    ]
+   }
+  },
+  "BackendLambdaLogGroupNameProduction": {
+   "Value": {
+    "Ref": "BackendLambdaLogGroupProduction44CF48AD"
+   }
+  },
+  "TenantPolicyArn": {
+   "Value": {
+    "Ref": "TenantPolicyA9D20965"
+   }
+  },
+  "TenantRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TenantRole75C06F3F",
+     "Arn"
+    ]
+   }
+  },
+  "CodeDeployAppName": {
+   "Value": "arbitiumrs-backend-codedeploy"
+  },
+  "OidcProviderArn": {
+   "Value": "arn:aws:iam::982081058012:oidc-provider/token.actions.githubusercontent.com"
+  },
+  "OidcDeployRoleArnProduction": {
+   "Value": {
+    "Fn::GetAtt": [
+     "OidcDeployRoleProduction0D41AC96",
+     "Arn"
+    ]
+   }
+  },
+  "BackendLambdaFunctionNameStaging": {
+   "Value": "arbitiumrs-backend-staging"
+  },
+  "BackendLambdaAliasArnStaging": {
+   "Value": "arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging:staging"
+  },
+  "BackendLambdaLogGroupNameStaging": {
+   "Value": {
+    "Ref": "BackendLambdaLogGroupStagingB499533A"
+   }
+  },
+  "OidcDeployRoleArnStaging": {
+   "Value": {
+    "Fn::GetAtt": [
+     "OidcDeployRoleStaging9EC7C977",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

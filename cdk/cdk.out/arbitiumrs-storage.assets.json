@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "608460f889076fcf28e23139f6eb4110a3761e7a43eb9021900eb69315983ddb": {
+      "displayName": "arbitiumrs-storage Template",
+      "source": {
+        "path": "arbitiumrs-storage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "982081058012-us-east-1-816a9864": {
+          "bucketName": "cdk-hnb659fds-assets-982081058012-us-east-1",
+          "objectKey": "608460f889076fcf28e23139f6eb4110a3761e7a43eb9021900eb69315983ddb.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::982081058012:role/cdk-hnb659fds-file-publishing-role-982081058012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

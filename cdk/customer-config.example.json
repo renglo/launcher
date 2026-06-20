@@ -1,0 +1,23 @@
+{
+  "_comment": "Copy this file to customer-config.json and fill in all values before running cdk synth.",
+
+  "env_name": "myenv",
+  "aws_account": "123456789012",
+  "aws_region": "us-east-1",
+
+  "github_repo": "MyOrg/my-releases-repo",
+  "github_handlers_repo": "MyOrg/my-extensions-repo",
+
+  "enable_staging": true,
+
+  "architecture": "x86_64",
+
+  "compute_type": "fargate",
+
+  "ec2_instance_type": "t3.medium",
+
+  "_compute_type_values": "lambda_only | fargate | ec2",
+  "_architecture_values": "x86_64 | arm64",
+  "_ec2_deploy_note": "When compute_type is ec2, the synthesized template includes VpcId and SubnetIds CloudFormation parameters. The customer selects their default VPC (or any VPC) and subnets at stack deploy time — no VPC values needed here.",
+  "_lambda_deploy_note": "Backend and handlers Lambda functions are not created by CloudFormation. Each repo's OIDC pipeline creates/updates its Lambda and points it at the private ECR repo after pushing the image."
+}

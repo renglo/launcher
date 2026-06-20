@@ -1,0 +1,462 @@
+{
+ "Resources": {
+  "DataBucketE3889A50": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "arbitiumrs-982081058012-us-east-1",
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableBlueprints85872336": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "irn",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "version",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "irn",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "version",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitiumrs_blueprints"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableEntities4A17DB83": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "_id",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitiumrs_entities"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableRel72D8E268": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "rel",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "rel",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitiumrs_rel"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableChatD5A2606D": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "entity_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "entity_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitiumrs_chat"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableSession1A151519": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "entity_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "entity_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitiumrs_session"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableSearch3492367B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "search_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "search_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitiumrs_search"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableDataE0AE55D0": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "portfolio_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "doc_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "geo_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "path_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "time_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "portfolio_index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "doc_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "geo_index",
+      "KeySchema": [
+       {
+        "AttributeName": "portfolio_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "geo_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "KEYS_ONLY"
+      }
+     },
+     {
+      "IndexName": "path_index",
+      "KeySchema": [
+       {
+        "AttributeName": "portfolio_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "path_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "time_index",
+      "KeySchema": [
+       {
+        "AttributeName": "portfolio_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "time_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "path_index"
+       ],
+       "ProjectionType": "INCLUDE"
+      }
+     }
+    ],
+    "TableName": "arbitiumrs_data"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableGraphD93ECF44": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "graph_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "forward_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "backward_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "graph_index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "forward_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "backward_index",
+      "KeySchema": [
+       {
+        "AttributeName": "graph_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "backward_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "TableName": "arbitiumrs_graph"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "TableBlueprintsArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableBlueprints85872336",
+     "Arn"
+    ]
+   }
+  },
+  "TableEntitiesArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableEntities4A17DB83",
+     "Arn"
+    ]
+   }
+  },
+  "TableRelArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableRel72D8E268",
+     "Arn"
+    ]
+   }
+  },
+  "TableChatArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableChatD5A2606D",
+     "Arn"
+    ]
+   }
+  },
+  "TableSessionArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableSession1A151519",
+     "Arn"
+    ]
+   }
+  },
+  "TableSearchArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableSearch3492367B",
+     "Arn"
+    ]
+   }
+  },
+  "TableDataArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableDataE0AE55D0",
+     "Arn"
+    ]
+   }
+  },
+  "TableGraphArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableGraphD93ECF44",
+     "Arn"
+    ]
+   }
+  },
+  "DataBucketName": {
+   "Value": {
+    "Ref": "DataBucketE3889A50"
+   }
+  },
+  "DataBucketArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DataBucketE3889A50",
+     "Arn"
+    ]
+   }
+  },
+  "EnvName": {
+   "Value": "arbitiumrs"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

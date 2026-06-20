@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "e9a05581e8637a25d51a82b574050d95095e00b5d5a0d9c1e155f81ad12ef23a": {
+      "displayName": "arbitiumrs-runtime Template",
+      "source": {
+        "path": "arbitiumrs-runtime.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "982081058012-us-east-1-462da0d2": {
+          "bucketName": "cdk-hnb659fds-assets-982081058012-us-east-1",
+          "objectKey": "e9a05581e8637a25d51a82b574050d95095e00b5d5a0d9c1e155f81ad12ef23a.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::982081058012:role/cdk-hnb659fds-file-publishing-role-982081058012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,485 @@
+{
+ "Resources": {
+  "RestApiProduction": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitiumrs-api-production"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiProduction"
+   }
+  },
+  "RestApiProxyResourceProduction": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RestApiProduction",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "RestApiProduction"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiProxyResourceProduction"
+   }
+  },
+  "RestApiMethodAnyRootProduction": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production:production/invocations"
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "RestApiProduction",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "RestApiProduction"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiMethodAnyRootProduction"
+   }
+  },
+  "RestApiMethodAnyProxyProduction": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-production:production/invocations"
+    },
+    "ResourceId": {
+     "Ref": "RestApiProxyResourceProduction"
+    },
+    "RestApiId": {
+     "Ref": "RestApiProduction"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiMethodAnyProxyProduction"
+   }
+  },
+  "RestApiDeploymentProduction": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "RestApiId": {
+     "Ref": "RestApiProduction"
+    },
+    "StageName": "production"
+   },
+   "DependsOn": [
+    "RestApiProxyResourceProduction"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiDeploymentProduction"
+   }
+  },
+  "WsApiProduction": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitiumrs-websocket-production",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsApiProduction"
+   }
+  },
+  "WsIntegrationProduction": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WsApiProduction"
+    },
+    "ContentHandlingStrategy": "CONVERT_TO_TEXT",
+    "IntegrationMethod": "POST",
+    "IntegrationType": "HTTP",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "RestApiProduction"
+       },
+       ".execute-api.us-east-1.amazonaws.com/production/_chat/message"
+      ]
+     ]
+    },
+    "PassthroughBehavior": "WHEN_NO_MATCH",
+    "PayloadFormatVersion": "1.0",
+    "RequestTemplates": {
+     "message_template": "#set($action = $input.path('$.action'))\n#set($data = $input.path('$.data'))\n#set($entity_type = $input.path('$.entity_type'))\n#set($entity_id = $input.path('$.entity_id'))\n#set($thread = $input.path('$.thread'))\n#set($portfolio = $input.path('$.portfolio'))\n#set($org = $input.path('$.org'))\n#set($core = $input.path('$.core'))\n#set($next = $input.path('$.next'))\n#set($auth = $input.path('$.auth'))\n{\n  \"action\": \"$util.escapeJavaScript($action)\",\n  \"data\": $input.json('$.data'),\n  \"entity_type\": \"$util.escapeJavaScript($entity_type)\",\n  \"entity_id\": \"$util.escapeJavaScript($entity_id)\",\n  \"thread\": \"$util.escapeJavaScript($thread)\",\n  \"portfolio\": \"$util.escapeJavaScript($portfolio)\",\n  \"org\": \"$util.escapeJavaScript($org)\",\n  \"core\": \"$util.escapeJavaScript($core)\",\n  \"next\": \"$util.escapeJavaScript($util.defaultIfNullOrEmpty($next, ''))\",\n  \"connectionId\": \"$context.connectionId\",\n  \"auth\": \"$util.escapeJavaScript($auth)\"\n}"
+    },
+    "TemplateSelectionExpression": "message_template",
+    "TimeoutInMillis": 29000
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsIntegrationProduction"
+   }
+  },
+  "WsRouteProduction": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WsApiProduction"
+    },
+    "RouteKey": "chat_message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WsIntegrationProduction"
+       }
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "WsIntegrationProduction"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsRouteProduction"
+   }
+  },
+  "WsStageProduction": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WsApiProduction"
+    },
+    "AutoDeploy": true,
+    "StageName": "production"
+   },
+   "DependsOn": [
+    "WsRouteProduction"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsStageProduction"
+   }
+  },
+  "RestApiStaging": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitiumrs-api-staging"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiStaging"
+   }
+  },
+  "RestApiProxyResourceStaging": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RestApiStaging",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "RestApiStaging"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiProxyResourceStaging"
+   }
+  },
+  "RestApiMethodAnyRootStaging": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging:staging/invocations"
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "RestApiStaging",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "RestApiStaging"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiMethodAnyRootStaging"
+   }
+  },
+  "RestApiMethodAnyProxyStaging": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:982081058012:function:arbitiumrs-backend-staging:staging/invocations"
+    },
+    "ResourceId": {
+     "Ref": "RestApiProxyResourceStaging"
+    },
+    "RestApiId": {
+     "Ref": "RestApiStaging"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiMethodAnyProxyStaging"
+   }
+  },
+  "RestApiDeploymentStaging": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "RestApiId": {
+     "Ref": "RestApiStaging"
+    },
+    "StageName": "staging"
+   },
+   "DependsOn": [
+    "RestApiProxyResourceStaging"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/RestApiDeploymentStaging"
+   }
+  },
+  "WsApiStaging": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitiumrs-websocket-staging",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsApiStaging"
+   }
+  },
+  "WsIntegrationStaging": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WsApiStaging"
+    },
+    "ContentHandlingStrategy": "CONVERT_TO_TEXT",
+    "IntegrationMethod": "POST",
+    "IntegrationType": "HTTP",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "RestApiStaging"
+       },
+       ".execute-api.us-east-1.amazonaws.com/staging/_chat/message"
+      ]
+     ]
+    },
+    "PassthroughBehavior": "WHEN_NO_MATCH",
+    "PayloadFormatVersion": "1.0",
+    "RequestTemplates": {
+     "message_template": "#set($action = $input.path('$.action'))\n#set($data = $input.path('$.data'))\n#set($entity_type = $input.path('$.entity_type'))\n#set($entity_id = $input.path('$.entity_id'))\n#set($thread = $input.path('$.thread'))\n#set($portfolio = $input.path('$.portfolio'))\n#set($org = $input.path('$.org'))\n#set($core = $input.path('$.core'))\n#set($next = $input.path('$.next'))\n#set($auth = $input.path('$.auth'))\n{\n  \"action\": \"$util.escapeJavaScript($action)\",\n  \"data\": $input.json('$.data'),\n  \"entity_type\": \"$util.escapeJavaScript($entity_type)\",\n  \"entity_id\": \"$util.escapeJavaScript($entity_id)\",\n  \"thread\": \"$util.escapeJavaScript($thread)\",\n  \"portfolio\": \"$util.escapeJavaScript($portfolio)\",\n  \"org\": \"$util.escapeJavaScript($org)\",\n  \"core\": \"$util.escapeJavaScript($core)\",\n  \"next\": \"$util.escapeJavaScript($util.defaultIfNullOrEmpty($next, ''))\",\n  \"connectionId\": \"$context.connectionId\",\n  \"auth\": \"$util.escapeJavaScript($auth)\"\n}"
+    },
+    "TemplateSelectionExpression": "message_template",
+    "TimeoutInMillis": 29000
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsIntegrationStaging"
+   }
+  },
+  "WsRouteStaging": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WsApiStaging"
+    },
+    "RouteKey": "chat_message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WsIntegrationStaging"
+       }
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "WsIntegrationStaging"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsRouteStaging"
+   }
+  },
+  "WsStageStaging": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WsApiStaging"
+    },
+    "AutoDeploy": true,
+    "StageName": "staging"
+   },
+   "DependsOn": [
+    "WsRouteStaging"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/WsStageStaging"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/0XMQQ6CMBCF4bO4LyPWxL3RjQujgQOYEUYYgbahUwkhvbsBTFy9b/M/DfqQQrrBwSdF2SQtP2HKBYtG4eAfEzquUGjAEabTy2Tk5ehYrbShL2j2laS25awzudaOHRmJ6t9+9FL/yosRqnoUtmY5skGWl1ywohhn3oK4IFHdR6mt2e5hpyHdvD1z0gcj3BFk634B4m/GI8EAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitiumrs-api/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "RestApiUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "RestApiProduction"
+      },
+      ".execute-api.us-east-1.amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "WebSocketUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "WsApiProduction"
+      },
+      ".execute-api.us-east-1.amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "WebSocketConnectionsUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WsApiProduction"
+      },
+      ".execute-api.us-east-1.amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "RestApiUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "RestApiStaging"
+      },
+      ".execute-api.us-east-1.amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "WebSocketUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "WsApiStaging"
+      },
+      ".execute-api.us-east-1.amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "WebSocketConnectionsUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WsApiStaging"
+      },
+      ".execute-api.us-east-1.amazonaws.com/staging/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

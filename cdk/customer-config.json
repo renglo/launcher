@@ -1,0 +1,11 @@
+{
+    "env_name": "arbitiumrs",
+    "aws_account": "982081058012",
+    "aws_region": "us-east-1",
+    "github_repo": "Arbitium/releases",
+    "github_handlers_repo": "Arbitium/arbitiumlab",
+    "enable_staging": true,
+    "architecture": "x86_64",
+    "compute_type": "ec2",
+    "ec2_instance_type": "t3.medium"
+}
