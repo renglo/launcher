@@ -118,32 +118,49 @@ class ApiStack(Stack):
             path_part="{proxy+}",
         )
 
-        for suffix, resource_id in (
-            ("Root", rest_api.attr_root_resource_id),
-            ("Proxy", proxy_resource.ref),
-        ):
-            apigw.CfnMethod(
-                self,
-                f"RestApiMethodAny{suffix}{stage_cap}",
-                rest_api_id=rest_api.ref,
-                resource_id=resource_id,
-                http_method="ANY",
-                authorization_type="NONE",
-                integration=apigw.CfnMethod.IntegrationProperty(
-                    type="AWS_PROXY",
-                    integration_http_method="POST",
-                    uri=integration_uri,
-                ),
-            )
+        lambda_integration = apigw.CfnMethod.IntegrationProperty(
+            type="AWS_PROXY",
+            integration_http_method="POST",
+            uri=integration_uri,
+        )
+        root_method = apigw.CfnMethod(
+            self,
+            f"RestApiMethodAnyRoot{stage_cap}",
+            rest_api_id=rest_api.ref,
+            resource_id=rest_api.attr_root_resource_id,
+            http_method="ANY",
+            authorization_type="NONE",
+            integration=lambda_integration,
+        )
+        proxy_method = apigw.CfnMethod(
+            self,
+            f"RestApiMethodAnyProxy{stage_cap}",
+            rest_api_id=rest_api.ref,
+            resource_id=proxy_resource.ref,
+            http_method="ANY",
+            authorization_type="NONE",
+            integration=lambda_integration,
+        )
 
+        # Deployment must run after all methods exist or the stage snapshot omits /{proxy+}.
         deployment = apigw.CfnDeployment(
             self,
             f"RestApiDeployment{stage_cap}",
             rest_api_id=rest_api.ref,
-            stage_name=stage,
             description=DESCRIPTION,
         )
         deployment.add_dependency(proxy_resource)
+        deployment.add_dependency(root_method)
+        deployment.add_dependency(proxy_method)
+
+        apigw.CfnStage(
+            self,
+            f"RestApiStage{stage_cap}",
+            rest_api_id=rest_api.ref,
+            deployment_id=deployment.ref,
+            stage_name=stage,
+            description=DESCRIPTION,
+        )
 
         rest_url = f"https://{rest_api.ref}.execute-api.{aws_region}.amazonaws.com/{stage}/"
         chat_endpoint = f"{rest_url}_chat/message"

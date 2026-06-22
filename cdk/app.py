@@ -1,19 +1,29 @@
 #!/usr/bin/env python3
 """CDK app entry point.
 
-Reads customer-config.json (same directory as this file), instantiates all
-platform stacks, and synthesizes a single CloudFormation template.
+Reads customer-config.json (same directory as this file) and instantiates all
+platform stacks.
 
-Usage:
+Deploy order:
     cd launcher/cdk
     pip install -r requirements.txt
-    cdk synth --output ./output
+
+    # Stack A — ECR, IAM, CodeDeploy, OIDC
+    cdk deploy {env_name}-runtime
+
+    # Seed image — build + push to ECR before Lambda can be created
+    python ../scripts/upload_seed_image.py --env-name {env_name} --aws-profile {profile}
+
+    # Stack B — Lambda + API Gateway
+    cdk deploy {env_name}-app
+
+    # Remaining stacks (can be deployed in parallel after Stack A)
+    cdk deploy {env_name}-compute
 """
 
 from __future__ import annotations
 
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -24,7 +34,7 @@ _INFRA_INSTALLER_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_INFRA_INSTALLER_ROOT / "extensions-service" / "scripts"))
 from compute_stack import ComputeStack  # noqa: E402
 
-from stacks.api import ApiStack
+from stacks.app import AppStack
 from stacks.auth import AuthStack
 from stacks.runtime import RuntimeStack
 from stacks.storage import StorageStack
@@ -91,6 +101,7 @@ storage_stack = StorageStack(
     env=cdk_env,
 )
 
+# Stack A — ECR + IAM + CodeDeploy + OIDC (no Lambda, no API Gateway)
 runtime_stack = RuntimeStack(
     app,
     f"{env_name}-runtime",
@@ -101,24 +112,24 @@ runtime_stack = RuntimeStack(
     cognito_user_pool_id=auth_stack.user_pool_id,
     s3_bucket_name=storage_stack.bucket_name,
     enable_staging=enable_staging,
-    architecture=architecture,
     env=cdk_env,
 )
 runtime_stack.add_dependency(auth_stack)
 runtime_stack.add_dependency(storage_stack)
 
-api_stack = ApiStack(
+# Stack B — Lambda (seed image) + API Gateway
+# Deploy AFTER running scripts/upload_seed_image.py
+app_stack = AppStack(
     app,
-    f"{env_name}-api",
+    f"{env_name}-app",
     env_name=env_name,
-    aws_region=aws_region,
     aws_account=aws_account,
-    prod_alias_arn=runtime_stack.prod_alias_arn,
-    staging_alias_arn=runtime_stack.staging_alias_arn,
+    aws_region=aws_region,
     enable_staging=enable_staging,
+    architecture=architecture,
     env=cdk_env,
 )
-api_stack.add_dependency(runtime_stack)
+app_stack.add_dependency(runtime_stack)
 
 compute_stack = ComputeStack(
     app,

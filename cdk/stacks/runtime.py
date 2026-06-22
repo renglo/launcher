@@ -1,17 +1,21 @@
-"""RuntimeStack: backend stage-1 infra (everything except the Lambda function).
+"""RuntimeStack (Stack A): Backend infrastructure — ECR, IAM, CodeDeploy, OIDC.
 
-Creates ECR, tenant execution role/policy, CloudWatch log groups, CodeDeploy,
-and GitHub OIDC deploy roles. Backend Lambda functions are created by the
-releases-repo OIDC pipeline after pushing the container image.
+Creates the ECR repository, tenant execution role/policy, CodeDeploy resources,
+and GitHub OIDC deploy roles.  The Lambda functions and API Gateway are created
+in AppStack (Stack B) after the seed image has been pushed to ECR.
+
+Deploy order:
+  1. cdk deploy {env}-runtime                (this stack)
+  2. python scripts/upload_seed_image.py ... (push seed image to ECR)
+  3. cdk deploy {env}-app                    (Lambda + API Gateway)
 """
 
 from __future__ import annotations
 
-from aws_cdk import CfnOutput, RemovalPolicy, Stack
+from aws_cdk import CfnOutput, Stack
 from aws_cdk import aws_codedeploy as codedeploy
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
-from aws_cdk import aws_logs as logs
 from constructs import Construct
 
 # Account-level GitHub Actions OIDC provider host (one IAM OIDC provider per account/URL).
@@ -173,11 +177,6 @@ def _backend_lambda_function_name(env_name: str, stage: str) -> str:
     return f"{env_name}-backend-{stage}"
 
 
-def _backend_lambda_alias_arn(env_name: str, stage: str, region: str, account: str) -> str:
-    fn = _backend_lambda_function_name(env_name, stage)
-    return f"arn:aws:lambda:{region}:{account}:function:{fn}:{stage}"
-
-
 def _deploy_permissions_policy(
     env_name: str,
     region: str,
@@ -290,22 +289,10 @@ class RuntimeStack(Stack):
         cognito_user_pool_id: str,
         s3_bucket_name: str,
         enable_staging: bool = True,
-        architecture: str = "x86_64",
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        self._architecture = architecture
-
-        # Expected backend Lambda names/aliases (created by releases-repo OIDC, not CF).
-        self.prod_alias_arn = _backend_lambda_alias_arn(
-            env_name, "production", aws_region, aws_account
-        )
-        self.staging_alias_arn = (
-            _backend_lambda_alias_arn(env_name, "staging", aws_region, aws_account)
-            if enable_staging
-            else ""
-        )
         backend_repo = ecr.Repository(
             self,
             "BackendEcrRepo",
@@ -335,22 +322,6 @@ class RuntimeStack(Stack):
         )
 
         self.tt_role = tt_role
-
-        # --- CloudWatch log groups (Lambda function is created by OIDC pipeline) ---
-        backend_log_prod = logs.LogGroup(
-            self,
-            "BackendLambdaLogGroupProduction",
-            log_group_name=f"/aws/lambda/{_backend_lambda_function_name(env_name, 'production')}",
-            removal_policy=RemovalPolicy.RETAIN,
-        )
-        backend_log_staging = None
-        if enable_staging:
-            backend_log_staging = logs.LogGroup(
-                self,
-                "BackendLambdaLogGroupStaging",
-                log_group_name=f"/aws/lambda/{_backend_lambda_function_name(env_name, 'staging')}",
-                removal_policy=RemovalPolicy.RETAIN,
-            )
 
         # --- ECR policy (allow Lambda to pull from the private repo after step 4) ---
         backend_repo.add_to_resource_policy(
@@ -462,36 +433,10 @@ class RuntimeStack(Stack):
         # --- Outputs ---
         CfnOutput(self, "BackendEcrRepoName", value=backend_repo.repository_name)
         CfnOutput(self, "BackendEcrRepoUri", value=backend_repo.repository_uri)
-        CfnOutput(
-            self,
-            "BackendLambdaFunctionNameProduction",
-            value=_backend_lambda_function_name(env_name, "production"),
-        )
-        CfnOutput(self, "BackendLambdaAliasArnProduction", value=self.prod_alias_arn)
-        CfnOutput(self, "BackendLambdaArchitecture", value=architecture)
-        CfnOutput(self, "BackendLambdaExecutionRoleArn", value=tt_role.role_arn)
-        CfnOutput(
-            self,
-            "BackendLambdaLogGroupNameProduction",
-            value=backend_log_prod.log_group_name,
-        )
         CfnOutput(self, "TenantPolicyArn", value=tt_policy.managed_policy_arn)
         CfnOutput(self, "TenantRoleArn", value=tt_role.role_arn)
         CfnOutput(self, "CodeDeployAppName", value=cd_app.application_name)
         CfnOutput(self, "OidcProviderArn", value=oidc_provider.open_id_connect_provider_arn)
         CfnOutput(self, "OidcDeployRoleArnProduction", value=prod_oidc_role.role_arn)
-        if enable_staging:
-            CfnOutput(
-                self,
-                "BackendLambdaFunctionNameStaging",
-                value=_backend_lambda_function_name(env_name, "staging"),
-            )
-            CfnOutput(self, "BackendLambdaAliasArnStaging", value=self.staging_alias_arn)
-            if backend_log_staging is not None:
-                CfnOutput(
-                    self,
-                    "BackendLambdaLogGroupNameStaging",
-                    value=backend_log_staging.log_group_name,
-                )
         if staging_oidc_role:
             CfnOutput(self, "OidcDeployRoleArnStaging", value=staging_oidc_role.role_arn)
