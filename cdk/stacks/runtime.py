@@ -1,22 +1,18 @@
-"""RuntimeStack (Stack A): Backend infrastructure — ECR, IAM, CodeDeploy, OIDC.
+"""Runtime resources: Backend infrastructure — ECR, IAM, CodeDeploy, OIDC.
 
-Creates the ECR repository, tenant execution role/policy, CodeDeploy resources,
-and GitHub OIDC deploy roles.  The Lambda functions and API Gateway are created
-in AppStack (Stack B) after the seed image has been pushed to ECR.
-
-Deploy order:
-  1. cdk deploy {env}-runtime                (this stack)
-  2. python scripts/upload_seed_image.py ... (push seed image to ECR)
-  3. cdk deploy {env}-app                    (Lambda + API Gateway)
+Part of stack-a. Lambda functions and API Gateway are in stack-b after the seed
+image has been pushed to ECR.
 """
 
 from __future__ import annotations
 
-from aws_cdk import CfnOutput, Stack
+from aws_cdk import CfnOutput, RemovalPolicy
 from aws_cdk import aws_codedeploy as codedeploy
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
 from constructs import Construct
+
+from platform_defaults import backend_ecr_repository_name
 
 # Account-level GitHub Actions OIDC provider host (one IAM OIDC provider per account/URL).
 GITHUB_OIDC_PROVIDER_ARN_SUFFIX = "token.actions.githubusercontent.com"
@@ -31,6 +27,7 @@ def _tt_policy_document(
     s3_bucket_name: str,
 ) -> iam.PolicyDocument:
     handlers_bucket = f"{env_name}-handlers-ecs-{account}"
+    backend_repo_name = backend_ecr_repository_name(env_name)
     return iam.PolicyDocument(
         statements=[
             iam.PolicyStatement(
@@ -83,7 +80,7 @@ def _tt_policy_document(
                     "ecr:GetDownloadUrlForLayer",
                     "ecr:BatchCheckLayerAvailability",
                 ],
-                resources=[f"arn:aws:ecr:{region}:{account}:repository/{env_name}_backend"],
+                resources=[f"arn:aws:ecr:{region}:{account}:repository/{backend_repo_name}"],
             ),
             iam.PolicyStatement(
                 sid="EcrAuthToken",
@@ -186,7 +183,7 @@ def _deploy_permissions_policy(
     enable_staging: bool,
 ) -> iam.PolicyDocument:
     """Permissions for the releases-repo GitHub Actions OIDC deploy role."""
-    ecr_repo_arn = f"arn:aws:ecr:{region}:{account}:repository/{env_name}_backend"
+    ecr_repo_arn = f"arn:aws:ecr:{region}:{account}:repository/{backend_ecr_repository_name(env_name)}"
     codedeploy_app_arn = f"arn:aws:codedeploy:{region}:{account}:application:{env_name}-backend-codedeploy"
     codedeploy_group_arn = f"arn:aws:codedeploy:{region}:{account}:deploymentgroup:{env_name}-backend-codedeploy/*"
     codedeploy_config_arn = f"arn:aws:codedeploy:{region}:{account}:deploymentconfig:*"
@@ -276,7 +273,7 @@ def _deploy_permissions_policy(
     )
 
 
-class RuntimeStack(Stack):
+class RuntimeStack(Construct):
     def __init__(
         self,
         scope: Construct,
@@ -293,10 +290,12 @@ class RuntimeStack(Stack):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        backend_repo_name = backend_ecr_repository_name(env_name)
         backend_repo = ecr.Repository(
             self,
             "BackendEcrRepo",
-            repository_name=f"{env_name}_backend",
+            repository_name=backend_repo_name,
+            removal_policy=RemovalPolicy.DESTROY,
         )
         backend_repo.add_lifecycle_rule(max_image_count=10)
 
@@ -313,7 +312,11 @@ class RuntimeStack(Stack):
             self,
             "TenantRole",
             role_name=f"{env_name}_tt_role",
-            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            assumed_by=iam.CompositePrincipal(
+                iam.ServicePrincipal("lambda.amazonaws.com"),
+                iam.ServicePrincipal("events.amazonaws.com"),
+                iam.ServicePrincipal("apigateway.amazonaws.com"),
+            ),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
                 tt_policy,
@@ -321,6 +324,7 @@ class RuntimeStack(Stack):
             description=DESCRIPTION,
         )
 
+        self.tt_policy = tt_policy
         self.tt_role = tt_role
 
         # --- ECR policy (allow Lambda to pull from the private repo after step 4) ---
@@ -429,6 +433,12 @@ class RuntimeStack(Stack):
 
         prod_oidc_role = _oidc_role("production")
         staging_oidc_role = _oidc_role("staging") if enable_staging else None
+
+        self.backend_repo = backend_repo
+        self.cd_app = cd_app
+        self.oidc_provider = oidc_provider
+        self.oidc_deploy_role_production = prod_oidc_role
+        self.oidc_deploy_role_staging = staging_oidc_role
 
         # --- Outputs ---
         CfnOutput(self, "BackendEcrRepoName", value=backend_repo.repository_name)

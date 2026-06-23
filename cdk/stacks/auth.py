@@ -1,11 +1,11 @@
 """CognitoStack: Cognito user pool + app client."""
 
-from aws_cdk import CfnOutput, Stack
+from aws_cdk import CfnOutput, RemovalPolicy
 from aws_cdk import aws_cognito as cognito
 from constructs import Construct
 
 
-class AuthStack(Stack):
+class AuthStack(Construct):
     def __init__(
         self,
         scope: Construct,
@@ -26,6 +26,7 @@ class AuthStack(Stack):
             standard_attributes=cognito.StandardAttributes(
                 email=cognito.StandardAttribute(required=True, mutable=True),
             ),
+            removal_policy=RemovalPolicy.DESTROY,
         )
 
         app_client = user_pool.add_client(

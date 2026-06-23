@@ -1,6 +1,6 @@
 """StorageStack: S3 data bucket + 8 DynamoDB tables."""
 
-from aws_cdk import CfnOutput, RemovalPolicy, Stack
+from aws_cdk import CfnOutput, RemovalPolicy
 from aws_cdk import aws_dynamodb as dynamodb
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
@@ -10,7 +10,7 @@ _BILLING = dynamodb.BillingMode.PAY_PER_REQUEST
 _S = dynamodb.AttributeType.STRING
 
 
-class StorageStack(Stack):
+class StorageStack(Construct):
     def __init__(
         self,
         scope: Construct,
@@ -28,7 +28,7 @@ class StorageStack(Stack):
             self,
             "DataBucket",
             bucket_name=bucket_name,
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.SNAPSHOT,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             encryption=s3.BucketEncryption.S3_MANAGED,
         )
@@ -61,7 +61,7 @@ class StorageStack(Stack):
             table_name=table_name,
             partition_key=dynamodb.Attribute(name=pk, type=_S),
             billing_mode=_BILLING,
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.SNAPSHOT,
         )
         if sk:
             kwargs["sort_key"] = dynamodb.Attribute(name=sk, type=_S)
@@ -77,7 +77,7 @@ class StorageStack(Stack):
             partition_key=dynamodb.Attribute(name="portfolio_index", type=_S),
             sort_key=dynamodb.Attribute(name="doc_index", type=_S),
             billing_mode=_BILLING,
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.SNAPSHOT,
         )
         table.add_local_secondary_index(
             index_name="geo_index",
@@ -106,7 +106,7 @@ class StorageStack(Stack):
             partition_key=dynamodb.Attribute(name="graph_index", type=_S),
             sort_key=dynamodb.Attribute(name="forward_index", type=_S),
             billing_mode=_BILLING,
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.SNAPSHOT,
         )
         table.add_local_secondary_index(
             index_name="backward_index",

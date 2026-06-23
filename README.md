@@ -1,98 +1,235 @@
-# Launcher — core backend environment
+# Launcher — CDK infrastructure
 
-Provisions tenant AWS resources (DynamoDB, Cognito, IAM, S3, backend Lambda container + ECR, API Gateway, WebSocket, CodeDeploy, GitHub OIDC) and writes local state under `launcher/state/<environment_name>/`.
 
-**Full walkthrough (venv, deploy, outputs, application wiring):** [ENVIRONMENT_README.md](ENVIRONMENT_README.md)
+
+Defines the tenant platform as **CloudFormation** via CDK (`launcher/cdk/`). The orchestrator lives in [bootstrap/README.md](../bootstrap/README.md).
+
+
 
 ---
 
-## New environment (recommended)
 
-On **`<main-launcher-root>`** (folder with `bootstrap/`, `launcher/`, `extensions-service/` siblings), use the bootstrap orchestrator — it runs launcher deploy + extensions provision and merges state:
+
+## Stacks
+
+
+
+Two CloudFormation stacks per environment (synth output in `bootstrap/output/<env>/`):
+
+
+
+| Stack | CF name | Description | Contents |
+|-------|---------|-------------|----------|
+| A | `<env>-stack-a` | Reglo deployment — auth, storage, runtime | Cognito, S3/DynamoDB, backend ECR, tenant IAM, CodeDeploy, releases OIDC |
+| B | `<env>-stack-b` | Reglo deployment — app, compute, extension | Backend Lambdas (seed), REST + WebSocket API Gateway, handlers compute, extension |
+
+**Deploy order:** `<env>-stack-a` → **seed image** → `<env>-stack-b`
+
+
+
+Resource names inside the stacks still use `env_name` from `customer-config.json` (e.g. `{env}_backend` ECR repo).
+
+
+
+---
+
+
+
+## Configuration
+
+
 
 ```bash
+
+cd launcher/cdk
+
+cp customer-config.example.json customer-config.json
+
+```
+
+
+
+| Field | Description |
+
+|-------|-------------|
+
+| `env_name` | Resource prefix and synth output folder name |
+
+| `aws_account` / `aws_region` | Target account and region |
+
+| `github_repo` | Releases repo (backend OIDC) |
+
+| `github_handlers_repo` | Handlers/extensions repo |
+
+| `enable_staging` | `true` → staging Lambda + APIs + staging OIDC |
+
+| `compute_type` | `lambda_only` \| `fargate` \| `ec2` |
+
+| `ec2_instance_type` | EC2 instance type for handlers ASG (only `ec2`) |
+
+| `ec2_min_instances` / `ec2_desired_instances` / `ec2_max_instances` | ASG size (only `ec2`) |
+
+Platform-wide defaults (`architecture`, backend seed image URI/tag): `launcher/cdk/platform_defaults.json`.
+
+
+
+---
+
+
+
+## Synth and deploy
+
+
+
+```bash
+
+cd <infra-installer>
+
 bash bootstrap/setup-venvs.sh
 
-python bootstrap/install.py <extension> \
-  --profile <aws-profile> \
-  --aws-region us-east-1 \
-  --github-repo <org>/<releases-repo>
+python bootstrap/install.py synth
+
 ```
 
-See [bootstrap/README.md](../bootstrap/README.md) and [bootstrap/ARCHITECTURE.md](../bootstrap/ARCHITECTURE.md).
 
-IAM policy helpers (`generate_env_deployment_tt_policy`, `provision_env_deployment_tt_identity`) and GitHub env injection (`inject_github_env_vars`) live under **`../bootstrap/helpers/`**.
 
----
+Deploy from `bootstrap/output/<env>`:
 
-## Launcher only (standalone deploy)
 
-From **`<main-launcher-root>/launcher`**:
 
 ```bash
-python3.12 -m venv launch-venv
-# Linux/macOS/WSL: source launch-venv/bin/activate
-# Windows: launch-venv\Scripts\activate
-pip install -r requirements.txt
 
-cd scripts
-python deploy_environment.py <environment_name> \
-  --aws-profile <profile> \
-  --aws-region <region> \
-  --github-repo <org>/<releases-repo>
+export ENV=<env>
+
+export AWS_PROFILE=<aws-profile>
+
+export AWS_REGION=<aws-region>
+
+
+
+cd bootstrap/output/$ENV
+
+
+
+cdk deploy "$ENV-stack-a" \
+
+  --app "python app.py" --output . --require-approval never --profile "$AWS_PROFILE"
+
+
+
+python upload_seed_image.py \
+
+  --env-name "$ENV" --aws-profile "$AWS_PROFILE" --aws-region "$AWS_REGION"
+
+
+
+# compute_type=ec2 → requires VPC and subnets
+
+cdk deploy "$ENV-stack-b" \
+
+  --app "python app.py" \
+
+  --output . \
+
+  --exclusively \
+
+  --parameters VpcId=<vpc-id> \
+
+  --parameters 'SubnetIds=<subnet-ids>' \
+
+  --require-approval never \
+
+  --profile "$AWS_PROFILE"
+
 ```
 
-`--github-repo` is **required** (GitHub OIDC trust for the releases / control repo).
 
-**Optional flags:** `--disable-staging-role`, `--enable-cdk-bootstrap`, `--seed-image-uri <uri>`, `--dry-run`
 
-- CDK bootstrap is **off** by default (SDK-based provisioning today). Use `--enable-cdk-bootstrap` only to prepare the account for future CDK workflows.
-- First-time backend Lambda: a minimal seed image is built/pushed from `scripts/backend/seed-image/` unless you pass `--seed-image-uri`.
-- Backend is provisioned for **`production`** and **`staging`** (Lambda alias per stage). CodeDeploy: production = `LambdaCanary10Percent10Minutes`, staging = `LambdaAllAtOnce`.
+**Important:** `<env>-stack-b` requires the seed image in ECR (`<env>_backend:seed`) before deploy.
+
+
+
+**Re-deploying `<env>-stack-b`:** resets Lambda code to the seed image. Re-run the releases pipeline afterward.
+
+
 
 ---
 
-## State files (`launcher/state/<environment_name>/`)
 
-| File | Role |
-|------|------|
-| `created_resources.json` | Single source of truth for **teardown** (AWS ARNs and names) |
-| `env_config.py` | Generated Python config for the **system** app (copy into product repo if needed) |
-| `production.json` | GitHub Environment payload (`VARS` / `SECRETS`) for production |
-| `staging.json` | Same for staging (unless `--disable-staging-role`) |
 
-After bootstrap, merged release payloads also live under `bootstrap/state/<extension>/platform_vars.production.json` (and staging). Sync to GitHub:
+## Post-deploy
+
+
 
 ```bash
-python bootstrap/helpers/inject_github_env_vars.py \
-  --json bootstrap/state/<extension>/platform_vars.production.json
+
+cd <infra-installer>
+
+python bootstrap/install.py write-state \
+
+  --env-name <env> \
+
+  --aws-profile <aws-profile> \
+
+  --aws-region <aws-region>
+
 ```
 
-Requires authenticated GitHub CLI (`gh auth login`). See [bootstrap/README.md — Sync GitHub environment variables](../bootstrap/README.md#sync-github-environment-variables).
+
+
+State is written to `s3://<env>-<account>-<region>/params/` — see [bootstrap/README.md §8](../bootstrap/README.md#8-sync-github-environment-variables).
+
+
 
 ---
+
+
+
+## OIDC prerequisite (optional)
+
+
+
+CDK **references** the GitHub OIDC provider; it does not create it. If the account already has it, skip this. Otherwise:
+
+
+
+```bash
+
+python bootstrap/install.py ensure-oidc --aws-profile <aws-profile> --aws-region <aws-region>
+
+```
+
+
+
+---
+
+
+
+## Legacy flow (boto3)
+
+
+
+`scripts/deploy_environment.py` remains available for environments not using CDK. See [ENVIRONMENT_README.md](ENVIRONMENT_README.md).
+
+
+
+---
+
+
 
 ## Tear down
 
-Reads `launcher/state/<env>/created_resources.json`:
+
 
 ```bash
-cd launcher/scripts
-python teardown_environment.py <environment_name> \
-  --aws-profile <profile> \
-  --aws-region <region> \
-  --yes
+
+cd bootstrap/output/$ENV
+
+cdk destroy "$ENV-stack-b" "$ENV-stack-a" --app "python app.py" --output . --profile "$AWS_PROFILE"
+
 ```
 
-| Flag | Effect |
-|------|--------|
-| `--skip-tables` | Keep DynamoDB tables and data |
-| `--skip-cognito` | Keep Cognito user pool |
-| `--keep-logs` | Keep `/aws/lambda/<backend-function>` CloudWatch log groups |
-| (no `--yes`) | Must type environment name to confirm |
 
-Removes GitHub deploy IAM roles/policies from the manifest, then CodeDeploy, Lambdas, API Gateways, WebSocket APIs, ECR, tenant IAM role/policy, S3 (if created), Cognito, DynamoDB tables, and local **`launcher/state/<env>/`**.
 
-The account-level GitHub OIDC provider (`token.actions.githubusercontent.com`) is **not** deleted (often shared across environments).
+The account-level OIDC provider is **not** deleted (shared across environments).
 
-Full-platform teardown (launcher + extensions + bootstrap state): `python bootstrap/uninstall.py <extension> --profile <profile> --yes`

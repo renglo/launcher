@@ -1,24 +1,19 @@
 #!/usr/bin/env python3
 """CDK app entry point.
 
-Reads customer-config.json (same directory as this file) and instantiates all
-platform stacks.
+Reads customer-config.json (same directory as this file) and instantiates two
+platform stacks: <env>-stack-a (pre-seed) and <env>-stack-b (post-seed).
 
 Deploy order:
-    cd launcher/cdk
+    cd bootstrap/output/<env_name>
     pip install -r requirements.txt
 
-    # Stack A — ECR, IAM, CodeDeploy, OIDC
-    cdk deploy {env_name}-runtime
+    cdk deploy <env>-stack-a --app "python app.py"
 
-    # Seed image — build + push to ECR before Lambda can be created
-    python ../scripts/upload_seed_image.py --env-name {env_name} --aws-profile {profile}
+    python upload_seed_image.py \\
+        --env-name <env_name> --aws-profile <profile>
 
-    # Stack B — Lambda + API Gateway
-    cdk deploy {env_name}-app
-
-    # Remaining stacks (can be deployed in parallel after Stack A)
-    cdk deploy {env_name}-compute
+    cdk deploy <env>-stack-b --app "python app.py" --output . [--parameters VpcId=... SubnetIds=...]
 """
 
 from __future__ import annotations
@@ -29,23 +24,26 @@ from pathlib import Path
 
 import aws_cdk as cdk
 
-# Add extensions-service/scripts to path so ComputeStack is importable.
-_INFRA_INSTALLER_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(_INFRA_INSTALLER_ROOT / "extensions-service" / "scripts"))
-from compute_stack import ComputeStack  # noqa: E402
+_ROOT = Path(__file__).resolve().parent
+_EXTENSIONS_DIR = _ROOT / "extensions"
+if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
+    sys.path.insert(0, str(_EXTENSIONS_DIR))
+else:
+    sys.path.insert(0, str(_ROOT.parents[2] / "extensions-service" / "scripts"))
 
-from stacks.app import AppStack
-from stacks.auth import AuthStack
-from stacks.runtime import RuntimeStack
-from stacks.storage import StorageStack
+from stack_names import stack_a_id, stack_b_id  # noqa: E402
+from stacks.stack_a import StackA  # noqa: E402
+from stacks.stack_b import StackB  # noqa: E402
+from extension_loader import (  # noqa: E402
+    load_extension_config,
+    load_extension_manifest,
+    resolve_extension_folder,
+)
+from platform_defaults import architecture as platform_architecture  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Load customer config
-# ---------------------------------------------------------------------------
-
-_CONFIG_PATH = Path(__file__).parent / "customer-config.json"
+_CONFIG_PATH = _ROOT / "customer-config.json"
 if not _CONFIG_PATH.is_file():
-    _example = Path(__file__).parent / "customer-config.example.json"
+    _example = _ROOT / "customer-config.example.json"
     raise FileNotFoundError(
         f"customer-config.json not found at {_CONFIG_PATH}\n"
         f"Copy the example: cp {_example} {_CONFIG_PATH}"
@@ -68,81 +66,61 @@ aws_region = _cfg.get("aws_region", "us-east-1").strip() or "us-east-1"
 github_repo = _require("github_repo")
 github_handlers_repo = _cfg.get("github_handlers_repo", github_repo).strip() or github_repo
 enable_staging = bool(_cfg.get("enable_staging", True))
-architecture = _cfg.get("architecture", "x86_64").strip() or "x86_64"
+architecture = platform_architecture(config_dir=_ROOT)
 compute_type = _cfg.get("compute_type", "fargate").strip() or "fargate"
 ec2_instance_type = _cfg.get("ec2_instance_type", "t3.medium").strip() or "t3.medium"
+ec2_min_instances = int(_cfg.get("ec2_min_instances", 0))
+ec2_desired_instances = int(_cfg.get("ec2_desired_instances", 1))
+ec2_max_instances = int(_cfg.get("ec2_max_instances", 2))
+extension_path = _cfg.get("extension_path", "").strip()
 
-if architecture not in ("x86_64", "arm64"):
-    raise ValueError(f"customer-config.json: 'architecture' must be 'x86_64' or 'arm64', got {architecture!r}")
 if compute_type not in ("lambda_only", "fargate", "ec2"):
     raise ValueError(f"customer-config.json: 'compute_type' must be lambda_only|fargate|ec2, got {compute_type!r}")
 
-# ---------------------------------------------------------------------------
-# CDK app
-# ---------------------------------------------------------------------------
-
 app = cdk.App()
-
 cdk_env = cdk.Environment(account=aws_account, region=aws_region)
 
-auth_stack = AuthStack(
+stack_a = StackA(
     app,
-    f"{env_name}-auth",
-    env_name=env_name,
-    env=cdk_env,
-)
-
-storage_stack = StorageStack(
-    app,
-    f"{env_name}-storage",
-    env_name=env_name,
-    aws_account=aws_account,
-    aws_region=aws_region,
-    env=cdk_env,
-)
-
-# Stack A — ECR + IAM + CodeDeploy + OIDC (no Lambda, no API Gateway)
-runtime_stack = RuntimeStack(
-    app,
-    f"{env_name}-runtime",
+    stack_a_id(env_name),
     env_name=env_name,
     aws_account=aws_account,
     aws_region=aws_region,
     github_repo=github_repo,
-    cognito_user_pool_id=auth_stack.user_pool_id,
-    s3_bucket_name=storage_stack.bucket_name,
     enable_staging=enable_staging,
     env=cdk_env,
 )
-runtime_stack.add_dependency(auth_stack)
-runtime_stack.add_dependency(storage_stack)
 
-# Stack B — Lambda (seed image) + API Gateway
-# Deploy AFTER running scripts/upload_seed_image.py
-app_stack = AppStack(
+extension_folder = None
+extension_manifest = None
+extension_config = None
+if extension_path:
+    extension_folder = resolve_extension_folder(extension_path)
+    extension_manifest = load_extension_manifest(extension_folder)
+    extension_config = load_extension_config(extension_folder)
+
+stack_b = StackB(
     app,
-    f"{env_name}-app",
+    stack_b_id(env_name),
     env_name=env_name,
     aws_account=aws_account,
     aws_region=aws_region,
-    enable_staging=enable_staging,
-    architecture=architecture,
-    env=cdk_env,
-)
-app_stack.add_dependency(runtime_stack)
-
-compute_stack = ComputeStack(
-    app,
-    f"{env_name}-compute",
-    env_name=env_name,
-    aws_account=aws_account,
-    aws_region=aws_region,
-    compute_type=compute_type,
-    ec2_instance_type=ec2_instance_type,
     github_handlers_repo=github_handlers_repo,
     enable_staging=enable_staging,
+    architecture=architecture,
+    compute_type=compute_type,
+    ec2_instance_type=ec2_instance_type,
+    ec2_min_instances=ec2_min_instances,
+    ec2_desired_instances=ec2_desired_instances,
+    ec2_max_instances=ec2_max_instances,
+    tenant_policy=stack_a.tt_policy,
+    tenant_role=stack_a.tt_role,
+    extension_folder=extension_folder,
+    extension_manifest=extension_manifest,
+    extension_config=extension_config,
+    include_extension=extension_folder is not None and extension_manifest is not None,
     env=cdk_env,
 )
-compute_stack.add_dependency(runtime_stack)
+stack_b.add_dependency(stack_a)
 
 app.synth()

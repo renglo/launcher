@@ -1,27 +1,23 @@
-"""AppStack (Stack B): Backend Lambda functions + API Gateway.
+"""App resources: Backend Lambda functions + API Gateway.
 
-Requires the seed image to already exist in ECR before deploying.
+Part of stack-b. Requires the seed image to already exist in ECR before deploying.
 
 Deploy order:
-  1. cdk deploy {env}-runtime                   (Stack A: ECR, IAM, CodeDeploy, OIDC)
-  2. python scripts/upload_seed_image.py ...    (push seed image to ECR)
-  3. cdk deploy {env}-app                       (Stack B: Lambda + API Gateway)
-
-After Stack B, trigger the releases pipeline to update Lambda code to the
-real application image and CodeDeploy will shift alias traffic.
-
-NOTE: Re-deploying Stack B resets Lambda code to the seed image.
-      Always re-run the releases pipeline after any Stack B change.
+  1. cdk deploy stack-a
+  2. python scripts/upload_seed_image.py ...
+  3. cdk deploy stack-b
 """
 
 from __future__ import annotations
 
-from aws_cdk import CfnDeletionPolicy, CfnOutput, RemovalPolicy, Stack
+from aws_cdk import CfnDeletionPolicy, CfnOutput, RemovalPolicy
 from aws_cdk import aws_apigateway as apigw
 from aws_cdk import aws_apigatewayv2 as apigwv2
 from aws_cdk import aws_lambda as aws_lambda
 from aws_cdk import aws_logs as logs
 from constructs import Construct
+
+from platform_defaults import backend_seed_image_uri, lambda_architecture_cfn
 
 DESCRIPTION = "Reglo Deployment"
 
@@ -59,15 +55,11 @@ def _alias_arn(env_name: str, stage: str, region: str, account: str) -> str:
     return f"arn:aws:lambda:{region}:{account}:function:{_fn_name(env_name, stage)}:{stage}"
 
 
-def _seed_image_uri(env_name: str, region: str, account: str) -> str:
-    return f"{account}.dkr.ecr.{region}.amazonaws.com/{env_name}_backend:seed"
-
-
 def _execution_role_arn(env_name: str, account: str) -> str:
     return f"arn:aws:iam::{account}:role/{env_name}_tt_role"
 
 
-class AppStack(Stack):
+class AppStack(Construct):
     """Stack B — Lambda functions + API Gateway for all enabled stages."""
 
     def __init__(
@@ -86,9 +78,13 @@ class AppStack(Stack):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        seed_uri = _seed_image_uri(env_name, aws_region, aws_account)
+        seed_uri = backend_seed_image_uri(
+            env_name=env_name,
+            region=aws_region,
+            account=aws_account,
+        )
         exec_role_arn = _execution_role_arn(env_name, aws_account)
-        arch_cfn = "x86_64" if architecture == "x86_64" else "arm64"
+        arch_cfn = lambda_architecture_cfn(architecture)
 
         prod = self._make_stage(
             env_name=env_name,
@@ -101,6 +97,10 @@ class AppStack(Stack):
             timeout_seconds=timeout_seconds,
             memory_mb=memory_mb,
         )
+        self.production = prod
+        self.staging: dict[str, str] | None = None
+        self.architecture = architecture
+        self.exec_role_arn = exec_role_arn
 
         CfnOutput(self, "BackendLambdaFunctionNameProduction", value=prod["fn_name"])
         CfnOutput(self, "BackendLambdaAliasArnProduction", value=prod["alias_arn"])
@@ -123,6 +123,7 @@ class AppStack(Stack):
                 timeout_seconds=timeout_seconds,
                 memory_mb=memory_mb,
             )
+            self.staging = staging
             CfnOutput(self, "BackendLambdaFunctionNameStaging", value=staging["fn_name"])
             CfnOutput(self, "BackendLambdaAliasArnStaging", value=staging["alias_arn"])
             CfnOutput(self, "BackendLambdaLogGroupNameStaging", value=staging["log_group_name"])
@@ -164,8 +165,8 @@ class AppStack(Stack):
             memory_size=memory_mb,
             description=DESCRIPTION,
         )
-        fn.cfn_options.deletion_policy = CfnDeletionPolicy.RETAIN
-        fn.cfn_options.update_replace_policy = CfnDeletionPolicy.RETAIN
+        fn.cfn_options.deletion_policy = CfnDeletionPolicy.DELETE
+        fn.cfn_options.update_replace_policy = CfnDeletionPolicy.DELETE
 
         # Publish initial version so alias can point to it
         version = aws_lambda.CfnVersion(
@@ -175,8 +176,8 @@ class AppStack(Stack):
             description=f"Seed version — {stage}",
         )
         version.add_dependency(fn)
-        version.cfn_options.deletion_policy = CfnDeletionPolicy.RETAIN
-        version.cfn_options.update_replace_policy = CfnDeletionPolicy.RETAIN
+        version.cfn_options.deletion_policy = CfnDeletionPolicy.DELETE
+        version.cfn_options.update_replace_policy = CfnDeletionPolicy.DELETE
 
         alias = aws_lambda.CfnAlias(
             self,
@@ -187,15 +188,15 @@ class AppStack(Stack):
             description=f"{DESCRIPTION} {stage} traffic alias",
         )
         alias.add_dependency(version)
-        alias.cfn_options.deletion_policy = CfnDeletionPolicy.RETAIN
-        alias.cfn_options.update_replace_policy = CfnDeletionPolicy.RETAIN
+        alias.cfn_options.deletion_policy = CfnDeletionPolicy.DELETE
+        alias.cfn_options.update_replace_policy = CfnDeletionPolicy.DELETE
 
         # --- CloudWatch log group ---
         log_group = logs.LogGroup(
             self,
             f"BackendLambdaLogGroup{cap}",
             log_group_name=f"/aws/lambda/{fn_name}",
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.DESTROY,
         )
 
         # --- REST API Gateway ---
@@ -258,23 +259,29 @@ class AppStack(Stack):
             path_part="{proxy+}",
         )
 
-        for suffix, resource_id in (
-            ("Root", rest_api.attr_root_resource_id),
-            ("Proxy", proxy_resource.ref),
-        ):
-            apigw.CfnMethod(
-                self,
-                f"RestApiMethodAny{suffix}{cap}",
-                rest_api_id=rest_api.ref,
-                resource_id=resource_id,
-                http_method="ANY",
-                authorization_type="NONE",
-                integration=apigw.CfnMethod.IntegrationProperty(
-                    type="AWS_PROXY",
-                    integration_http_method="POST",
-                    uri=integration_uri,
-                ),
-            )
+        lambda_integration = apigw.CfnMethod.IntegrationProperty(
+            type="AWS_PROXY",
+            integration_http_method="POST",
+            uri=integration_uri,
+        )
+        root_method = apigw.CfnMethod(
+            self,
+            f"RestApiMethodAnyRoot{cap}",
+            rest_api_id=rest_api.ref,
+            resource_id=rest_api.attr_root_resource_id,
+            http_method="ANY",
+            authorization_type="NONE",
+            integration=lambda_integration,
+        )
+        proxy_method = apigw.CfnMethod(
+            self,
+            f"RestApiMethodAnyProxy{cap}",
+            rest_api_id=rest_api.ref,
+            resource_id=proxy_resource.ref,
+            http_method="ANY",
+            authorization_type="NONE",
+            integration=lambda_integration,
+        )
 
         # Grant API Gateway permission to invoke the Lambda alias
         source_arn = (
@@ -289,15 +296,26 @@ class AppStack(Stack):
             source_arn=source_arn,
         )
 
+        # Deployment must run after all methods exist or the stage snapshot omits /{proxy+}.
         deployment = apigw.CfnDeployment(
             self,
             f"RestApiDeployment{cap}",
             rest_api_id=rest_api.ref,
-            stage_name=stage,
             description=DESCRIPTION,
         )
         deployment.add_dependency(proxy_resource)
+        deployment.add_dependency(root_method)
+        deployment.add_dependency(proxy_method)
         deployment.add_dependency(permission)
+
+        apigw.CfnStage(
+            self,
+            f"RestApiStage{cap}",
+            rest_api_id=rest_api.ref,
+            deployment_id=deployment.ref,
+            stage_name=stage,
+            description=DESCRIPTION,
+        )
 
         rest_url = f"https://{rest_api.ref}.execute-api.{aws_region}.amazonaws.com/{stage}/"
         return rest_api, rest_url

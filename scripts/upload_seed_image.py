@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """Build and push the seed container image to ECR.
 
-Run this AFTER deploying the runtime stack (Stack A) and BEFORE
-deploying the app stack (Stack B).
+Run this AFTER deploying <env>-stack-a and BEFORE deploying <env>-stack-b.
 
-Usage:
-    python scripts/upload_seed_image.py \\
-        --env-name arbitiumrs \\
+Usage (from bootstrap/output/<env>/):
+    python upload_seed_image.py \\
+        --env-name <env> \\
         --aws-profile my-profile \\
         [--aws-region us-east-1] \\
         [--architecture x86_64|arm64] \\
         [--dry-run]
+
+Usage (from monorepo launcher/scripts/):
+    python scripts/upload_seed_image.py ...
+
+Defaults (architecture, seed image tag/URI) come from platform_defaults.json
+next to this script (deploy package) or launcher/cdk/platform_defaults.json.
 """
 
 from __future__ import annotations
@@ -20,23 +25,34 @@ import base64
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 
 import boto3
 
-_SEED_IMAGE_DIR = Path(__file__).resolve().parent / "backend" / "seed-image"
-_SEED_TAG = "seed"
+_ROOT = Path(__file__).resolve().parent
+if (_ROOT / "platform_defaults.json").is_file():
+    _CONFIG_DIR = _ROOT
+    _SEED_IMAGE_DIR = _ROOT / "seed-image"
+else:
+    _CONFIG_DIR = _ROOT.parent / "cdk"
+    _SEED_IMAGE_DIR = _ROOT / "backend" / "seed-image"
+
+sys.path.insert(0, str(_CONFIG_DIR))
+
+from platform_defaults import (  # noqa: E402
+    architecture as default_architecture,
+    backend_ecr_repository_name,
+    backend_seed_image_uri,
+    load_platform_defaults,
+)
 
 
 def _session(profile: Optional[str], region: str) -> boto3.Session:
     if profile:
         return boto3.Session(profile_name=profile, region_name=region)
     return boto3.Session(region_name=region)
-
-
-def _ecr_repository_name(env_name: str) -> str:
-    return f"{env_name}_backend"
 
 
 def _docker_executable() -> str:
@@ -73,7 +89,6 @@ def _ecr_private_login(session: boto3.Session, aws_region: str, docker: str) -> 
 
 def _ecr_public_login(session: boto3.Session, docker: str) -> None:
     """Authenticate Docker to public.ecr.aws (required to pull lambda/python base images)."""
-    # ecr-public API is only available in us-east-1.
     ecr_public = session.client("ecr-public", region_name="us-east-1")
     encoded = ecr_public.get_authorization_token()["authorizationData"]["authorizationToken"]
     _, password = base64.b64decode(encoded).decode("utf-8").split(":", 1)
@@ -88,6 +103,8 @@ def _build_and_push(
 ) -> None:
     platform = "linux/amd64" if architecture == "x86_64" else "linux/arm64"
     dockerfile = _SEED_IMAGE_DIR / "Dockerfile"
+    if not dockerfile.is_file():
+        raise FileNotFoundError(f"Seed image Dockerfile not found: {dockerfile}")
 
     has_buildx = False
     try:
@@ -122,15 +139,24 @@ def upload_seed_image(
     env_name: str,
     aws_profile: Optional[str],
     aws_region: str,
-    architecture: str = "x86_64",
+    architecture: str | None = None,
     dry_run: bool = False,
+    *,
+    defaults: dict | None = None,
 ) -> str:
     """Build and push seed image. Returns the image URI."""
+    platform_defaults = defaults or load_platform_defaults(_CONFIG_DIR)
+    arch = architecture or default_architecture(platform_defaults, config_dir=_CONFIG_DIR)
     session = _session(aws_profile, aws_region)
     account_id = session.client("sts").get_caller_identity()["Account"]
-    registry = f"{account_id}.dkr.ecr.{aws_region}.amazonaws.com"
-    repo_name = _ecr_repository_name(env_name)
-    image_uri = f"{registry}/{repo_name}:{_SEED_TAG}"
+    repo_name = backend_ecr_repository_name(env_name, platform_defaults, config_dir=_CONFIG_DIR)
+    image_uri = backend_seed_image_uri(
+        env_name=env_name,
+        region=aws_region,
+        account=account_id,
+        defaults=platform_defaults,
+        config_dir=_CONFIG_DIR,
+    )
 
     if dry_run:
         print(f"[dry-run] Would build and push: {image_uri}")
@@ -142,7 +168,7 @@ def upload_seed_image(
     except ecr.exceptions.RepositoryNotFoundException:
         raise RuntimeError(
             f"ECR repository '{repo_name}' not found. "
-            "Deploy the runtime stack (Stack A) first."
+            f"Deploy {env_name}-stack-a first."
         )
 
     docker = _docker_executable()
@@ -150,22 +176,31 @@ def upload_seed_image(
     print("Logging in to public ECR (public.ecr.aws) for Lambda base image...")
     _ecr_public_login(session, docker)
 
+    registry = f"{account_id}.dkr.ecr.{aws_region}.amazonaws.com"
     print(f"Logging in to private ECR registry: {registry}")
     _ecr_private_login(session, aws_region, docker)
 
     print(f"Building and pushing seed image: {image_uri}")
-    _build_and_push(docker=docker, image_uri=image_uri, architecture=architecture)
+    _build_and_push(docker=docker, image_uri=image_uri, architecture=arch)
 
     print(f"Seed image pushed successfully: {image_uri}")
     return image_uri
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Push seed image to ECR (run between Stack A and Stack B).")
+    default_arch = default_architecture(config_dir=_CONFIG_DIR)
+    parser = argparse.ArgumentParser(
+        description="Push seed image to ECR (run between <env>-stack-a and <env>-stack-b)."
+    )
     parser.add_argument("--env-name", required=True, help="Environment name (e.g. arbitiumrs)")
     parser.add_argument("--aws-profile", default=None)
     parser.add_argument("--aws-region", default="us-east-1")
-    parser.add_argument("--architecture", choices=["x86_64", "arm64"], default="x86_64")
+    parser.add_argument(
+        "--architecture",
+        choices=["x86_64", "arm64"],
+        default=None,
+        help=f"Override platform_defaults.json architecture (default: {default_arch})",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -177,7 +212,7 @@ def main() -> None:
         dry_run=args.dry_run,
     )
     print(f"\nSeed image URI: {uri}")
-    print("\nNext step: cdk deploy {env}-app")
+    print(f'\nNext step: cdk deploy {args.env_name}-stack-b --app "python app.py" --output .')
 
 
 if __name__ == "__main__":
