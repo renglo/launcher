@@ -94,6 +94,26 @@ def _ecs_handlers_handshake_statements(
     ]
 
 
+def _env_lambda_log_write_resources(
+    env_name: str,
+    aws_region: str,
+    aws_account_id: str,
+) -> list[str]:
+    """
+    CloudWatch Logs write targets for Lambdas that follow env naming ({env_name}*).
+
+    Covers function names like {env_name}-backend-staging and {env_name}-dev-3.
+    """
+    log_group = (
+        f"arn:aws:logs:{aws_region}:{aws_account_id}:log-group:/aws/lambda/{env_name}*"
+    )
+    log_stream = (
+        f"arn:aws:logs:{aws_region}:{aws_account_id}:log-group:/aws/lambda/{env_name}*"
+        ":log-stream:*"
+    )
+    return [log_group, log_stream]
+
+
 def _build_tt_runtime_policy_document(
     env_name: str,
     aws_region: str,
@@ -101,17 +121,11 @@ def _build_tt_runtime_policy_document(
     cognito_user_pool_id: str,
     s3_bucket_name: str,
 ) -> dict:
-    """Runtime policy for {env}_tt_role: actions unchanged from legacy; resources tightened where possible."""
+    """Runtime policy for {env}_tt_role with resources scoped to env_name conventions."""
     role_tt = f"{env_name}_tt_role"
     pass_role_arn = f"arn:aws:iam::{aws_account_id}:role/{role_tt}"
     lambda_prefix = f"arn:aws:lambda:{aws_region}:{aws_account_id}:function:{env_name}"
-    log_group_arn = (
-        f"arn:aws:logs:{aws_region}:{aws_account_id}:log-group:/aws/lambda/{env_name}*"
-    )
-    log_stream_arn = (
-        f"arn:aws:logs:{aws_region}:{aws_account_id}:log-group:/aws/lambda/{env_name}*"
-        ":log-stream:*"
-    )
+    log_resources = _env_lambda_log_write_resources(env_name, aws_region, aws_account_id)
     backend_ecr_arn = (
         f"arn:aws:ecr:{aws_region}:{aws_account_id}:repository/{env_name}_backend"
     )
@@ -159,15 +173,14 @@ def _build_tt_runtime_policy_document(
                 ],
             },
             {
+                "Sid": "LogsEnvLambdaWrite",
                 "Effect": "Allow",
                 "Action": [
                     "logs:CreateLogGroup",
                     "logs:CreateLogStream",
                     "logs:PutLogEvents",
-                    "logs:DescribeLogStreams",
-                    "logs:GetLogEvents",
                 ],
-                "Resource": [log_group_arn, log_stream_arn],
+                "Resource": log_resources,
             },
             {
                 "Sid": "EcrPullBackendImage",
@@ -236,6 +249,7 @@ def _build_tt_runtime_policy_document(
                 "Resource": f"arn:aws:events:{aws_region}:{aws_account_id}:event-bus/default",
             },
             {
+                "Sid": "EventBridgePassRole",
                 "Effect": "Allow",
                 "Action": "iam:PassRole",
                 "Resource": pass_role_arn,
