@@ -6,7 +6,7 @@ image has been pushed to ECR.
 
 from __future__ import annotations
 
-from aws_cdk import CfnOutput, RemovalPolicy
+from aws_cdk import CfnCondition, CfnOutput, RemovalPolicy
 from aws_cdk import aws_codedeploy as codedeploy
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
@@ -16,6 +16,9 @@ from platform_defaults import backend_ecr_repository_name
 
 # Account-level GitHub Actions OIDC provider host (one IAM OIDC provider per account/URL).
 GITHUB_OIDC_PROVIDER_ARN_SUFFIX = "token.actions.githubusercontent.com"
+GITHUB_OIDC_URL = "https://token.actions.githubusercontent.com"
+GITHUB_OIDC_THUMBPRINT = "6938fd4d98bab03faadb97b34396831e3780aea1"
+GITHUB_OIDC_CLIENT_ID = "sts.amazonaws.com"
 DESCRIPTION = "Reglo Deployment"
 
 
@@ -286,6 +289,7 @@ class RuntimeStack(Construct):
         cognito_user_pool_id: str,
         s3_bucket_name: str,
         enable_staging: bool = True,
+        create_github_oidc_condition: CfnCondition | None = None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -393,13 +397,22 @@ class RuntimeStack(Construct):
             )
 
         # --- GitHub OIDC + deploy roles ---
-        # Reuse the account GitHub OIDC provider when present (only one allowed per account/URL).
+        oidc_provider_arn = (
+            f"arn:aws:iam::{aws_account}:oidc-provider/{GITHUB_OIDC_PROVIDER_ARN_SUFFIX}"
+        )
+        if create_github_oidc_condition is not None:
+            oidc_provider_resource = iam.CfnOIDCProvider(
+                self,
+                "GitHubOidcProviderResource",
+                url=GITHUB_OIDC_URL,
+                client_id_list=[GITHUB_OIDC_CLIENT_ID],
+                thumbprint_list=[GITHUB_OIDC_THUMBPRINT],
+            )
+            oidc_provider_resource.cfn_options.condition = create_github_oidc_condition
         oidc_provider = iam.OpenIdConnectProvider.from_open_id_connect_provider_arn(
             self,
             "GitHubOidcProvider",
-            open_id_connect_provider_arn=(
-                f"arn:aws:iam::{aws_account}:oidc-provider/{GITHUB_OIDC_PROVIDER_ARN_SUFFIX}"
-            ),
+            open_id_connect_provider_arn=oidc_provider_arn,
         )
         deploy_policy_doc = _deploy_permissions_policy(
             env_name,

@@ -3,19 +3,18 @@
 
 Run this AFTER deploying <env>-stack-a and BEFORE deploying <env>-stack-b.
 
-Usage (from bootstrap/output/<env>/):
-    python upload_seed_image.py \\
+Usage (from monorepo root):
+    python bootstrap/upload_seed_image.py \\
         --env-name <env> \\
         --aws-profile my-profile \\
         [--aws-region us-east-1] \\
         [--architecture x86_64|arm64] \\
         [--dry-run]
 
-Usage (from monorepo launcher/scripts/):
+Usage (from launcher/scripts/):
     python scripts/upload_seed_image.py ...
 
-Defaults (architecture, seed image tag/URI) come from platform_defaults.json
-next to this script (deploy package) or launcher/cdk/platform_defaults.json.
+Defaults (architecture, seed image tag/URI) come from launcher/cdk/platform_defaults.json.
 """
 
 from __future__ import annotations
@@ -212,7 +211,7 @@ def main() -> None:
         dry_run=args.dry_run,
     )
     print(f"\nSeed image URI: {uri}")
-    print(f'\nNext step: cdk deploy {args.env_name}-stack-b --app "python app.py" --output .')
+    print(f"\nNext step: deploy {args.env_name}-stack-b (CloudFormation or CDK)")
 
 
 if __name__ == "__main__":

@@ -20,9 +20,5 @@
   "ec2_max_instances": 2,
 
   "_compute_type_values": "lambda_only | fargate | ec2",
-  "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
-  "_ec2_instance_count_note": "ec2_min_instances / ec2_desired_instances / ec2_max_instances control the ASG size for the handlers ECS EC2 cluster. Set min=1 to keep at least one instance warm.",
-  "_ec2_deploy_note": "When compute_type is ec2, the synthesized template includes VpcId and SubnetIds CloudFormation parameters. The customer selects their default VPC (or any VPC) and subnets at stack deploy time — no VPC values needed here.",
-  "_lambda_deploy_note": "Backend Lambdas are created by the app stack with a seed ECR image (updated by the releases OIDC pipeline). Handlers Lambda is created by the compute stack with inline seed code (updated by the handlers OIDC pipeline).",
-  "_extension_path_note": "Sibling folder with installer/infra/cdk_extension.json. Synth emits extension resources in stack-b + extension-state.json (runtime vs inventory outputs) and copies extension blueprints into bootstrap/output/<env>/."
+  "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json"
 }

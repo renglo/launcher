@@ -5,15 +5,15 @@ Reads customer-config.json (same directory as this file) and instantiates two
 platform stacks: <env>-stack-a (pre-seed) and <env>-stack-b (post-seed).
 
 Deploy order:
-    cd bootstrap/output/<env_name>
+    cd bootstrap/output/<env_name>/cdk
     pip install -r requirements.txt
 
-    cdk deploy <env>-stack-a --app "python app.py"
+    cdk deploy <env>-stack-a --app "python app.py" [--parameters CreateGitHubOIDC=true]
 
-    python upload_seed_image.py \\
+    python bootstrap/upload_seed_image.py \\
         --env-name <env_name> --aws-profile <profile>
 
-    cdk deploy <env>-stack-b --app "python app.py" --output . [--parameters VpcId=... SubnetIds=...]
+    cdk deploy <env>-stack-b --app "python app.py" --output .
 """
 
 from __future__ import annotations

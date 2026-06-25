@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from aws_cdk import Stack
+from aws_cdk import CfnCondition, CfnParameter, Fn, Stack
 from constructs import Construct
 
 from stack_names import stack_a_description
@@ -31,6 +31,22 @@ class StackA(Stack):
             description=stack_a_description(),
             **kwargs,
         )
+        create_oidc = CfnParameter(
+            self,
+            "CreateGitHubOIDC",
+            type="String",
+            default="false",
+            allowed_values=["true", "false"],
+            description=(
+                "Create the GitHub Actions OIDC provider in this account. "
+                "Set to true only if token.actions.githubusercontent.com is not already registered."
+            ),
+        )
+        create_oidc_condition = CfnCondition(
+            self,
+            "CreateGitHubOIDCCondition",
+            expression=Fn.condition_equals(create_oidc.value_as_string, "true"),
+        )
         auth = AuthStack(self, "Auth", env_name=env_name)
         storage = StorageStack(
             self,
@@ -49,6 +65,7 @@ class StackA(Stack):
             cognito_user_pool_id=auth.user_pool_id,
             s3_bucket_name=storage.bucket_name,
             enable_staging=enable_staging,
+            create_github_oidc_condition=create_oidc_condition,
         )
 
         self.auth = auth
