@@ -8,12 +8,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from aws_cdk import CfnOutput, Stack
+from aws_cdk import CfnOutput, Stack, Token
 from constructs import IConstruct
 
 
-def _emit(stack: Stack, key: str, value: str) -> None:
-    CfnOutput(stack, key, value=value)
+def _emit(stack: Stack, key: str, value: Any) -> None:
+    out_value = value if isinstance(value, str) else Token.as_string(value)
+    CfnOutput(stack, key, value=out_value)
 
 
 def export_stack_a_outputs(
@@ -21,6 +22,7 @@ def export_stack_a_outputs(
     *,
     auth: IConstruct,
     storage: IConstruct,
+    console: IConstruct,
     runtime: IConstruct,
     env_name: str,
     enable_staging: bool,
@@ -28,10 +30,17 @@ def export_stack_a_outputs(
     _emit(stack, "UserPoolId", auth.user_pool_id)
     _emit(stack, "UserPoolArn", auth.user_pool_arn)
     _emit(stack, "AppClientId", auth.app_client_id)
+    _emit(stack, "CognitoDomain", auth.cognito_domain)
 
     _emit(stack, "DataBucketName", storage.data_bucket.bucket_name)
     _emit(stack, "DataBucketArn", storage.data_bucket.bucket_arn)
     _emit(stack, "EnvName", env_name)
+
+    _emit(stack, "AmplifyAppId", console.amplify_app_id)
+    _emit(stack, "AmplifyDefaultDomain", console.default_domain)
+    _emit(stack, "AmplifyConsoleUrlProduction", console.production_url)
+    if enable_staging and console.staging_url is not None:
+        _emit(stack, "AmplifyConsoleUrlStaging", console.staging_url)
 
     _emit(stack, "BackendEcrRepoName", runtime.backend_repo.repository_name)
     _emit(stack, "BackendEcrRepoUri", runtime.backend_repo.repository_uri)
@@ -68,14 +77,23 @@ def export_stack_b_app_outputs(stack: Stack, app: IConstruct) -> None:
 def export_stack_b_compute_outputs(stack: Stack, compute: IConstruct) -> None:
     exports: dict[str, Any] = getattr(compute, "stable_outputs", None) or {}
     for key, value in exports.items():
-        if value is not None and str(value) != "":
-            _emit(stack, key, str(value))
+        if value is None:
+            continue
+        if isinstance(value, str) and value == "":
+            continue
+        _emit(stack, key, value)
 
 
 def export_stack_b_extension_outputs(stack: Stack, extension: IConstruct) -> None:
     for key, value in (getattr(extension, "runtime_outputs", None) or {}).items():
-        if value is not None and str(value) != "":
-            _emit(stack, key, str(value))
+        if value is None:
+            continue
+        if isinstance(value, str) and value == "":
+            continue
+        _emit(stack, key, value)
     for key, value in (getattr(extension, "inventory_outputs", None) or {}).items():
-        if value is not None and str(value) != "":
-            _emit(stack, key, str(value))
+        if value is None:
+            continue
+        if isinstance(value, str) and value == "":
+            continue
+        _emit(stack, key, value)

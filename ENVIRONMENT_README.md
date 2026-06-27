@@ -132,15 +132,29 @@ VITE_WEBSOCKET_URL = 'wss://<id>.execute-api.<region>.amazonaws.com/production/'
 
 ### Front-end (console)
 
+Infra provisions an **Amplify Hosting** app (`{env_name}-console`) with `production` and `staging` branches. OAuth callback/sign-out URLs on the Cognito app client are set automatically from Amplify `DefaultDomain` (`https://{branch}.{appId}.amplifyapp.com`). Local dev URLs (`http://localhost:5173/`) are included.
+
+After deploy + `write-state`, sync `platform_vars.*.json` to the releases repo GitHub Environment. Key vars:
+
+| Var | Purpose |
+|-----|---------|
+| `AMPLIFY_APP_ID` | Amplify app ID for CI zip deploy via OIDC |
+| `AMPLIFY_CONSOLE_URL` | Hosted console URL for the stage |
+| `COGNITO_DOMAIN` | `{env}.auth.{region}.amazoncognito.com` |
+
 In `.env.development.*` / `.env.production.*` under **`console/`**:
 
 ```bash
 VITE_COGNITO_REGION='...'
 VITE_COGNITO_USERPOOL_ID='...'
 VITE_COGNITO_APP_CLIENT_ID='...'
+VITE_COGNITO_DOMAIN='...'
+VITE_AMPLIFY_CONSOLE_URL='...'
 ```
 
 Use **`VITE_WEBSOCKET_URL`** / staging variants from `env_config.py` or `production.json` `VARS`.
+
+Console frontend is deployed from the **releases** repo (`github_repo`) via GitHub Actions OIDC (`AWS_GITHUB_OIDC_ROLE_ARN` in `SECRETS`), not by Amplify Git integration.
 
 ### Local system environment
 

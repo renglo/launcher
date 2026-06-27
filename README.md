@@ -112,6 +112,31 @@ cdk deploy "$ENV-stack-a" --app "python app.py" --output . \
 
 ---
 
+## Handlers network (`HandlersNetworkMode`, `compute_type=ec2` only)
+
+`<env>-stack-b` exposes CloudFormation parameters when the template was synthesized with `compute_type=ec2`:
+
+| Parameter | Default | Purpose |
+|-----------|---------|---------|
+| `HandlersNetworkMode` | `create` | `create` = dedicated VPC/subnets; `existing` = customer VPC/subnets |
+| `ExistingVpcId` | *(empty)* | VPC ID when mode is `existing` |
+| `ExistingSubnetIds` | *(empty)* | Comma-separated subnet IDs when mode is `existing` |
+
+The stack **always** creates a dedicated handlers security group. In `existing` mode it is created inside `ExistingVpcId`; VPC/subnets are not deleted on stack teardown.
+
+```bash
+cd bootstrap/output/$ENV/cdk
+cdk deploy "$ENV-stack-b" --app "python app.py" --output . \
+  --parameters HandlersNetworkMode=existing \
+  --parameters ExistingVpcId=vpc-0123456789abcdef0 \
+  --parameters ExistingSubnetIds=subnet-aaa,subnet-bbb \
+  --profile "$AWS_PROFILE"
+```
+
+All `ExistingSubnetIds` must belong to `ExistingVpcId` and should span at least two Availability Zones.
+
+---
+
 ## Legacy flow (boto3)
 
 `scripts/deploy_environment.py` remains available for environments not using CDK. See [ENVIRONMENT_README.md](ENVIRONMENT_README.md).

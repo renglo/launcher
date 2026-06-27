@@ -184,6 +184,7 @@ def _deploy_permissions_policy(
     s3_bucket_name: str,
     *,
     enable_staging: bool,
+    amplify_app_id: str | None = None,
 ) -> iam.PolicyDocument:
     """Permissions for the releases-repo GitHub Actions OIDC deploy role."""
     ecr_repo_arn = f"arn:aws:ecr:{region}:{account}:repository/{backend_ecr_repository_name(env_name)}"
@@ -204,76 +205,91 @@ def _deploy_permissions_policy(
             ]
         )
 
-    return iam.PolicyDocument(
-        statements=[
+    statements: list[iam.PolicyStatement] = [
+        iam.PolicyStatement(
+            sid="ReadIdentity",
+            actions=["sts:GetCallerIdentity"],
+            resources=["*"],
+        ),
+        iam.PolicyStatement(
+            sid="EcrPushPull",
+            actions=[
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload",
+                "ecr:PutImage",
+            ],
+            resources=[ecr_repo_arn],
+        ),
+        iam.PolicyStatement(
+            sid="EcrAuthToken",
+            actions=["ecr:GetAuthorizationToken"],
+            resources=["*"],
+        ),
+        iam.PolicyStatement(
+            sid="BackendLambdaDeploy",
+            actions=[
+                "lambda:CreateFunction",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration",
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:PublishVersion",
+                "lambda:CreateAlias",
+                "lambda:UpdateAlias",
+                "lambda:GetAlias",
+                "lambda:AddPermission",
+            ],
+            resources=backend_lambda_arns,
+        ),
+        iam.PolicyStatement(
+            sid="CodeDeployLambdaRelease",
+            actions=[
+                "codedeploy:CreateDeployment",
+                "codedeploy:RegisterApplicationRevision",
+                "codedeploy:GetDeployment",
+                "codedeploy:GetDeploymentConfig",
+                "codedeploy:GetDeploymentGroup",
+                "codedeploy:GetApplication",
+            ],
+            resources=[codedeploy_app_arn, codedeploy_group_arn, codedeploy_config_arn],
+        ),
+        iam.PolicyStatement(
+            sid="PassExecutionRole",
+            actions=["iam:PassRole"],
+            resources=[lambda_execution_role_arn],
+            conditions={"StringEquals": {"iam:PassedToService": "lambda.amazonaws.com"}},
+        ),
+        iam.PolicyStatement(
+            sid="CloudFormationDescribe",
+            actions=["cloudformation:DescribeStacks"],
+            resources=["*"],
+        ),
+        iam.PolicyStatement(
+            sid="S3WriteState",
+            actions=["s3:PutObject", "s3:GetObject"],
+            resources=[f"arn:aws:s3:::{s3_bucket_name}/params/*"],
+        ),
+    ]
+    if amplify_app_id:
+        statements.append(
             iam.PolicyStatement(
-                sid="ReadIdentity",
-                actions=["sts:GetCallerIdentity"],
-                resources=["*"],
-            ),
-            iam.PolicyStatement(
-                sid="EcrPushPull",
+                sid="AmplifyConsoleDeploy",
                 actions=[
-                    "ecr:BatchGetImage",
-                    "ecr:BatchCheckLayerAvailability",
-                    "ecr:InitiateLayerUpload",
-                    "ecr:UploadLayerPart",
-                    "ecr:CompleteLayerUpload",
-                    "ecr:PutImage",
+                    "amplify:CreateDeployment",
+                    "amplify:StartDeployment",
+                    "amplify:GetJob",
+                    "amplify:StopJob",
+                    "amplify:GetApp",
+                    "amplify:GetBranch",
                 ],
-                resources=[ecr_repo_arn],
-            ),
-            iam.PolicyStatement(
-                sid="EcrAuthToken",
-                actions=["ecr:GetAuthorizationToken"],
-                resources=["*"],
-            ),
-            iam.PolicyStatement(
-                sid="BackendLambdaDeploy",
-                actions=[
-                    "lambda:CreateFunction",
-                    "lambda:GetFunction",
-                    "lambda:GetFunctionConfiguration",
-                    "lambda:UpdateFunctionCode",
-                    "lambda:UpdateFunctionConfiguration",
-                    "lambda:PublishVersion",
-                    "lambda:CreateAlias",
-                    "lambda:UpdateAlias",
-                    "lambda:GetAlias",
-                    "lambda:AddPermission",
-                ],
-                resources=backend_lambda_arns,
-            ),
-            iam.PolicyStatement(
-                sid="CodeDeployLambdaRelease",
-                actions=[
-                    "codedeploy:CreateDeployment",
-                    "codedeploy:RegisterApplicationRevision",
-                    "codedeploy:GetDeployment",
-                    "codedeploy:GetDeploymentConfig",
-                    "codedeploy:GetDeploymentGroup",
-                    "codedeploy:GetApplication",
-                ],
-                resources=[codedeploy_app_arn, codedeploy_group_arn, codedeploy_config_arn],
-            ),
-            iam.PolicyStatement(
-                sid="PassExecutionRole",
-                actions=["iam:PassRole"],
-                resources=[lambda_execution_role_arn],
-                conditions={"StringEquals": {"iam:PassedToService": "lambda.amazonaws.com"}},
-            ),
-            iam.PolicyStatement(
-                sid="CloudFormationDescribe",
-                actions=["cloudformation:DescribeStacks"],
-                resources=["*"],
-            ),
-            iam.PolicyStatement(
-                sid="S3WriteState",
-                actions=["s3:PutObject", "s3:GetObject"],
-                resources=[f"arn:aws:s3:::{s3_bucket_name}/params/*"],
-            ),
-        ]
-    )
+                resources=[f"arn:aws:amplify:{region}:{account}:apps/{amplify_app_id}/*"],
+            )
+        )
+
+    return iam.PolicyDocument(statements=statements)
 
 
 class RuntimeStack(Construct):
@@ -289,6 +305,7 @@ class RuntimeStack(Construct):
         cognito_user_pool_id: str,
         s3_bucket_name: str,
         enable_staging: bool = True,
+        amplify_app_id: str | None = None,
         create_github_oidc_condition: CfnCondition | None = None,
         **kwargs,
     ) -> None:
@@ -420,6 +437,7 @@ class RuntimeStack(Construct):
             aws_account,
             s3_bucket_name,
             enable_staging=enable_staging,
+            amplify_app_id=amplify_app_id,
         )
 
         def _oidc_role(stage: str) -> iam.Role:

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from aws_cdk import Stack
+from aws_cdk import CfnCondition, CfnParameter, Fn, Stack
 from aws_cdk import aws_iam as iam
 from constructs import Construct
 
@@ -25,7 +25,7 @@ if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
 else:
     sys.path.insert(0, str(_ROOT.parents[1] / "extensions-service" / "scripts"))
 
-from compute_stack import ComputeStack  # noqa: E402
+from compute_stack import ComputeStack, HANDLERS_NETWORK_MODE_CREATE, HANDLERS_NETWORK_MODE_EXISTING  # noqa: E402
 
 
 class StackB(Stack):
@@ -68,6 +68,60 @@ class StackB(Stack):
             enable_staging=enable_staging,
             architecture=architecture,
         )
+        handlers_network_params = None
+        if compute_type == "ec2":
+            handlers_network_mode = CfnParameter(
+                self,
+                "HandlersNetworkMode",
+                type="String",
+                default=HANDLERS_NETWORK_MODE_CREATE,
+                allowed_values=[HANDLERS_NETWORK_MODE_CREATE, HANDLERS_NETWORK_MODE_EXISTING],
+                description=(
+                    "Handlers EC2 network layout. create provisions a dedicated VPC and subnets; "
+                    "existing uses ExistingVpcId and ExistingSubnetIds."
+                ),
+            )
+            handlers_network_params = {
+                "handlers_network_mode": handlers_network_mode,
+                "create_dedicated_network": CfnCondition(
+                    self,
+                    "CreateHandlersDedicatedNetwork",
+                    expression=Fn.condition_equals(
+                        handlers_network_mode.value_as_string,
+                        HANDLERS_NETWORK_MODE_CREATE,
+                    ),
+                ),
+                "use_existing_network": CfnCondition(
+                    self,
+                    "UseHandlersExistingNetwork",
+                    expression=Fn.condition_equals(
+                        handlers_network_mode.value_as_string,
+                        HANDLERS_NETWORK_MODE_EXISTING,
+                    ),
+                ),
+                "existing_vpc_id": CfnParameter(
+                    self,
+                    "ExistingVpcId",
+                    type="String",
+                    default="",
+                    description=(
+                        "VPC ID for handlers EC2 capacity when HandlersNetworkMode is existing. "
+                        "Ignored when HandlersNetworkMode is create."
+                    ),
+                ),
+                "existing_subnet_ids": CfnParameter(
+                    self,
+                    "ExistingSubnetIds",
+                    type="CommaDelimitedList",
+                    default="",
+                    description=(
+                        "Subnet IDs for the handlers Auto Scaling group when HandlersNetworkMode is existing. "
+                        "All subnets must belong to ExistingVpcId. Use subnets in at least two "
+                        "Availability Zones for high availability. Ignored when HandlersNetworkMode is create."
+                    ),
+                ),
+            }
+
         compute = ComputeStack(
             self,
             "Compute",
@@ -82,6 +136,7 @@ class StackB(Stack):
             github_handlers_repo=github_handlers_repo,
             enable_staging=enable_staging,
             tenant_policy=tenant_policy,
+            handlers_network_params=handlers_network_params,
         )
 
         self.app = app

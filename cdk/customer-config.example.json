@@ -20,5 +20,6 @@
   "ec2_max_instances": 2,
 
   "_compute_type_values": "lambda_only | fargate | ec2",
+  "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode (create|existing) as a CloudFormation parameter at deploy time — not in this file.",
   "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json"
 }

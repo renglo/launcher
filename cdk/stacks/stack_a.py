@@ -7,6 +7,7 @@ from constructs import Construct
 
 from stack_names import stack_a_description
 from stacks.auth import AuthStack
+from stacks.console import ConsoleStack
 from stacks.runtime import RuntimeStack
 from stacks.stack_exports import export_stack_a_outputs
 from stacks.storage import StorageStack
@@ -47,13 +48,31 @@ class StackA(Stack):
             "CreateGitHubOIDCCondition",
             expression=Fn.condition_equals(create_oidc.value_as_string, "true"),
         )
-        auth = AuthStack(self, "Auth", env_name=env_name)
         storage = StorageStack(
             self,
             "Storage",
             env_name=env_name,
             aws_account=aws_account,
             aws_region=aws_region,
+        )
+        console = ConsoleStack(
+            self,
+            "Console",
+            env_name=env_name,
+            enable_staging=enable_staging,
+        )
+        callback_urls = [console.production_url, console.production_callback_url]
+        logout_urls = [console.production_url]
+        if enable_staging and console.staging_url and console.staging_callback_url:
+            callback_urls.extend([console.staging_url, console.staging_callback_url])
+            logout_urls.append(console.staging_url)
+        auth = AuthStack(
+            self,
+            "Auth",
+            env_name=env_name,
+            aws_region=aws_region,
+            console_callback_urls=callback_urls,
+            console_logout_urls=logout_urls,
         )
         runtime = RuntimeStack(
             self,
@@ -65,11 +84,13 @@ class StackA(Stack):
             cognito_user_pool_id=auth.user_pool_id,
             s3_bucket_name=storage.bucket_name,
             enable_staging=enable_staging,
+            amplify_app_id=console.amplify_app_id,
             create_github_oidc_condition=create_oidc_condition,
         )
 
         self.auth = auth
         self.storage = storage
+        self.console = console
         self.runtime = runtime
         self.tt_policy = runtime.tt_policy
         self.tt_role = runtime.tt_role
@@ -78,6 +99,7 @@ class StackA(Stack):
             self,
             auth=auth,
             storage=storage,
+            console=console,
             runtime=runtime,
             env_name=env_name,
             enable_staging=enable_staging,
