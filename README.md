@@ -87,15 +87,18 @@ With `compute_type=ec2`, stack-b creates a dedicated handlers VPC; no network pa
 
 ## Post-deploy
 
-```bash
-cd <infra-installer>
-python bootstrap/install.py write-state \
-  --env-name <env> \
-  --aws-profile <aws-profile> \
-  --aws-region <aws-region>
-```
+Stack-b automatically writes bootstrap config to SSM Parameter Store and uploads blueprints to DynamoDB. No manual post-deploy step is required.
 
-State is written to `s3://<env>-<account>-<region>/params/` — see [bootstrap/README.md §7](../bootstrap/README.md#7-sync-github-environment-variables).
+SSM paths (see [bootstrap/README.md §6](../bootstrap/README.md#6-bootstrap-config-in-ssm-automatic-on-stack-b)):
+
+- `/{env}/bootstrap/platform-vars/production`
+- `/{env}/bootstrap/platform-vars/staging`
+- `/{env}/bootstrap/deploy-input`
+- `/{env}/bootstrap/ecs-vpc` (EC2 handlers only)
+- `/{env}/bootstrap/ecs-subnets` (EC2 handlers only)
+- `/{env}/bootstrap/ecs-security-groups` (EC2 handlers only)
+
+CI/CD workflows read these via OIDC.
 
 ---
 

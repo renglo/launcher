@@ -134,7 +134,7 @@ VITE_WEBSOCKET_URL = 'wss://<id>.execute-api.<region>.amazonaws.com/production/'
 
 Infra provisions an **Amplify Hosting** app (`{env_name}-console`) with `production` and `staging` branches. OAuth callback/sign-out URLs on the Cognito app client are set automatically from Amplify `DefaultDomain` (`https://{branch}.{appId}.amplifyapp.com`). Local dev URLs (`http://localhost:5173/`) are included.
 
-After deploy + `write-state`, sync `platform_vars.*.json` to the releases repo GitHub Environment. Key vars:
+After deploy, CI/CD reads `platform_vars.*` from SSM Parameter Store. Key vars:
 
 | Var | Purpose |
 |-----|---------|
