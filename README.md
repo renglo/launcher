@@ -1,8 +1,15 @@
-README
+# Launcher
 
-If you want to install a new Renglo Environment use this:
+Scripts and utilities for provisioning and managing Renglo cloud environments.
 
-ENVIRONMENT_README.md
+## Setup
 
+To install a new Renglo environment, see [ENVIRONMENT_README.md](ENVIRONMENT_README.md).
 
+## License
 
+This project is licensed under the MIT License. See [LICENSE.txt](LICENSE.txt) for details.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and the Contributor License Agreement.
