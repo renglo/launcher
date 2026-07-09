@@ -7,7 +7,7 @@ For binary files, prints metadata and optionally saves to a local file.
 # Show a text/JSON document (prints content)
 python dev/launcher/scripts/show_s3_document.py <bucket_name> <file_path>
 
-# Show a document in _docs
+# Show a document in _files
 python dev/launcher/scripts/show_s3_document.py <bucket_name> <file_path>/thumbnail.png --save thumbnail.png
 
 # With profile

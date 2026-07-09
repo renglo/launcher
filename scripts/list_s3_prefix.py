@@ -55,7 +55,7 @@ def main():
         description="List contents of a virtual folder (prefix) in an S3 bucket.",
     )
     parser.add_argument("bucket", help="S3 bucket name")
-    parser.add_argument("prefix", help="Prefix (folder path), e.g. _docs/portfolio/org/_thumbnails")
+    parser.add_argument("prefix", help="Prefix (folder path), e.g. _files/portfolio/org/_thumbnails")
     parser.add_argument(
         "-l", "--long",
         action="store_true",
