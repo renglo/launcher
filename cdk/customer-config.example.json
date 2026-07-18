@@ -1,0 +1,25 @@
+{
+  "_comment": "Copy this file to customer-config.json and fill in all values before running cdk synth.",
+
+  "env_name": "myenv",
+  "aws_account": "123456789012",
+  "aws_region": "us-east-1",
+
+  "github_repo": "MyOrg/my-releases-repo",
+  "github_handlers_repo": "MyOrg/my-extensions-repo",
+
+  "extension_path": "my-extension-repo",
+
+  "enable_staging": true,
+
+  "compute_type": "lambda_only | fargate | ec2",
+
+  "ec2_instance_type": "t3.medium",
+  "ec2_min_instances": 1,
+  "ec2_desired_instances": 1,
+  "ec2_max_instances": 2,
+
+  "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode (create|existing) as a CloudFormation parameter at deploy time — not in this file.",
+  "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
+  "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file"
+}
