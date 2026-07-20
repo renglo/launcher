@@ -1,6 +1,6 @@
 """Build and emit the extension state manifest bundled with CDK synth output.
 
-The manifest is extension-agnostic at bootstrap/write-state runtime: only the JSON
+The manifest is extension-agnostic at bootstrap runtime: only the JSON
 in cdk/output is consumed post-deploy.
 """
 

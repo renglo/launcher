@@ -72,6 +72,8 @@ ec2_instance_type = _cfg.get("ec2_instance_type", "t3.medium").strip() or "t3.me
 ec2_min_instances = int(_cfg.get("ec2_min_instances", 0))
 ec2_desired_instances = int(_cfg.get("ec2_desired_instances", 1))
 ec2_max_instances = int(_cfg.get("ec2_max_instances", 2))
+network_mode = _cfg.get("network_mode", "").strip() or None
+
 extension_path = _cfg.get("extension_path", "").strip()
 
 if compute_type not in ("lambda_only", "fargate", "ec2"):
@@ -105,16 +107,22 @@ stack_b = StackB(
     env_name=env_name,
     aws_account=aws_account,
     aws_region=aws_region,
+    github_repo=github_repo,
     github_handlers_repo=github_handlers_repo,
     enable_staging=enable_staging,
     architecture=architecture,
     compute_type=compute_type,
+    network_mode=network_mode,
     ec2_instance_type=ec2_instance_type,
     ec2_min_instances=ec2_min_instances,
     ec2_desired_instances=ec2_desired_instances,
     ec2_max_instances=ec2_max_instances,
     tenant_policy=stack_a.tt_policy,
     tenant_role=stack_a.tt_role,
+    stack_a_auth=stack_a.auth,
+    stack_a_storage=stack_a.storage,
+    stack_a_console=stack_a.console,
+    stack_a_runtime=stack_a.runtime,
     extension_folder=extension_folder,
     extension_manifest=extension_manifest,
     extension_config=extension_config,

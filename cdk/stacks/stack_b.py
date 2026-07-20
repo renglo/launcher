@@ -12,6 +12,8 @@ from constructs import Construct
 
 from stack_names import stack_b_description
 from stacks.app import AppStack
+from stacks.blueprint_uploader import BlueprintUploader
+from stacks.bootstrap_config import BootstrapConfigStack
 from stacks.extension import ExtensionStack
 from stacks.stack_exports import (
     export_stack_b_app_outputs,
@@ -37,16 +39,22 @@ class StackB(Stack):
         env_name: str,
         aws_account: str,
         aws_region: str,
+        github_repo: str,
         github_handlers_repo: str,
         enable_staging: bool = True,
         architecture: str = "x86_64",
         compute_type: str = "fargate",
+        network_mode: str | None = None,
         ec2_instance_type: str = "t3.medium",
         ec2_min_instances: int = 0,
         ec2_desired_instances: int = 1,
         ec2_max_instances: int = 2,
         tenant_policy: iam.IManagedPolicy | None = None,
         tenant_role: iam.IRole | None = None,
+        stack_a_auth: Any = None,
+        stack_a_storage: Any = None,
+        stack_a_console: Any = None,
+        stack_a_runtime: Any = None,
         extension_folder: Path | None = None,
         extension_manifest: dict[str, Any] | None = None,
         extension_config: dict[str, Any] | None = None,
@@ -141,6 +149,7 @@ class StackB(Stack):
 
         self.app = app
         self.compute = compute
+        extension = None
 
         if extension_folder is not None and extension_manifest is not None:
             attach_roles: dict[str, iam.IRole] = {}
@@ -153,7 +162,7 @@ class StackB(Stack):
             if handlers_ecs_task_role is not None:
                 attach_roles[f"{env_name}-handlers-ecs-task"] = handlers_ecs_task_role
 
-            self.extension = ExtensionStack(
+            extension = ExtensionStack(
                 self,
                 "Extension",
                 env_name=env_name,
@@ -164,8 +173,37 @@ class StackB(Stack):
                 compute_type=compute_type,
                 attach_roles=attach_roles,
             )
+            self.extension = extension
 
         export_stack_b_app_outputs(self, app)
         export_stack_b_compute_outputs(self, compute)
-        if extension_folder is not None and extension_manifest is not None:
-            export_stack_b_extension_outputs(self, self.extension)
+        if extension is not None:
+            export_stack_b_extension_outputs(self, extension)
+
+        if (
+            stack_a_auth is not None
+            and stack_a_storage is not None
+            and stack_a_console is not None
+            and stack_a_runtime is not None
+        ):
+            BootstrapConfigStack(
+                self,
+                "BootstrapConfig",
+                env_name=env_name,
+                aws_account=aws_account,
+                aws_region=aws_region,
+                github_repo=github_repo,
+                github_handlers_repo=github_handlers_repo,
+                enable_staging=enable_staging,
+                compute_type=compute_type,
+                network_mode=network_mode,
+                auth=stack_a_auth,
+                storage=stack_a_storage,
+                console=stack_a_console,
+                runtime=stack_a_runtime,
+                app=app,
+                compute=compute,
+                extension=extension,
+            )
+
+        BlueprintUploader(self, "BlueprintUploader", env_name=env_name)

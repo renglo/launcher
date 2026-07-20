@@ -180,9 +180,8 @@ def _deploy_permissions_policy(
     env_name: str,
     region: str,
     account: str,
-    s3_bucket_name: str,
     *,
-    enable_staging: bool,
+    stage: str,
     amplify_app_id: str | None = None,
 ) -> iam.PolicyDocument:
     """Permissions for the releases-repo GitHub Actions OIDC deploy role."""
@@ -193,16 +192,9 @@ def _deploy_permissions_policy(
     lambda_execution_role_arn = f"arn:aws:iam::{account}:role/{env_name}_tt_role"
 
     backend_lambda_arns = [
-        f"arn:aws:lambda:{region}:{account}:function:{_backend_lambda_function_name(env_name, 'production')}",
-        f"arn:aws:lambda:{region}:{account}:function:{_backend_lambda_function_name(env_name, 'production')}:*",
+        f"arn:aws:lambda:{region}:{account}:function:{_backend_lambda_function_name(env_name, stage)}",
+        f"arn:aws:lambda:{region}:{account}:function:{_backend_lambda_function_name(env_name, stage)}:*",
     ]
-    if enable_staging:
-        backend_lambda_arns.extend(
-            [
-                f"arn:aws:lambda:{region}:{account}:function:{_backend_lambda_function_name(env_name, 'staging')}",
-                f"arn:aws:lambda:{region}:{account}:function:{_backend_lambda_function_name(env_name, 'staging')}:*",
-            ]
-        )
 
     statements: list[iam.PolicyStatement] = [
         iam.PolicyStatement(
@@ -267,9 +259,14 @@ def _deploy_permissions_policy(
             resources=["*"],
         ),
         iam.PolicyStatement(
-            sid="S3WriteState",
-            actions=["s3:PutObject", "s3:GetObject"],
-            resources=[f"arn:aws:s3:::{s3_bucket_name}/params/*"],
+            sid="SsmReadPlatformVars",
+            actions=["ssm:GetParameter", "ssm:GetParameters"],
+            resources=[
+                f"arn:aws:ssm:{region}:{account}:parameter/{env_name}/bootstrap/platform-vars/{stage}",
+                f"arn:aws:ssm:{region}:{account}:parameter/{env_name}/bootstrap/ecs-vpc",
+                f"arn:aws:ssm:{region}:{account}:parameter/{env_name}/bootstrap/ecs-subnets",
+                f"arn:aws:ssm:{region}:{account}:parameter/{env_name}/bootstrap/ecs-security-groups",
+            ],
         ),
     ]
     if amplify_app_id:
@@ -430,16 +427,14 @@ class RuntimeStack(Construct):
             "GitHubOidcProvider",
             open_id_connect_provider_arn=oidc_provider_arn,
         )
-        deploy_policy_doc = _deploy_permissions_policy(
-            env_name,
-            aws_region,
-            aws_account,
-            s3_bucket_name,
-            enable_staging=enable_staging,
-            amplify_app_id=amplify_app_id,
-        )
-
         def _oidc_role(stage: str) -> iam.Role:
+            policy_doc = _deploy_permissions_policy(
+                env_name,
+                aws_region,
+                aws_account,
+                stage=stage,
+                amplify_app_id=amplify_app_id,
+            )
             return iam.Role(
                 self,
                 f"OidcDeployRole{stage.capitalize()}",
@@ -456,7 +451,7 @@ class RuntimeStack(Construct):
                     },
                 ),
                 inline_policies={
-                    f"GitHubActionsDeployPolicy-{env_name}-{stage}": deploy_policy_doc
+                    f"GitHubActionsDeployPolicy-{env_name}-{stage}": policy_doc
                 },
                 description=DESCRIPTION,
             )
