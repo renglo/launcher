@@ -224,6 +224,7 @@ class AppStack(Construct):
             "alias_arn": the_alias_arn,
             "log_group_name": log_group.log_group_name,
             "rest_url": rest_url,
+            "rest_api_id": rest_api.ref,
             "ws_url": ws_url,
             "ws_connections": ws_connections,
         }

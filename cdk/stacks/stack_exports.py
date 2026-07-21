@@ -1,4 +1,4 @@
-"""Stable CloudFormation stack outputs for write_state and external tooling.
+"""Stable CloudFormation stack outputs for bootstrap config and external tooling.
 
 Nested constructs prefix output keys (e.g. StorageDataBucketName…). Re-export
 here at the Stack scope so OutputKey matches the contract (DataBucketName, …).
