@@ -1,0 +1,8 @@
+{
+  "env_name": "productora0719",
+  "aws_account": "339713094352",
+  "aws_region": "us-east-1",
+  "github_repo": "renglo/productora-releases",
+  "enable_staging": true,
+  "compute_type": "lambda_only"
+}
