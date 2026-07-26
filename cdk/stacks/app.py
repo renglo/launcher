@@ -3,9 +3,8 @@
 Part of stack-b. Requires the seed image to already exist in ECR before deploying.
 
 Deploy order:
-  1. deploy stack-a
-  2. python bootstrap/upload_seed_image.py ...
-  3. deploy stack-b
+  1. deploy stack-a (builds and pushes the seed image via a CodeBuild custom resource)
+  2. deploy stack-b
 """
 
 from __future__ import annotations

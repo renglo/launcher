@@ -60,6 +60,25 @@ def backend_ecr_repository_name(
     return f"{env_name}{suffix}"
 
 
+def backend_seed_image_tag(
+    defaults: dict[str, Any] | None = None,
+    *,
+    config_dir: Path | None = None,
+) -> str:
+    cfg = defaults if defaults is not None else load_platform_defaults(config_dir)
+    return str(_backend_seed_cfg(cfg).get("image_tag", "seed"))
+
+
+def docker_platform(
+    defaults: dict[str, Any] | None = None,
+    *,
+    config_dir: Path | None = None,
+) -> str:
+    """Docker --platform value matching platform_defaults architecture."""
+    arch = architecture(defaults, config_dir=config_dir)
+    return "linux/amd64" if arch == "x86_64" else "linux/arm64"
+
+
 def backend_seed_image_uri(
     *,
     env_name: str,
@@ -71,7 +90,7 @@ def backend_seed_image_uri(
     cfg = defaults if defaults is not None else load_platform_defaults(config_dir)
     seed_cfg = _backend_seed_cfg(cfg)
     repo_name = backend_ecr_repository_name(env_name, cfg)
-    image_tag = str(seed_cfg.get("image_tag", "seed"))
+    image_tag = backend_seed_image_tag(cfg, config_dir=config_dir)
     template = str(
         seed_cfg.get(
             "uri_template",

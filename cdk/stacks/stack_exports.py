@@ -44,6 +44,7 @@ def export_stack_a_outputs(
 
     _emit(stack, "BackendEcrRepoName", runtime.backend_repo.repository_name)
     _emit(stack, "BackendEcrRepoUri", runtime.backend_repo.repository_uri)
+    _emit(stack, "SeedCodeBuildProjectName", runtime.seed_project.project_name)
     _emit(stack, "TenantPolicyArn", runtime.tt_policy.managed_policy_arn)
     _emit(stack, "TenantRoleArn", runtime.tt_role.role_arn)
     _emit(stack, "CodeDeployAppName", runtime.cd_app.application_name)

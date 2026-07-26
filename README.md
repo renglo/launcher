@@ -10,10 +10,10 @@ Two CloudFormation stacks per environment (synth output in `bootstrap/output/<en
 
 | Stack | CF name | Description | Contents |
 |-------|---------|-------------|----------|
-| A | `<env>-stack-a` | Reglo deployment — auth, storage, runtime | Cognito, S3/DynamoDB, backend ECR, tenant IAM, CodeDeploy, releases OIDC |
+| A | `<env>-stack-a` | Reglo deployment — auth, storage, runtime | Cognito, S3/DynamoDB, backend ECR, seed CodeBuild, tenant IAM, CodeDeploy, releases OIDC |
 | B | `<env>-stack-b` | Reglo deployment — app, compute, extension | Backend Lambdas (seed), REST + WebSocket API Gateway, handlers compute, extension |
 
-**Deploy order:** `<env>-stack-a` → **seed image** → `<env>-stack-b`
+**Deploy order:** `<env>-stack-a` (builds seed image automatically) → `<env>-stack-b`
 
 Resource names inside the stacks still use `env_name` from `customer-config.json` (e.g. `{env}_backend` ECR repo).
 
@@ -56,28 +56,18 @@ export ENV=<env>
 export AWS_PROFILE=<aws-profile>
 export AWS_REGION=<aws-region>
 
-# CloudFormation (from env root)
+# CloudFormation (from env root) — stack-a builds the seed image automatically
 cd bootstrap/output/$ENV
 aws cloudformation deploy --template-file "$ENV-stack-a.template.json" --stack-name "$ENV-stack-a" --capabilities CAPABILITY_NAMED_IAM --profile "$AWS_PROFILE"
-
-cd <infra-installer>
-python bootstrap/upload_seed_image.py --env-name "$ENV" --aws-profile "$AWS_PROFILE" --aws-region "$AWS_REGION"
-
-cd bootstrap/output/$ENV
 aws cloudformation deploy --template-file "$ENV-stack-b.template.json" --stack-name "$ENV-stack-b" --capabilities CAPABILITY_NAMED_IAM --profile "$AWS_PROFILE"
 
 # CDK (from cdk/)
 cd bootstrap/output/$ENV/cdk
 cdk deploy "$ENV-stack-a" --app "python app.py" --output . --require-approval never --profile "$AWS_PROFILE"
-
-cd <infra-installer>
-python bootstrap/upload_seed_image.py --env-name "$ENV" --aws-profile "$AWS_PROFILE" --aws-region "$AWS_REGION"
-
-cd bootstrap/output/$ENV/cdk
 cdk deploy "$ENV-stack-b" --app "python app.py" --output . --exclusively --require-approval never --profile "$AWS_PROFILE"
 ```
 
-**Important:** `<env>-stack-b` requires the seed image in ECR (`<env>_backend:seed`) before deploy.
+**Important:** `<env>-stack-b` requires the seed image in ECR (`<env>_backend:seed`). Stack-a builds and pushes it automatically via a CodeBuild custom resource during its own deploy; the stack-a deploy does not complete until the build succeeds. To rebuild manually: `aws codebuild start-build --project-name "$ENV-seed-image"`.
 
 **Re-deploying `<env>-stack-b`:** resets Lambda code to the seed image. Re-run the releases pipeline afterward.
 

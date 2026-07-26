@@ -11,7 +11,11 @@ downloads/
 eggs/
 .eggs/
 lib/
+!cdk/lib/
+!cdk/lib/**
 lib64/
+cdk/cdk.out/
+cdk/customer-config.json
 parts/
 sdist/
 var/

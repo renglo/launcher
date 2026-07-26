@@ -1,18 +1,27 @@
-"""Runtime resources: Backend infrastructure — ECR, IAM, CodeDeploy, OIDC.
+"""Runtime resources: Backend infrastructure — ECR, IAM, CodeDeploy, OIDC, seed CodeBuild.
 
-Part of stack-a. Lambda functions and API Gateway are in stack-b after the seed
-image has been pushed to ECR.
+Part of stack-a. A custom resource runs the seed CodeBuild project during the
+stack-a deploy (build + push ``{env}_backend:seed`` to ECR), so stack-b can be
+deployed right after without a manual step.
 """
 
 from __future__ import annotations
 
-from aws_cdk import CfnCondition, CfnOutput, RemovalPolicy
+from aws_cdk import CfnCondition, CfnOutput, CustomResource, Duration, RemovalPolicy
+from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_codedeploy as codedeploy
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_lambda as aws_lambda
+from aws_cdk import aws_logs as logs
+from aws_cdk import custom_resources as cr
 from constructs import Construct
 
-from platform_defaults import backend_ecr_repository_name
+from platform_defaults import (
+    backend_ecr_repository_name,
+    backend_seed_image_tag,
+    docker_platform,
+)
 
 # Account-level GitHub Actions OIDC provider host (one IAM OIDC provider per account/URL).
 GITHUB_OIDC_PROVIDER_ARN_SUFFIX = "token.actions.githubusercontent.com"
@@ -20,6 +29,86 @@ GITHUB_OIDC_URL = "https://token.actions.githubusercontent.com"
 GITHUB_OIDC_THUMBPRINT = "6938fd4d98bab03faadb97b34396831e3780aea1"
 GITHUB_OIDC_CLIENT_ID = "sts.amazonaws.com"
 DESCRIPTION = "Reglo Deployment"
+
+# Minimal Lambda container stub — inlined in CodeBuild (NO_SOURCE); no local Docker.
+_SEED_DOCKERFILE = """\
+FROM public.ecr.aws/lambda/python:3.12
+COPY app.py ${LAMBDA_TASK_ROOT}
+CMD ["app.handler"]
+"""
+
+_SEED_APP_PY = """\
+def handler(event, context):
+    return {
+        "statusCode": 200,
+        "body": "seed image ok",
+    }
+"""
+
+
+# Custom-resource handlers (inline). on_event triggers the build; is_complete
+# polls until the build finishes. The Provider framework re-invokes is_complete
+# on an interval, so neither Lambda has to block for the whole build duration.
+_SEED_TRIGGER_CODE = '''\
+import boto3
+
+codebuild = boto3.client("codebuild")
+
+
+def on_event(event, context):
+    if event["RequestType"] == "Delete":
+        return {"PhysicalResourceId": event.get("PhysicalResourceId", "seed-build")}
+    project = event["ResourceProperties"]["ProjectName"]
+    build = codebuild.start_build(projectName=project)["build"]
+    return {"PhysicalResourceId": build["id"], "Data": {"BuildId": build["id"]}}
+
+
+def is_complete(event, context):
+    if event["RequestType"] == "Delete":
+        return {"IsComplete": True}
+    build_id = event["PhysicalResourceId"]
+    builds = codebuild.batch_get_builds(ids=[build_id]).get("builds", [])
+    if not builds:
+        return {"IsComplete": False}
+    status = builds[0]["buildStatus"]
+    if status == "SUCCEEDED":
+        return {"IsComplete": True}
+    if status == "IN_PROGRESS":
+        return {"IsComplete": False}
+    raise Exception("Seed build %s ended with status %s" % (build_id, status))
+'''
+
+
+def _seed_build_spec() -> codebuild.BuildSpec:
+    return codebuild.BuildSpec.from_object(
+        {
+            "version": "0.2",
+            "phases": {
+                "pre_build": {
+                    "commands": [
+                        "REGISTRY=$(echo \"$REPO_URI\" | cut -d/ -f1)",
+                        "aws ecr get-login-password --region \"$AWS_DEFAULT_REGION\" "
+                        "| docker login --username AWS --password-stdin \"$REGISTRY\"",
+                        "aws ecr-public get-login-password --region us-east-1 "
+                        "| docker login --username AWS --password-stdin public.ecr.aws",
+                    ]
+                },
+                "build": {
+                    "commands": [
+                        "cat > Dockerfile <<'EOF'\n"
+                        f"{_SEED_DOCKERFILE}"
+                        "EOF",
+                        "cat > app.py <<'EOF'\n"
+                        f"{_SEED_APP_PY}"
+                        "EOF",
+                        "docker build --platform \"$DOCKER_PLATFORM\" "
+                        "-t \"$REPO_URI:$IMAGE_TAG\" .",
+                        "docker push \"$REPO_URI:$IMAGE_TAG\"",
+                    ]
+                },
+            },
+        }
+    )
 
 
 def _tt_policy_document(
@@ -344,7 +433,7 @@ class RuntimeStack(Construct):
         self.tt_policy = tt_policy
         self.tt_role = tt_role
 
-        # --- ECR policy (allow Lambda to pull from the private repo after step 4) ---
+        # --- ECR policy (allow Lambda to pull from the private repo after seed push) ---
         backend_repo.add_to_resource_policy(
             iam.PolicyStatement(
                 sid="LambdaECRPull",
@@ -363,6 +452,86 @@ class RuntimeStack(Construct):
                 },
             )
         )
+
+        # --- Seed image CodeBuild (NO_SOURCE; run by custom resource below) ---
+        seed_project = codebuild.Project(
+            self,
+            "SeedImageBuilder",
+            project_name=f"{env_name}-seed-image",
+            description=f"{DESCRIPTION} — build and push backend seed image",
+            environment=codebuild.BuildEnvironment(
+                build_image=codebuild.LinuxBuildImage.STANDARD_7_0,
+                privileged=True,
+                compute_type=codebuild.ComputeType.SMALL,
+                environment_variables={
+                    "REPO_URI": codebuild.BuildEnvironmentVariable(
+                        value=backend_repo.repository_uri
+                    ),
+                    "IMAGE_TAG": codebuild.BuildEnvironmentVariable(
+                        value=backend_seed_image_tag()
+                    ),
+                    "DOCKER_PLATFORM": codebuild.BuildEnvironmentVariable(
+                        value=docker_platform()
+                    ),
+                },
+            ),
+            build_spec=_seed_build_spec(),
+        )
+        backend_repo.grant_pull_push(seed_project)
+        seed_project.add_to_role_policy(
+            iam.PolicyStatement(
+                sid="EcrPublicAuth",
+                actions=[
+                    "ecr-public:GetAuthorizationToken",
+                    "sts:GetServiceBearerToken",
+                ],
+                resources=["*"],
+            )
+        )
+
+        # --- Custom resource: run the seed build during stack-a deploy ---
+        seed_trigger_code = aws_lambda.Code.from_inline(_SEED_TRIGGER_CODE)
+        seed_on_event = aws_lambda.Function(
+            self,
+            "SeedBuildOnEvent",
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
+            handler="index.on_event",
+            code=seed_trigger_code,
+            timeout=Duration.minutes(2),
+            description=f"{DESCRIPTION} — start seed CodeBuild",
+        )
+        seed_is_complete = aws_lambda.Function(
+            self,
+            "SeedBuildIsComplete",
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
+            handler="index.is_complete",
+            code=seed_trigger_code,
+            timeout=Duration.minutes(2),
+            description=f"{DESCRIPTION} — poll seed CodeBuild status",
+        )
+        seed_build_permissions = iam.PolicyStatement(
+            actions=["codebuild:StartBuild", "codebuild:BatchGetBuilds"],
+            resources=[seed_project.project_arn],
+        )
+        seed_on_event.add_to_role_policy(seed_build_permissions)
+        seed_is_complete.add_to_role_policy(seed_build_permissions)
+
+        seed_provider = cr.Provider(
+            self,
+            "SeedBuildProvider",
+            on_event_handler=seed_on_event,
+            is_complete_handler=seed_is_complete,
+            query_interval=Duration.seconds(15),
+            total_timeout=Duration.minutes(30),
+            log_retention=logs.RetentionDays.ONE_WEEK,
+        )
+        seed_build = CustomResource(
+            self,
+            "SeedBuildRunner",
+            service_token=seed_provider.service_token,
+            properties={"ProjectName": seed_project.project_name},
+        )
+        seed_build.node.add_dependency(seed_project)
 
         # --- CodeDeploy ---
         cd_service_role = iam.Role(
@@ -460,6 +629,7 @@ class RuntimeStack(Construct):
         staging_oidc_role = _oidc_role("staging") if enable_staging else None
 
         self.backend_repo = backend_repo
+        self.seed_project = seed_project
         self.cd_app = cd_app
         self.oidc_provider = oidc_provider
         self.oidc_deploy_role_production = prod_oidc_role
@@ -468,6 +638,7 @@ class RuntimeStack(Construct):
         # --- Outputs ---
         CfnOutput(self, "BackendEcrRepoName", value=backend_repo.repository_name)
         CfnOutput(self, "BackendEcrRepoUri", value=backend_repo.repository_uri)
+        CfnOutput(self, "SeedCodeBuildProjectName", value=seed_project.project_name)
         CfnOutput(self, "TenantPolicyArn", value=tt_policy.managed_policy_arn)
         CfnOutput(self, "TenantRoleArn", value=tt_role.role_arn)
         CfnOutput(self, "CodeDeployAppName", value=cd_app.application_name)

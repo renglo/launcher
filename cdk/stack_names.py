@@ -16,7 +16,7 @@ def stack_b_id(env_name: str) -> str:
 def stack_a_description() -> str:
     return (
         f"{REGLO_STACK_DESCRIPTION} — auth, storage, runtime "
-        "(Cognito, S3, DynamoDB, ECR, IAM, CodeDeploy, OIDC)"
+        "(Cognito, S3, DynamoDB, ECR, seed CodeBuild, IAM, CodeDeploy, OIDC)"
     )
 
 

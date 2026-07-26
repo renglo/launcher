@@ -1,8 +1,13 @@
 {
-  "env_name": "productora0719",
-  "aws_account": "339713094352",
-  "aws_region": "us-east-1",
-  "github_repo": "renglo/productora-releases",
-  "enable_staging": true,
-  "compute_type": "lambda_only"
+    "env_name": "arbitiumrs15",
+    "aws_account": "982081058012",
+    "aws_region": "us-east-1",
+    "github_repo": "Arbitium/releases",
+    "extension_path": "arbitiumlab",
+    "enable_staging": true,
+    "compute_type": "ec2",
+    "ec2_instance_type": "t3.xlarge",
+    "ec2_min_instances": 1,
+    "ec2_desired_instances": 1,
+    "ec2_max_instances": 1
 }

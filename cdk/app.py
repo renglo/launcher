@@ -8,10 +8,9 @@ Deploy order:
     cd bootstrap/output/<env_name>/cdk
     pip install -r requirements.txt
 
+    # stack-a builds and pushes the seed image automatically (CodeBuild custom
+    # resource); the deploy blocks until the build succeeds.
     cdk deploy <env>-stack-a --app "python app.py" [--parameters CreateGitHubOIDC=true]
-
-    python bootstrap/upload_seed_image.py \\
-        --env-name <env_name> --aws-profile <profile>
 
     cdk deploy <env>-stack-b --app "python app.py" --output .
 """

@@ -1,4 +1,4 @@
-"""Stack A (pre-seed): Cognito, storage, backend runtime (ECR, IAM, CodeDeploy, OIDC)."""
+"""Stack A (pre-seed): Cognito, storage, backend runtime (ECR, seed CodeBuild, IAM, CodeDeploy, OIDC)."""
 
 from __future__ import annotations
 

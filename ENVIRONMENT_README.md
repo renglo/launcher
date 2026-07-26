@@ -8,7 +8,7 @@ Short index: [README.md](README.md)
 
 ## Prerequisites
 
-- Python **3.12**, AWS CLI, Docker (seed image build)
+- Python **3.12**, AWS CLI
 - Named AWS profile with permissions to provision the environment
 - Optional: minimal operator policy —  
   `python bootstrap/helpers/generate_env_deployment_tt_policy.py <env> --aws-profile <profile>`
@@ -57,12 +57,11 @@ python deploy_environment.py <environment_name> \
 |------|---------|
 | `--disable-staging-role` | Do not create staging GitHub OIDC role / skip staging-oriented outputs where applicable |
 | `--enable-cdk-bootstrap` | Run CDK bootstrap (optional; default flow uses SDK scripts) |
-| `--seed-image-uri <uri>` | Override ECR image used only when backend Lambda is created the first time |
 | `--dry-run` | Plan IAM/backend changes without creating resources |
 
 **CDK:** Bootstrap is skipped by default. `--enable-cdk-bootstrap` is for forward compatibility if deploy moves fully to CDK.
 
-**Seed image:** On first backend Lambda creation, `deploy_environment.py` builds and pushes a minimal image from `scripts/backend/seed-image/` (`public.ecr.aws/lambda/python:3.12`). Use `--seed-image-uri` to override.
+**Seed image:** Use the CDK bootstrap flow ([bootstrap/README.md](../bootstrap/README.md)): stack-a creates a CodeBuild project that builds and pushes `<env>_backend:seed`. No local Docker.
 
 **CodeDeploy:** `production` → `CodeDeployDefault.LambdaCanary10Percent10Minutes`; `staging` → `CodeDeployDefault.LambdaAllAtOnce`.
 
