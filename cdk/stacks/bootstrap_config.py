@@ -142,22 +142,50 @@ class BootstrapConfigStack(Construct):
         )
 
         if compute_type == "ec2":
-            self._provision_ecs_network_ssm(env_name, compute_outputs)
+            self._provision_ecs_network_ssm(env_name, compute)
 
-    def _provision_ecs_network_ssm(self, env_name: str, compute_outputs: dict[str, Any]) -> None:
-        """Write ECS VPC/subnet/SG IDs as separate SSM params (Fn::If tokens cannot use to_json_string)."""
-        vpc = compute_outputs.get("HandlersComputeVpcId")
-        subnets = compute_outputs.get("HandlersComputeSubnetIds")
-        security_groups = compute_outputs.get("HandlersComputeSecurityGroupId")
-        if vpc is None or subnets is None or security_groups is None:
+    def _provision_ecs_network_ssm(self, env_name: str, compute: Any) -> None:
+        """Write ECS VPC/subnet/SG IDs as separate SSM params.
+
+        Use two mutually exclusive AWS::SSM::Parameter resources (create|existing)
+        that share the same Name. A single param whose Value is Fn::If over
+        conditional EC2 resources makes PutParameter fail in existing mode.
+        """
+        spec = getattr(compute, "ecs_network_ssm", None)
+        if not isinstance(spec, dict):
             return
-        self._ssm_string_param("EcsVpc", ssm_ecs_vpc_path(env_name), vpc)
-        self._ssm_string_param("EcsSubnets", ssm_ecs_subnets_path(env_name), subnets)
-        self._ssm_string_param(
-            "EcsSecurityGroups",
-            ssm_ecs_security_groups_path(env_name),
-            security_groups,
+        create_condition = spec.get("create_condition")
+        existing_condition = spec.get("existing_condition")
+        if create_condition is None or existing_condition is None:
+            return
+
+        pairs = (
+            (
+                "EcsVpc",
+                ssm_ecs_vpc_path(env_name),
+                spec.get("vpc_create"),
+                spec.get("vpc_existing"),
+            ),
+            (
+                "EcsSubnets",
+                ssm_ecs_subnets_path(env_name),
+                spec.get("subnets_create"),
+                spec.get("subnets_existing"),
+            ),
+            (
+                "EcsSecurityGroups",
+                ssm_ecs_security_groups_path(env_name),
+                spec.get("security_groups_create"),
+                spec.get("security_groups_existing"),
+            ),
         )
+        for construct_id, name, create_value, existing_value in pairs:
+            if create_value is None or existing_value is None:
+                continue
+            created = self._ssm_string_param(f"{construct_id}Create", name, create_value)
+            created.cfn_options.condition = create_condition
+            existing = self._ssm_string_param(f"{construct_id}Existing", name, existing_value)
+            existing.cfn_options.condition = existing_condition
 
     def _ssm_json_param(self, construct_id: str, name: str, payload: dict[str, Any]) -> ssm.CfnParameter:
         return ssm.CfnParameter(

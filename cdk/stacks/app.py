@@ -374,5 +374,6 @@ class AppStack(Construct):
 
         ws_endpoint = f"https://{ws_api.ref}.execute-api.{aws_region}.amazonaws.com"
         ws_connections = f"{ws_endpoint}/{stage}/"
-        ws_url = ws_connections.replace("https://", "wss://")
+        # Build wss URL explicitly — do not str.replace on tokenized https URLs.
+        ws_url = f"wss://{ws_api.ref}.execute-api.{aws_region}.amazonaws.com/{stage}/"
         return ws_url, ws_connections

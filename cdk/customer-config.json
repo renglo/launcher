@@ -1,7 +1,5 @@
 {
-    "env_name": "arbitiumrs15",
-    "aws_account": "982081058012",
-    "aws_region": "us-east-1",
+    "env_name": "arbitiumrs24",
     "github_repo": "Arbitium/releases",
     "extension_path": "arbitiumlab",
     "enable_staging": true,

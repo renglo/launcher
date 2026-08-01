@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from aws_cdk import CfnCondition, CfnParameter, Fn, Stack
+from aws_cdk import CfnCondition, CfnParameter, CfnRule, CfnRuleAssertion, Fn, Stack
 from aws_cdk import aws_iam as iam
 from constructs import Construct
 
@@ -37,8 +37,6 @@ class StackB(Stack):
         construct_id: str,
         *,
         env_name: str,
-        aws_account: str,
-        aws_region: str,
         github_repo: str,
         github_handlers_repo: str,
         enable_staging: bool = True,
@@ -67,6 +65,9 @@ class StackB(Stack):
             description=stack_b_description(include_extension=include_extension),
             **kwargs,
         )
+        # Env-agnostic: unresolved tokens → AWS::AccountId / AWS::Region at deploy.
+        aws_account = self.account
+        aws_region = self.region
         app = AppStack(
             self,
             "App",
@@ -123,12 +124,37 @@ class StackB(Stack):
                     type="CommaDelimitedList",
                     default="",
                     description=(
-                        "Subnet IDs for the handlers Auto Scaling group when HandlersNetworkMode is existing. "
+                        "Subnet IDs for the handlers Auto Scaling group when HandlersNetworkMode is existing "
+                        "(CloudFormation CommaDelimitedList: subnet-aaa,subnet-bbb). "
                         "All subnets must belong to ExistingVpcId. Use subnets in at least two "
                         "Availability Zones for high availability. Ignored when HandlersNetworkMode is create."
                     ),
                 ),
             }
+            # Fail the changeset early if existing mode has an empty VPC ID.
+            # (Rules cannot use Fn::Join; subnet list is still required at deploy —
+            # empty ExistingSubnetIds fails ASG create. Avoids opaque SSM PutParameter.)
+            CfnRule(
+                self,
+                "RequireExistingNetworkParams",
+                rule_condition=Fn.condition_equals(
+                    handlers_network_mode.value_as_string,
+                    HANDLERS_NETWORK_MODE_EXISTING,
+                ),
+                assertions=[
+                    CfnRuleAssertion(
+                        assert_=Fn.condition_not(
+                            Fn.condition_equals(
+                                handlers_network_params["existing_vpc_id"].value_as_string,
+                                "",
+                            )
+                        ),
+                        assert_description=(
+                            "ExistingVpcId is required when HandlersNetworkMode is existing"
+                        ),
+                    ),
+                ],
+            )
 
         compute = ComputeStack(
             self,

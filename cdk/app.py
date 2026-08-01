@@ -4,6 +4,10 @@
 Reads customer-config.json (same directory as this file) and instantiates two
 platform stacks: <env>-stack-a (pre-seed) and <env>-stack-b (post-seed).
 
+Stacks are environment-agnostic: account/region resolve at deploy time via
+CloudFormation pseudo parameters (AWS::AccountId / AWS::Region). Synth is offline
+and does not require aws_account / aws_region in customer-config.json.
+
 Deploy order:
     cd bootstrap/output/<env_name>/cdk
     pip install -r requirements.txt
@@ -60,8 +64,6 @@ def _require(key: str) -> str:
 
 
 env_name = _require("env_name")
-aws_account = _require("aws_account")
-aws_region = _cfg.get("aws_region", "us-east-1").strip() or "us-east-1"
 github_repo = _require("github_repo")
 github_handlers_repo = _cfg.get("github_handlers_repo", github_repo).strip() or github_repo
 enable_staging = bool(_cfg.get("enable_staging", True))
@@ -79,17 +81,13 @@ if compute_type not in ("lambda_only", "fargate", "ec2"):
     raise ValueError(f"customer-config.json: 'compute_type' must be lambda_only|fargate|ec2, got {compute_type!r}")
 
 app = cdk.App()
-cdk_env = cdk.Environment(account=aws_account, region=aws_region)
 
 stack_a = StackA(
     app,
     stack_a_id(env_name),
     env_name=env_name,
-    aws_account=aws_account,
-    aws_region=aws_region,
     github_repo=github_repo,
     enable_staging=enable_staging,
-    env=cdk_env,
 )
 
 extension_folder = None
@@ -104,8 +102,6 @@ stack_b = StackB(
     app,
     stack_b_id(env_name),
     env_name=env_name,
-    aws_account=aws_account,
-    aws_region=aws_region,
     github_repo=github_repo,
     github_handlers_repo=github_handlers_repo,
     enable_staging=enable_staging,
@@ -126,7 +122,6 @@ stack_b = StackB(
     extension_manifest=extension_manifest,
     extension_config=extension_config,
     include_extension=extension_folder is not None and extension_manifest is not None,
-    env=cdk_env,
 )
 stack_b.add_dependency(stack_a)
 
