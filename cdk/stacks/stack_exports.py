@@ -28,6 +28,8 @@ def export_stack_a_outputs(
     enable_staging: bool,
     email: IConstruct | None = None,
 ) -> None:
+    _emit(stack, "AwsAccountId", stack.account)
+    _emit(stack, "AwsRegion", stack.region)
     _emit(stack, "UserPoolId", auth.user_pool_id)
     _emit(stack, "UserPoolArn", auth.user_pool_arn)
     _emit(stack, "AppClientId", auth.app_client_id)

@@ -21,8 +21,6 @@ class StackA(Stack):
         construct_id: str,
         *,
         env_name: str,
-        aws_account: str,
-        aws_region: str,
         github_repo: str,
         enable_staging: bool = True,
         email_from: str = "",
@@ -36,6 +34,9 @@ class StackA(Stack):
             description=stack_a_description(),
             **kwargs,
         )
+        # Env-agnostic: unresolved tokens → AWS::AccountId / AWS::Region at deploy.
+        aws_account = self.account
+        aws_region = self.region
         create_oidc = CfnParameter(
             self,
             "CreateGitHubOIDC",

@@ -29,7 +29,6 @@ cp customer-config.example.json customer-config.json
 | Field | Description |
 |-------|-------------|
 | `env_name` | Resource prefix and synth output folder name |
-| `aws_account` / `aws_region` | Target account and region |
 | `github_repo` | Releases repo (backend OIDC) |
 | `github_handlers_repo` | Handlers/extensions repo |
 | `enable_staging` | `true` → staging Lambda + APIs + staging OIDC |
@@ -41,6 +40,8 @@ cp customer-config.example.json customer-config.json
 | `email_hosted_zone_id` | Route53 public hosted zone ID when DNS for that domain is in this account (pattern A); omit for external DNS |
 
 **Team invite email is required.** Cognito self-signup is disabled — invites are how users join after the first admin. Configure email in bootstrap [§3.3](../bootstrap/README.md#step-33--set-up-application-email-required), then [§7 Path B](../bootstrap/README.md#path-b--local-development-default--no-cicd) for local testing (no CI/CD).
+
+Account and region are **not** in `customer-config.json`. Templates are environment-agnostic (`AWS::AccountId` / `AWS::Region`); choose the target account and region at deploy time (AWS profile / CLI region).
 
 Platform-wide defaults (`architecture`, backend seed image URI/tag, Cognito token lifetime): `launcher/cdk/platform_defaults.json`. Set `cognito.token_validity_hours` (1–24, default **24**) for access/ID token lifetime on the app client — the console session follows the ID token `exp`.
 
@@ -116,21 +117,50 @@ cdk deploy "$ENV-stack-a" --app "python app.py" --output . \
 
 `<env>-stack-b` exposes CloudFormation parameters when the template was synthesized with `compute_type=ec2`:
 
-| Parameter | Default | Purpose |
-|-----------|---------|---------|
-| `HandlersNetworkMode` | `create` | `create` = dedicated VPC/subnets; `existing` = customer VPC/subnets |
-| `ExistingVpcId` | *(empty)* | VPC ID when mode is `existing` |
-| `ExistingSubnetIds` | *(empty)* | Comma-separated subnet IDs when mode is `existing` |
+| Parameter | Type | Default | Purpose |
+|-----------|------|---------|---------|
+| `HandlersNetworkMode` | `String` (`create`\|`existing`) | `create` | `create` = dedicated VPC/subnets; `existing` = customer VPC/subnets |
+| `ExistingVpcId` | `String` | *(empty)* | VPC ID when mode is `existing` |
+| `ExistingSubnetIds` | **`CommaDelimitedList`** | *(empty)* | Subnet IDs when mode is `existing` (CFN-native list) |
+
+A CloudFormation **Rule** rejects the changeset if mode is `existing` but `ExistingVpcId` is empty. Supply `ExistingSubnetIds` in the same deploy (console or quoted CLI overrides); an empty list fails when creating the Auto Scaling group.
 
 The stack **always** creates a dedicated handlers security group. In `existing` mode it is created inside `ExistingVpcId`; VPC/subnets are not deleted on stack teardown.
 
+### CloudFormation console (preferred for customer delivery)
+
+1. Upload `bootstrap/output/<env>/<env>-stack-b.template.json` (or use the packaged template URL).
+2. On the Parameters page set:
+   - `HandlersNetworkMode` = `existing`
+   - `ExistingVpcId` = `vpc-…`
+   - `ExistingSubnetIds` = `subnet-aaa,subnet-bbb,subnet-ccc` (single field; commas are part of `CommaDelimitedList`)
+
+### CloudFormation CLI
+
 ```bash
-cd bootstrap/output/$ENV/cdk
-cdk deploy "$ENV-stack-b" --app "python app.py" --output . \
-  --parameters HandlersNetworkMode=existing \
-  --parameters ExistingVpcId=vpc-0123456789abcdef0 \
-  --parameters ExistingSubnetIds=subnet-aaa,subnet-bbb \
-  --profile "$AWS_PROFILE"
+aws cloudformation deploy \
+  --template-file "bootstrap/output/${ENV}/${ENV}-stack-b.template.json" \
+  --stack-name "${ENV}-stack-b" \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides \
+    "HandlersNetworkMode=existing" \
+    "ExistingVpcId=vpc-0123456789abcdef0" \
+    "ExistingSubnetIds=subnet-aaa,subnet-bbb" \
+  --profile "$AWS_PROFILE" \
+  --region "$AWS_REGION"
+```
+
+### CDK CLI
+
+Quote **each** `--parameters` value (PowerShell treats unquoted commas as arrays and can drop `ExistingVpcId` / `ExistingSubnetIds`):
+
+```bash
+cdk deploy "${ENV}-stack-b" --app "bootstrap/output/${ENV}/cdk" --exclusively \
+  --parameters \
+    "HandlersNetworkMode=existing" \
+    "ExistingVpcId=vpc-0123456789abcdef0" \
+    "ExistingSubnetIds=subnet-aaa,subnet-bbb" \
+  --profile "$AWS_PROFILE" --region "$AWS_REGION"
 ```
 
 All `ExistingSubnetIds` must belong to `ExistingVpcId` and should span at least two Availability Zones.

@@ -23,7 +23,8 @@ class StorageStack(Construct):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        bucket_name = f"{env_name}-{aws_account}-{aws_region}".lower()
+        # Do not .lower() the whole string — account/region may be CFN tokens.
+        bucket_name = f"{env_name.lower()}-{aws_account}-{aws_region}"
         data_bucket = s3.Bucket(
             self,
             "DataBucket",
