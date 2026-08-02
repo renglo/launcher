@@ -74,9 +74,16 @@ ec2_max_instances = int(_cfg.get("ec2_max_instances", 2))
 network_mode = _cfg.get("network_mode", "").strip() or None
 
 extension_path = _cfg.get("extension_path", "").strip()
+email_from = _require("email_from")
+email_identity_type = _require("email_identity_type")
+email_hosted_zone_id = str(_cfg.get("email_hosted_zone_id", "") or "").strip()
 
 if compute_type not in ("lambda_only", "fargate", "ec2"):
     raise ValueError(f"customer-config.json: 'compute_type' must be lambda_only|fargate|ec2, got {compute_type!r}")
+if email_identity_type not in ("email", "domain"):
+    raise ValueError(
+        f"customer-config.json: 'email_identity_type' must be email|domain, got {email_identity_type!r}"
+    )
 
 app = cdk.App()
 cdk_env = cdk.Environment(account=aws_account, region=aws_region)
@@ -89,6 +96,9 @@ stack_a = StackA(
     aws_region=aws_region,
     github_repo=github_repo,
     enable_staging=enable_staging,
+    email_from=email_from,
+    email_identity_type=email_identity_type,
+    email_hosted_zone_id=email_hosted_zone_id,
     env=cdk_env,
 )
 
@@ -122,6 +132,7 @@ stack_b = StackB(
     stack_a_storage=stack_a.storage,
     stack_a_console=stack_a.console,
     stack_a_runtime=stack_a.runtime,
+    from_email=stack_a.from_email,
     extension_folder=extension_folder,
     extension_manifest=extension_manifest,
     extension_config=extension_config,

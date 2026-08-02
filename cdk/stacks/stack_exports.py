@@ -26,6 +26,7 @@ def export_stack_a_outputs(
     runtime: IConstruct,
     env_name: str,
     enable_staging: bool,
+    email: IConstruct | None = None,
 ) -> None:
     _emit(stack, "UserPoolId", auth.user_pool_id)
     _emit(stack, "UserPoolArn", auth.user_pool_arn)
@@ -41,6 +42,11 @@ def export_stack_a_outputs(
     _emit(stack, "AmplifyConsoleUrlProduction", console.production_url)
     if enable_staging and console.staging_url is not None:
         _emit(stack, "AmplifyConsoleUrlStaging", console.staging_url)
+
+    if email is not None:
+        _emit(stack, "FromEmail", email.email_from)
+        _emit(stack, "SesIdentityName", email.email_identity_name)
+        _emit(stack, "SesDnsMode", email.dns_mode)
 
     _emit(stack, "BackendEcrRepoName", runtime.backend_repo.repository_name)
     _emit(stack, "BackendEcrRepoUri", runtime.backend_repo.repository_uri)

@@ -8,6 +8,7 @@ from constructs import Construct
 from stack_names import stack_a_description
 from stacks.auth import AuthStack
 from stacks.console import ConsoleStack
+from stacks.email import EmailStack
 from stacks.runtime import RuntimeStack
 from stacks.stack_exports import export_stack_a_outputs
 from stacks.storage import StorageStack
@@ -24,6 +25,9 @@ class StackA(Stack):
         aws_region: str,
         github_repo: str,
         enable_staging: bool = True,
+        email_from: str = "",
+        email_identity_type: str = "email",
+        email_hosted_zone_id: str = "",
         **kwargs,
     ) -> None:
         super().__init__(
@@ -71,9 +75,22 @@ class StackA(Stack):
             "Auth",
             env_name=env_name,
             aws_region=aws_region,
+            console_setup_base_url=console.production_url,
             console_callback_urls=callback_urls,
             console_logout_urls=logout_urls,
         )
+        email = None
+        ses_identity_arn = None
+        if email_from.strip():
+            email = EmailStack(
+                self,
+                "Email",
+                env_name=env_name,
+                email_from=email_from,
+                email_identity_type=email_identity_type,
+                email_hosted_zone_id=email_hosted_zone_id,
+            )
+            ses_identity_arn = email.email_identity_arn
         runtime = RuntimeStack(
             self,
             "Runtime",
@@ -86,14 +103,17 @@ class StackA(Stack):
             enable_staging=enable_staging,
             amplify_app_id=console.amplify_app_id,
             create_github_oidc_condition=create_oidc_condition,
+            ses_identity_arn=ses_identity_arn,
         )
 
         self.auth = auth
         self.storage = storage
         self.console = console
+        self.email = email
         self.runtime = runtime
         self.tt_policy = runtime.tt_policy
         self.tt_role = runtime.tt_role
+        self.from_email = email.email_from if email is not None else ""
 
         export_stack_a_outputs(
             self,
@@ -101,6 +121,7 @@ class StackA(Stack):
             storage=storage,
             console=console,
             runtime=runtime,
+            email=email,
             env_name=env_name,
             enable_staging=enable_staging,
         )

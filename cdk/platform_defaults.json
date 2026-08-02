@@ -9,5 +9,10 @@
     "image_tag": "seed",
     "uri_template": "{account}.dkr.ecr.{region}.amazonaws.com/{ecr_repository_name}:{image_tag}"
   },
-  "_backend_seed_image_note": "uri_template placeholders: account, region, ecr_repository_name, image_tag. Repository name is {env_name} + ecr_repository_suffix."
+  "_backend_seed_image_note": "uri_template placeholders: account, region, ecr_repository_name, image_tag. Repository name is {env_name} + ecr_repository_suffix.",
+
+  "cognito": {
+    "token_validity_hours": 24
+  },
+  "_cognito_token_note": "Access and ID token lifetime for the app client (1–24 hours). Console session uses ID token exp."
 }

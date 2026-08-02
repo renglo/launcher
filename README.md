@@ -10,7 +10,7 @@ Two CloudFormation stacks per environment (synth output in `bootstrap/output/<en
 
 | Stack | CF name | Description | Contents |
 |-------|---------|-------------|----------|
-| A | `<env>-stack-a` | Reglo deployment — auth, storage, runtime | Cognito, S3/DynamoDB, backend ECR, seed CodeBuild, tenant IAM, CodeDeploy, releases OIDC |
+| A | `<env>-stack-a` | Reglo deployment — auth, storage, runtime | Cognito, S3/DynamoDB, SES (team invite email), backend ECR, seed CodeBuild, tenant IAM, CodeDeploy, releases OIDC |
 | B | `<env>-stack-b` | Reglo deployment — app, compute, extension | Backend Lambdas (seed), REST + WebSocket API Gateway, handlers compute, extension |
 
 **Deploy order:** `<env>-stack-a` (builds seed image automatically) → `<env>-stack-b`
@@ -36,8 +36,13 @@ cp customer-config.example.json customer-config.json
 | `compute_type` | `lambda_only` \| `fargate` \| `ec2` |
 | `ec2_instance_type` | EC2 instance type for handlers ASG (only `ec2`) |
 | `ec2_min_instances` / `ec2_desired_instances` / `ec2_max_instances` | ASG size (only `ec2`) |
+| `email_from` | **Required** — SES from-address for team invite email (app-owned address or domain) |
+| `email_identity_type` | **Required** — `email` (inbox verify) or `domain` (domain verify; preferred for no-reply) |
+| `email_hosted_zone_id` | Route53 public hosted zone ID when DNS for that domain is in this account (pattern A); omit for external DNS |
 
-Platform-wide defaults (`architecture`, backend seed image URI/tag): `launcher/cdk/platform_defaults.json`.
+**Team invite email is required.** Cognito self-signup is disabled — invites are how users join after the first admin. Configure email in bootstrap [§3.3](../bootstrap/README.md#step-33--set-up-application-email-required), then [§7 Path B](../bootstrap/README.md#path-b--local-development-default--no-cicd) for local testing (no CI/CD).
+
+Platform-wide defaults (`architecture`, backend seed image URI/tag, Cognito token lifetime): `launcher/cdk/platform_defaults.json`. Set `cognito.token_validity_hours` (1–24, default **24**) for access/ID token lifetime on the app client — the console session follows the ID token `exp`.
 
 ---
 
@@ -77,9 +82,11 @@ With `compute_type=ec2`, stack-b creates a dedicated handlers VPC; no network pa
 
 ## Post-deploy
 
-Stack-b automatically writes bootstrap config to SSM Parameter Store and uploads blueprints to DynamoDB. No manual post-deploy step is required.
+Stack-b writes bootstrap SSM parameters when deployed via CDK. CloudFormation-only deploys still need `write-state` (bootstrap §6).
 
-SSM paths (see [bootstrap/README.md §6](../bootstrap/README.md#6-bootstrap-config-in-ssm-automatic-on-stack-b)):
+**Infrastructure deploy is not the end of installation.** Follow **[bootstrap §7](../bootstrap/README.md#7-after-bootstrap--make-the-app-usable)** — default **Path B** (local API, no GitHub). Operators generate `bootstrap/output/<env>/local-dev/` with `write-local-config` (§7.3). Cloud production and CI/CD are optional later ([Path A](../bootstrap/README.md#path-a--cloud-go-live-optional-later) + [§8](../bootstrap/README.md#8-cicd-contract-optional--cloud-production-only)).
+
+SSM paths (bootstrap [§6](../bootstrap/README.md#6-bootstrap-config-in-ssm-write-state-after-stack-b)):
 
 - `/{env}/bootstrap/platform-vars/production`
 - `/{env}/bootstrap/platform-vars/staging`
@@ -88,7 +95,7 @@ SSM paths (see [bootstrap/README.md §6](../bootstrap/README.md#6-bootstrap-conf
 - `/{env}/bootstrap/ecs-subnets` (EC2 handlers only)
 - `/{env}/bootstrap/ecs-security-groups` (EC2 handlers only)
 
-CI/CD workflows read these via OIDC.
+CI workflows (only when you choose cloud go-live) read these via OIDC (bootstrap [§8](../bootstrap/README.md#8-cicd-contract-optional--cloud-production-only)).
 
 ---
 

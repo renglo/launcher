@@ -117,9 +117,11 @@ def _tt_policy_document(
     account: str,
     cognito_user_pool_id: str,
     s3_bucket_name: str,
+    ses_identity_arn: str | None = None,
 ) -> iam.PolicyDocument:
     handlers_bucket = f"{env_name}-handlers-ecs-{account}"
     backend_repo_name = backend_ecr_repository_name(env_name)
+    ses_resources = [ses_identity_arn] if ses_identity_arn else ["*"]
     return iam.PolicyDocument(
         statements=[
             iam.PolicyStatement(
@@ -193,12 +195,17 @@ def _tt_policy_document(
                     f"arn:aws:dynamodb:{region}:{account}:table/{env_name}_*/index/*",
                 ],
             ),
-            iam.PolicyStatement(actions=["ses:SendEmail"], resources=["*"]),
+            iam.PolicyStatement(
+                sid="SesSendEmail",
+                actions=["ses:SendEmail", "ses:SendRawEmail"],
+                resources=ses_resources,
+            ),
             iam.PolicyStatement(
                 actions=[
                     "cognito-idp:ListUsers",
                     "cognito-idp:AdminCreateUser",
                     "cognito-idp:AdminSetUserPassword",
+                    "cognito-idp:AdminUpdateUserAttributes",
                     "cognito-idp:AdminInitiateAuth",
                     "cognito-idp:RespondToAuthChallenge",
                 ],
@@ -392,6 +399,7 @@ class RuntimeStack(Construct):
         enable_staging: bool = True,
         amplify_app_id: str | None = None,
         create_github_oidc_condition: CfnCondition | None = None,
+        ses_identity_arn: str | None = None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -411,7 +419,12 @@ class RuntimeStack(Construct):
             "TenantPolicy",
             managed_policy_name=f"{env_name}_tt_policy",
             document=_tt_policy_document(
-                env_name, aws_region, aws_account, cognito_user_pool_id, s3_bucket_name
+                env_name,
+                aws_region,
+                aws_account,
+                cognito_user_pool_id,
+                s3_bucket_name,
+                ses_identity_arn=ses_identity_arn,
             ),
         )
         tt_role = iam.Role(

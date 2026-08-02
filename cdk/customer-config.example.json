@@ -19,6 +19,13 @@
   "ec2_desired_instances": 1,
   "ec2_max_instances": 2,
 
+  "email_from": "noreply@your-app-domain.com",
+  "email_identity_type": "domain",
+  "email_hosted_zone_id": "Z0123456789EXAMPLE",
+
+  "_email_from_note": "Required. SES from-address for team invite email — the primary way users join after the first admin.",
+  "_email_identity_type_note": "Required. email = verify via inbox link. domain = verify domain; add email_hosted_zone_id if the public hosted zone is in this AWS account for automatic DKIM records; omit zone id to export DkimRecord* outputs for manual DNS elsewhere.",
+  "_email_hosted_zone_id_note": "Required for domain + Route53 (pattern A). Omit when DNS is outside this account (pattern B). Find with: aws route53 list-hosted-zones.",
   "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode (create|existing) as a CloudFormation parameter at deploy time — not in this file.",
   "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
   "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file"

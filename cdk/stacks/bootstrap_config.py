@@ -49,6 +49,7 @@ class BootstrapConfigStack(Construct):
         app: Any,
         compute: Any,
         extension: Any | None = None,
+        from_email: str = "",
     ) -> None:
         super().__init__(scope, construct_id)
 
@@ -78,6 +79,7 @@ class BootstrapConfigStack(Construct):
             "compute_outputs": compute_outputs,
             "ecs_network": ecs_network,
             "extension_vars": extension_vars,
+            "from_email": (from_email or "").strip(),
         }
 
         prod_vars = build_launcher_vars(

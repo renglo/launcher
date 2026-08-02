@@ -103,14 +103,13 @@ class ExtensionStack(Construct):
         CfnOutput(self, "ActionsPolicyName", value=policy_name)
         CfnOutput(self, "ExtensionPath", value=extension_folder.name)
 
-        external_handlers = str(
-            extension_config.get("EXTERNAL_HANDLERS") or env_name
-        )
+        external_handlers = str(extension_config.get("EXTERNAL_HANDLERS") or "").strip()
         external_handlers_ecs = str(
             extension_config.get("EXTERNAL_HANDLERS_ECS_HANDLERS") or ""
-        )
-        runtime_outputs["EXTERNAL_HANDLERS"] = external_handlers
-        CfnOutput(self, "EXTERNAL_HANDLERS", value=external_handlers)
+        ).strip()
+        if external_handlers:
+            runtime_outputs["EXTERNAL_HANDLERS"] = external_handlers
+            CfnOutput(self, "EXTERNAL_HANDLERS", value=external_handlers)
         if external_handlers_ecs:
             runtime_outputs["EXTERNAL_HANDLERS_ECS_HANDLERS"] = external_handlers_ecs
             CfnOutput(

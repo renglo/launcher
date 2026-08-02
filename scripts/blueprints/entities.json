@@ -305,6 +305,21 @@
    "source": "",
    "type": "string",
    "widget": "text"
+  },
+  {
+   "cardinality": "single",
+   "default": {},
+   "hint": "Optional key-value tags. Each key can have one or more values (e.g. location: NYC, LA).",
+   "label": "Tags",
+   "layer": "1",
+   "multilingual": false,
+   "name": "tags",
+   "order": "5",
+   "required": false,
+   "semantic": "",
+   "source": "",
+   "type": "object",
+   "widget": "json"
   }
  ],
  "handle": "irma",

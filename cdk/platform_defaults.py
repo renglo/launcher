@@ -104,3 +104,21 @@ def backend_seed_image_uri(
         ecr_repository_name=repo_name,
         image_tag=image_tag,
     )
+
+
+def cognito_token_validity_hours(
+    defaults: dict[str, Any] | None = None,
+    *,
+    config_dir: Path | None = None,
+) -> int:
+    """Access/ID token lifetime in hours (Cognito allows 1–24)."""
+    cfg = defaults if defaults is not None else load_platform_defaults(config_dir)
+    cognito_cfg = cfg.get("cognito")
+    if not isinstance(cognito_cfg, dict):
+        cognito_cfg = {}
+    hours = int(cognito_cfg.get("token_validity_hours", 24))
+    if hours < 1 or hours > 24:
+        raise ValueError(
+            "platform_defaults.json: cognito.token_validity_hours must be between 1 and 24"
+        )
+    return hours

@@ -55,6 +55,7 @@ class StackB(Stack):
         stack_a_storage: Any = None,
         stack_a_console: Any = None,
         stack_a_runtime: Any = None,
+        from_email: str = "",
         extension_folder: Path | None = None,
         extension_manifest: dict[str, Any] | None = None,
         extension_config: dict[str, Any] | None = None,
@@ -204,6 +205,7 @@ class StackB(Stack):
                 app=app,
                 compute=compute,
                 extension=extension,
+                from_email=from_email,
             )
 
         BlueprintUploader(self, "BlueprintUploader", env_name=env_name)
