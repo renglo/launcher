@@ -50,6 +50,7 @@ class BootstrapConfigStack(Construct):
         compute: Any,
         extension: Any | None = None,
         from_email: str = "",
+        webhook: Any | None = None,
     ) -> None:
         super().__init__(scope, construct_id)
 
@@ -57,6 +58,11 @@ class BootstrapConfigStack(Construct):
         extension_vars: dict[str, Any] = {}
         if extension is not None:
             extension_vars = dict(getattr(extension, "runtime_outputs", None) or {})
+        if webhook is not None:
+            extension_vars = {
+                **extension_vars,
+                **dict(getattr(webhook, "runtime_outputs", None) or {}),
+            }
 
         ecs_network = build_ecs_network_vars(
             compute_type=compute_type,

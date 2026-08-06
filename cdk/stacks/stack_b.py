@@ -20,6 +20,7 @@ from stacks.stack_exports import (
     export_stack_b_compute_outputs,
     export_stack_b_extension_outputs,
 )
+from stacks.webhook_ingress import WebhookIngressStack, export_webhook_ingress_outputs
 _ROOT = Path(__file__).resolve().parents[1]
 _EXTENSIONS_DIR = _ROOT / "extensions"
 if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
@@ -178,6 +179,23 @@ class StackB(Stack):
         self.compute = compute
         extension = None
 
+        rest_url = app.production.get("rest_url") or ""
+        tt_role_arn = (
+            tenant_role.role_arn
+            if tenant_role is not None
+            else f"arn:aws:iam::{aws_account}:role/{env_name}_tt_role"
+        )
+        webhook = WebhookIngressStack(
+            self,
+            "WebhookIngress",
+            env_name=env_name,
+            aws_account=aws_account,
+            aws_region=aws_region,
+            api_base_url=rest_url,
+            tenant_role_arn=tt_role_arn,
+        )
+        self.webhook = webhook
+
         if extension_folder is not None and extension_manifest is not None:
             attach_roles: dict[str, iam.IRole] = {}
             if tenant_role is not None:
@@ -204,6 +222,7 @@ class StackB(Stack):
 
         export_stack_b_app_outputs(self, app)
         export_stack_b_compute_outputs(self, compute)
+        export_webhook_ingress_outputs(self, webhook)
         if extension is not None:
             export_stack_b_extension_outputs(self, extension)
 
@@ -232,6 +251,7 @@ class StackB(Stack):
                 compute=compute,
                 extension=extension,
                 from_email=from_email,
+                webhook=webhook,
             )
 
         BlueprintUploader(self, "BlueprintUploader", env_name=env_name)

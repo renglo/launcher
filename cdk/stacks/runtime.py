@@ -237,7 +237,12 @@ def _tt_policy_document(
                 resources=[
                     f"arn:aws:execute-api:{region}:{account}:*/*/POST/@connections/*",
                     f"arn:aws:execute-api:{region}:{account}:*/stage/POST/_schd/ping",
+                    f"arn:aws:execute-api:{region}:{account}:*/stage/POST/_schd/ingress",
                 ],
+            ),
+            iam.PolicyStatement(
+                actions=["events:InvokeApiDestination"],
+                resources=[f"arn:aws:events:{region}:{account}:api-destination/*"],
             ),
             iam.PolicyStatement(actions=["aoss:APIAccessAll"], resources=["*"]),
             # ECS handlers handshake (mirrors create_iam_policy._ecs_handlers_handshake_statements)
