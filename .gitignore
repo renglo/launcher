@@ -68,6 +68,7 @@ requirements.in
 run.sh
 env_config.py
 zappa_settings.json
+custom-config.json
 
 # Generated environment config
 env_config.py
