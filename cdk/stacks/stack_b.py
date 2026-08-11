@@ -50,10 +50,12 @@ class StackB(Stack):
         ec2_max_instances: int = 2,
         tenant_policy: iam.IManagedPolicy | None = None,
         tenant_role: iam.IRole | None = None,
+        ai_policy: iam.IManagedPolicy | None = None,
         stack_a_auth: Any = None,
         stack_a_storage: Any = None,
         stack_a_console: Any = None,
         stack_a_runtime: Any = None,
+        stack_a_ai_storage: Any = None,
         from_email: str = "",
         extension_folder: Path | None = None,
         extension_manifest: dict[str, Any] | None = None,
@@ -179,6 +181,14 @@ class StackB(Stack):
         self.compute = compute
         extension = None
 
+        # Platform AI amenity IAM on handlers roles (tenant role already attached in Stack A).
+        # Attach from the role side so the cross-stack edge is B→A (not A→B).
+        if ai_policy is not None:
+            for role_attr in ("handlers_lambda_role", "handlers_ecs_task_role"):
+                role = getattr(compute, role_attr, None)
+                if role is not None:
+                    role.add_managed_policy(ai_policy)
+
         rest_url = app.production.get("rest_url") or ""
         tt_role_arn = (
             tenant_role.role_arn
@@ -195,6 +205,16 @@ class StackB(Stack):
             tenant_role_arn=tt_role_arn,
         )
         self.webhook = webhook
+
+        platform_vector_bucket_name = None
+        platform_vector_bucket_arn = None
+        if stack_a_ai_storage is not None:
+            platform_vector_bucket_name = getattr(
+                stack_a_ai_storage, "vector_bucket_name", None
+            )
+            platform_vector_bucket_arn = getattr(
+                stack_a_ai_storage, "vector_bucket_arn", None
+            )
 
         if extension_folder is not None and extension_manifest is not None:
             attach_roles: dict[str, iam.IRole] = {}
@@ -217,6 +237,8 @@ class StackB(Stack):
                 extension_config=extension_config or {},
                 compute_type=compute_type,
                 attach_roles=attach_roles,
+                platform_vector_bucket_name=platform_vector_bucket_name,
+                platform_vector_bucket_arn=platform_vector_bucket_arn,
             )
             self.extension = extension
 
@@ -247,6 +269,7 @@ class StackB(Stack):
                 storage=stack_a_storage,
                 console=stack_a_console,
                 runtime=stack_a_runtime,
+                ai_storage=stack_a_ai_storage,
                 app=app,
                 compute=compute,
                 extension=extension,

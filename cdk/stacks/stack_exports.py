@@ -27,6 +27,7 @@ def export_stack_a_outputs(
     env_name: str,
     enable_staging: bool,
     email: IConstruct | None = None,
+    ai_storage: IConstruct | None = None,
 ) -> None:
     _emit(stack, "AwsAccountId", stack.account)
     _emit(stack, "AwsRegion", stack.region)
@@ -60,6 +61,12 @@ def export_stack_a_outputs(
     _emit(stack, "OidcDeployRoleArnProduction", runtime.oidc_deploy_role_production.role_arn)
     if enable_staging and runtime.oidc_deploy_role_staging is not None:
         _emit(stack, "OidcDeployRoleArnStaging", runtime.oidc_deploy_role_staging.role_arn)
+
+    if ai_storage is not None:
+        for key, value in (getattr(ai_storage, "runtime_outputs", None) or {}).items():
+            if value is None or (isinstance(value, str) and value == ""):
+                continue
+            _emit(stack, key, value)
 
 
 def export_stack_b_app_outputs(stack: Stack, app: IConstruct) -> None:

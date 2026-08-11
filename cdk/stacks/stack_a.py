@@ -6,6 +6,7 @@ from aws_cdk import CfnCondition, CfnParameter, Fn, Stack
 from constructs import Construct
 
 from stack_names import stack_a_description
+from stacks.ai_storage import AiStorageStack
 from stacks.auth import AuthStack
 from stacks.console import ConsoleStack
 from stacks.email import EmailStack
@@ -106,14 +107,23 @@ class StackA(Stack):
             create_github_oidc_condition=create_oidc_condition,
             ses_identity_arn=ses_identity_arn,
         )
+        ai_storage = AiStorageStack(
+            self,
+            "AiStorage",
+            env_name=env_name,
+            aws_account=aws_account,
+        )
+        ai_storage.ai_policy.attach_to_role(runtime.tt_role)
 
         self.auth = auth
         self.storage = storage
+        self.ai_storage = ai_storage
         self.console = console
         self.email = email
         self.runtime = runtime
         self.tt_policy = runtime.tt_policy
         self.tt_role = runtime.tt_role
+        self.ai_policy = ai_storage.ai_policy
         self.from_email = email.email_from if email is not None else ""
 
         export_stack_a_outputs(
@@ -123,6 +133,7 @@ class StackA(Stack):
             console=console,
             runtime=runtime,
             email=email,
+            ai_storage=ai_storage,
             env_name=env_name,
             enable_staging=enable_staging,
         )

@@ -51,13 +51,25 @@ class BootstrapConfigStack(Construct):
         extension: Any | None = None,
         from_email: str = "",
         webhook: Any | None = None,
+        ai_storage: Any | None = None,
     ) -> None:
         super().__init__(scope, construct_id)
 
         compute_outputs: dict[str, Any] = dict(getattr(compute, "stable_outputs", None) or {})
         extension_vars: dict[str, Any] = {}
+        if ai_storage is not None:
+            # Platform AI amenities first; extension may add index name vars only.
+            for key, value in (getattr(ai_storage, "runtime_outputs", None) or {}).items():
+                if key == "PlatformAiPolicyArn":
+                    continue
+                if value is None or (isinstance(value, str) and value == ""):
+                    continue
+                extension_vars[str(key)] = value
         if extension is not None:
-            extension_vars = dict(getattr(extension, "runtime_outputs", None) or {})
+            extension_vars = {
+                **extension_vars,
+                **dict(getattr(extension, "runtime_outputs", None) or {}),
+            }
         if webhook is not None:
             extension_vars = {
                 **extension_vars,
