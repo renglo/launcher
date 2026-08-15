@@ -85,7 +85,7 @@ With `compute_type=ec2`, stack-b creates a dedicated handlers VPC; no network pa
 
 Stack-b writes bootstrap SSM parameters when deployed via CDK. CloudFormation-only deploys still need `write-state` (bootstrap §6).
 
-**Infrastructure deploy is not the end of installation.** Follow **[bootstrap §7](../bootstrap/README.md#7-after-bootstrap--make-the-app-usable)** — default **Path B** (local API, no GitHub). Operators generate `bootstrap/output/<env>/local-dev/` with `write-local-config` (§7.3). Cloud production and CI/CD are optional later ([Path A](../bootstrap/README.md#path-a--cloud-go-live-optional-later) + [§8](../bootstrap/README.md#8-cicd-contract-optional--cloud-production-only)).
+**Infrastructure deploy is not the end of installation.** Follow **[bootstrap §7](../bootstrap/README.md#7-after-bootstrap--make-the-app-usable)** — default **Path B** (local API, no GitHub). Operators generate `bootstrap/output/<env>/local-dev/` with `write-local-config` ([Step 7.5](../bootstrap/README.md#step-75--generate-local-developer-config-bundle)). Cloud production and CI/CD are optional later ([Path A](../bootstrap/README.md#path-a--cloud-go-live-optional-later) + [§8](../bootstrap/README.md#8-cicd-contract-optional--cloud-production-only)).
 
 SSM paths (bootstrap [§6](../bootstrap/README.md#6-bootstrap-config-in-ssm-write-state-after-stack-b)):
 

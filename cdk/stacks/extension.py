@@ -16,6 +16,12 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
+from stacks.s3_vectors_kb_access import (
+    add_kb_create_dependencies,
+    add_kb_role_s3vectors_permissions,
+    append_kb_role_to_vector_bucket_policy,
+)
+
 _DESCRIPTION = "Reglo Deployment"
 _DEFAULT_VECTOR_DIM = 1024
 
@@ -122,6 +128,7 @@ class ExtensionStack(Construct):
                     env_name=env_name,
                     kb_cfg=kb_cfg,
                     classic_buckets=classic_buckets,
+                    vector_bucket_name=vector_bucket_name,
                     vector_bucket_arn=vector_bucket_arn,
                     index_arns=index_arns,
                     runtime_outputs=runtime_outputs,
@@ -270,6 +277,7 @@ class ExtensionStack(Construct):
         env_name: str,
         kb_cfg: dict[str, Any],
         classic_buckets: dict[str, s3.Bucket],
+        vector_bucket_name: str,
         vector_bucket_arn: str,
         index_arns: dict[str, str],
         runtime_outputs: dict[str, str],
@@ -298,9 +306,11 @@ class ExtensionStack(Construct):
                 f"bedrock_knowledge_base.vector_index_output_var={index_output_var!r} "
                 "must match an s3_vector_indexes[].output_var"
             )
+        index_name = runtime_outputs.get(index_output_var, index_output_var)
 
         stack = Stack.of(self)
         region = stack.region
+        account_id = stack.account
         embedding_model_id = str(
             kb_cfg.get("embedding_model_id") or "amazon.titan-embed-text-v2:0"
         )
@@ -325,18 +335,18 @@ class ExtensionStack(Construct):
                 resources=[embedding_model_arn],
             )
         )
-        kb_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "s3vectors:QueryVectors",
-                    "s3vectors:GetVectors",
-                    "s3vectors:PutVectors",
-                    "s3vectors:DeleteVectors",
-                    "s3vectors:GetIndex",
-                    "s3vectors:ListVectors",
-                ],
-                resources=["*"],
-            )
+        add_kb_role_s3vectors_permissions(
+            kb_role,
+            region=region,
+            account_id=account_id,
+            bucket_name=vector_bucket_name,
+            index_name=index_name,
+        )
+        bucket_policy_grant = append_kb_role_to_vector_bucket_policy(
+            self,
+            f"{kb_id_construct}VectorBucketPolicyGrant",
+            vector_bucket_name=vector_bucket_name,
+            kb_role=kb_role,
         )
 
         kb_name = str(kb_cfg.get("name_prefix") or f"{env_name}-extension-kb").replace(
@@ -367,6 +377,11 @@ class ExtensionStack(Construct):
                     },
                 },
             },
+        )
+        add_kb_create_dependencies(
+            knowledge_base,
+            vector_bucket_policy_grant=bucket_policy_grant,
+            kb_role=kb_role,
         )
         kb_id_attr = knowledge_base.get_att("KnowledgeBaseId").to_string()
         if kb_output in runtime_outputs:

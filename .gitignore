@@ -14,6 +14,8 @@ eggs/
 lib/
 !cdk/lib/
 !cdk/lib/**
+cdk/lib/**/__pycache__/
+cdk/lib/**/*.py[cod]
 lib64/
 cdk/cdk.out/
 cdk/customer-config.json

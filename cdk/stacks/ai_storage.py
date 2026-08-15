@@ -7,6 +7,12 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
+from stacks.s3_vectors_kb_access import (
+    add_kb_create_dependencies,
+    add_kb_role_s3vectors_permissions,
+    create_kb_vector_bucket_policy,
+)
+
 _DEFAULT_VECTOR_DIM = 1024
 _DEFAULT_EMBEDDING_MODEL = "amazon.titan-embed-text-v2:0"
 _RAG_INDEX_NAME = "rag-kb"
@@ -91,18 +97,22 @@ class AiStorageStack(Construct):
                 resources=[embedding_model_arn],
             )
         )
-        kb_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "s3vectors:QueryVectors",
-                    "s3vectors:GetVectors",
-                    "s3vectors:PutVectors",
-                    "s3vectors:DeleteVectors",
-                    "s3vectors:GetIndex",
-                    "s3vectors:ListVectors",
-                ],
-                resources=["*"],
-            )
+        add_kb_role_s3vectors_permissions(
+            kb_role,
+            region=region,
+            account_id=aws_account,
+            bucket_name=vector_bucket_name,
+            index_name=_RAG_INDEX_NAME,
+        )
+
+        vector_bucket_policy = create_kb_vector_bucket_policy(
+            self,
+            "PlatformVectorBucketPolicy",
+            vector_bucket_name=vector_bucket_name,
+            vector_bucket=vector_bucket,
+            kb_role_arns=[kb_role.role_arn],
+            region=region,
+            account_id=aws_account,
         )
 
         kb_name = f"{env_name}-platform-kb"
@@ -128,6 +138,12 @@ class AiStorageStack(Construct):
                     },
                 },
             },
+        )
+        add_kb_create_dependencies(
+            knowledge_base,
+            rag_index=rag_index,
+            vector_bucket_policy=vector_bucket_policy,
+            kb_role=kb_role,
         )
         kb_id = knowledge_base.get_att("KnowledgeBaseId").to_string()
         self.kb_id = kb_id
