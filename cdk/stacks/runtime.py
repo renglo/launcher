@@ -236,12 +236,10 @@ def _tt_policy_document(
                 actions=["execute-api:Invoke", "execute-api:ManageConnections"],
                 resources=[
                     f"arn:aws:execute-api:{region}:{account}:*/*/POST/@connections/*",
-                    f"arn:aws:execute-api:{region}:{account}:*/stage/POST/_schd/ping",
-                    f"arn:aws:execute-api:{region}:{account}:*/stage/POST/_schd/ingress",
                 ],
             ),
             iam.PolicyStatement(
-                actions=["events:InvokeApiDestination"],
+                actions=["events:InvokeApiDestination", "events:DescribeApiDestination"],
                 resources=[f"arn:aws:events:{region}:{account}:api-destination/*"],
             ),
             iam.PolicyStatement(actions=["aoss:APIAccessAll"], resources=["*"]),
