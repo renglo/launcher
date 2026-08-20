@@ -204,6 +204,7 @@ def _tt_policy_document(
                 actions=[
                     "cognito-idp:ListUsers",
                     "cognito-idp:AdminCreateUser",
+                    "cognito-idp:AdminDeleteUser",
                     "cognito-idp:AdminSetUserPassword",
                     "cognito-idp:AdminUpdateUserAttributes",
                     "cognito-idp:AdminInitiateAuth",

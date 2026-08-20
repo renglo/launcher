@@ -33,6 +33,16 @@ class StorageStack(Construct):
             auto_delete_objects=True,
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
             encryption=s3.BucketEncryption.S3_MANAGED,
+            # Presigned GET redirects: <img> does not need CORS; fetch() of the
+            # final S3 URL does. Objects stay private (signature still required).
+            cors=[
+                s3.CorsRule(
+                    allowed_methods=[s3.HttpMethods.GET, s3.HttpMethods.HEAD],
+                    allowed_origins=["*"],
+                    allowed_headers=["*"],
+                    max_age=3000,
+                )
+            ],
         )
 
         self.data_bucket = data_bucket
