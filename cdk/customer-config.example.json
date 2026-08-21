@@ -4,7 +4,11 @@
   "env_name": "myenv",
 
   "github_repo": "MyOrg/my-releases-repo",
+  "github_owner_id": "123456789",
+  "github_repo_id": "987654321",
   "github_handlers_repo": "MyOrg/my-extensions-repo",
+  "github_handlers_owner_id": "123456789",
+  "github_handlers_repo_id": "111222333",
 
   "extension_path": "my-extension-repo",
 
@@ -27,5 +31,6 @@
   "_account_region_note": "Account and region are NOT in this file. Templates are env-agnostic (AWS::AccountId / AWS::Region). Choose the target account/region at deploy time (AWS profile / CLI region).",
   "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode / ExistingVpcId / ExistingSubnetIds (CommaDelimitedList) as CloudFormation parameters at deploy time — not in this file. Prefer the CFN console or quoted --parameter-overrides; see launcher/README.md Handlers network.",
   "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
-  "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file"
+  "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file",
+  "_github_oidc_ids_note": "Optional GitHub owner/repo IDs for immutable OIDC subject claims (repo:ORG@ID/REPO@ID:environment:STAGE). When set, IAM trust policies accept both legacy and immutable sub formats. Find IDs via: gh api repos/ORG/REPO --jq '{owner_id: .owner.id, repo_id: .id}'. Omit github_handlers_* when same repo as github_repo — deploy IDs are reused."
 }

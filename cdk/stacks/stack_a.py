@@ -27,6 +27,8 @@ class StackA(Stack):
         email_from: str = "",
         email_identity_type: str = "email",
         email_hosted_zone_id: str = "",
+        github_owner_id: str | None = None,
+        github_repo_id: str | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -104,6 +106,8 @@ class StackA(Stack):
             s3_bucket_name=storage.bucket_name,
             enable_staging=enable_staging,
             amplify_app_id=console.amplify_app_id,
+            github_owner_id=github_owner_id,
+            github_repo_id=github_repo_id,
             create_github_oidc_condition=create_oidc_condition,
             ses_identity_arn=ses_identity_arn,
         )

@@ -17,6 +17,7 @@ from aws_cdk import aws_logs as logs
 from aws_cdk import custom_resources as cr
 from constructs import Construct
 
+from lib.github_oidc import github_environment_sub_claims
 from platform_defaults import (
     backend_ecr_repository_name,
     backend_seed_image_tag,
@@ -402,6 +403,8 @@ class RuntimeStack(Construct):
         s3_bucket_name: str,
         enable_staging: bool = True,
         amplify_app_id: str | None = None,
+        github_owner_id: str | None = None,
+        github_repo_id: str | None = None,
         create_github_oidc_condition: CfnCondition | None = None,
         ses_identity_arn: str | None = None,
         **kwargs,
@@ -632,7 +635,12 @@ class RuntimeStack(Construct):
                             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
                         },
                         "StringLike": {
-                            "token.actions.githubusercontent.com:sub": f"repo:{github_repo}:environment:{stage}"
+                            "token.actions.githubusercontent.com:sub": github_environment_sub_claims(
+                                github_repo,
+                                stage,
+                                owner_id=github_owner_id,
+                                repo_id=github_repo_id,
+                            ),
                         },
                     },
                 ),

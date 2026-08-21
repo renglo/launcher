@@ -63,9 +63,22 @@ def _require(key: str) -> str:
     return v
 
 
+def _optional_id(key: str) -> str | None:
+    v = str(_cfg.get(key, "") or "").strip()
+    return v or None
+
+
 env_name = _require("env_name")
 github_repo = _require("github_repo")
 github_handlers_repo = _cfg.get("github_handlers_repo", github_repo).strip() or github_repo
+github_owner_id = _optional_id("github_owner_id")
+github_repo_id = _optional_id("github_repo_id")
+if github_handlers_repo == github_repo:
+    github_handlers_owner_id = github_owner_id
+    github_handlers_repo_id = github_repo_id
+else:
+    github_handlers_owner_id = _optional_id("github_handlers_owner_id")
+    github_handlers_repo_id = _optional_id("github_handlers_repo_id")
 enable_staging = bool(_cfg.get("enable_staging", True))
 architecture = platform_architecture(config_dir=_ROOT)
 compute_type = _cfg.get("compute_type", "fargate").strip() or "fargate"
@@ -98,6 +111,8 @@ stack_a = StackA(
     email_from=email_from,
     email_identity_type=email_identity_type,
     email_hosted_zone_id=email_hosted_zone_id,
+    github_owner_id=github_owner_id,
+    github_repo_id=github_repo_id,
 )
 
 extension_folder = None
@@ -115,6 +130,8 @@ stack_b = StackB(
     github_repo=github_repo,
     github_handlers_repo=github_handlers_repo,
     enable_staging=enable_staging,
+    github_handlers_owner_id=github_handlers_owner_id,
+    github_handlers_repo_id=github_handlers_repo_id,
     architecture=architecture,
     compute_type=compute_type,
     network_mode=network_mode,
