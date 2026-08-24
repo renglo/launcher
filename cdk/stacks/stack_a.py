@@ -27,6 +27,7 @@ class StackA(Stack):
         email_from: str = "",
         email_identity_type: str = "email",
         email_hosted_zone_id: str = "",
+        package_registry: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -106,6 +107,7 @@ class StackA(Stack):
             amplify_app_id=console.amplify_app_id,
             create_github_oidc_condition=create_oidc_condition,
             ses_identity_arn=ses_identity_arn,
+            package_registry=package_registry,
         )
         ai_storage = AiStorageStack(
             self,

@@ -276,6 +276,62 @@ def _backend_lambda_function_name(env_name: str, stage: str) -> str:
     return f"{env_name}-backend-{stage}"
 
 
+def _codeartifact_read_statements(
+    region: str,
+    account: str,
+    package_registry: dict | None = None,
+) -> list[iam.PolicyStatement]:
+    """Allow the deploy role to pip/npm install from the publisher registry.
+
+    Same-account pull is always granted. Set package_registry.domain_owner when
+    the CodeArtifact domain lives in another AWS account.
+    """
+    owners = [account]
+    extra = ""
+    if isinstance(package_registry, dict):
+        extra = str(package_registry.get("domain_owner") or "").strip()
+    if extra and extra not in owners:
+        owners.append(extra)
+
+    resources: list[str] = []
+    for owner in owners:
+        resources.extend(
+            [
+                f"arn:aws:codeartifact:{region}:{owner}:domain/*",
+                f"arn:aws:codeartifact:{region}:{owner}:repository/*/*",
+                f"arn:aws:codeartifact:{region}:{owner}:package/*/*/*/*",
+            ]
+        )
+    return [
+        iam.PolicyStatement(
+            sid="CodeArtifactRead",
+            actions=[
+                "codeartifact:DescribeDomain",
+                "codeartifact:GetAuthorizationToken",
+                "codeartifact:GetRepositoryEndpoint",
+                "codeartifact:ReadFromRepository",
+                "codeartifact:DescribeRepository",
+                "codeartifact:ListPackages",
+                "codeartifact:ListPackageVersions",
+                "codeartifact:DescribePackageVersion",
+                "codeartifact:GetPackageVersionAsset",
+                "codeartifact:GetPackageVersionReadme",
+                "codeartifact:ListPackageVersionAssets",
+                "codeartifact:ListPackageVersionDependencies",
+            ],
+            resources=resources,
+        ),
+        iam.PolicyStatement(
+            sid="CodeArtifactBearerToken",
+            actions=["sts:GetServiceBearerToken"],
+            resources=["*"],
+            conditions={
+                "StringEquals": {"sts:AWSServiceName": "codeartifact.amazonaws.com"}
+            },
+        ),
+    ]
+
+
 def _deploy_permissions_policy(
     env_name: str,
     region: str,
@@ -283,6 +339,7 @@ def _deploy_permissions_policy(
     *,
     stage: str,
     amplify_app_id: str | None = None,
+    package_registry: dict | None = None,
 ) -> iam.PolicyDocument:
     """Permissions for the releases-repo GitHub Actions OIDC deploy role."""
     ecr_repo_arn = f"arn:aws:ecr:{region}:{account}:repository/{backend_ecr_repository_name(env_name)}"
@@ -385,6 +442,7 @@ def _deploy_permissions_policy(
             )
         )
 
+    statements.extend(_codeartifact_read_statements(region, account, package_registry))
     return iam.PolicyDocument(statements=statements)
 
 
@@ -404,6 +462,7 @@ class RuntimeStack(Construct):
         amplify_app_id: str | None = None,
         create_github_oidc_condition: CfnCondition | None = None,
         ses_identity_arn: str | None = None,
+        package_registry: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -620,6 +679,7 @@ class RuntimeStack(Construct):
                 aws_account,
                 stage=stage,
                 amplify_app_id=amplify_app_id,
+                package_registry=package_registry,
             )
             return iam.Role(
                 self,

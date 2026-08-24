@@ -27,5 +27,13 @@
   "_account_region_note": "Account and region are NOT in this file. Templates are env-agnostic (AWS::AccountId / AWS::Region). Choose the target account/region at deploy time (AWS profile / CLI region).",
   "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode / ExistingVpcId / ExistingSubnetIds (CommaDelimitedList) as CloudFormation parameters at deploy time — not in this file. Prefer the CFN console or quoted --parameter-overrides; see launcher/README.md Handlers network.",
   "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
-  "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file"
+  "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file",
+
+  "package_registry": {
+    "domain": "renglo",
+    "domain_owner": "",
+    "python_repository": "python-store",
+    "npm_repository": "npm-store"
+  },
+  "_package_registry_note": "Optional. Lets the GitHub deploy role pip/npm install from CodeArtifact. Omit domain_owner when the publisher domain is in this tenant account. Set domain_owner to the publisher AWS account for cross-account pull (that account must also list this tenant in reader_aws_accounts)."
 }

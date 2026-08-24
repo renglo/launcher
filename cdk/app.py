@@ -89,6 +89,10 @@ if email_identity_type not in ("email", "domain"):
 
 app = cdk.App()
 
+package_registry = _cfg.get("package_registry")
+if package_registry is not None and not isinstance(package_registry, dict):
+    raise ValueError("customer-config.json: 'package_registry' must be an object")
+
 stack_a = StackA(
     app,
     stack_a_id(env_name),
@@ -98,6 +102,7 @@ stack_a = StackA(
     email_from=email_from,
     email_identity_type=email_identity_type,
     email_hosted_zone_id=email_hosted_zone_id,
+    package_registry=package_registry,
 )
 
 extension_folder = None
