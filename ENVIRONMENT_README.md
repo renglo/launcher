@@ -88,7 +88,7 @@ python create_opensearch_index.py <environment_name> \
   --aws-profile <aws_profile> --aws-region <region>
 ```
 
-**GitHub Environments (releases repo):** After bootstrap merge, push vars/secrets:
+**GitHub Environments (BOM repo):** After bootstrap merge, push vars/secrets:
 
 ```bash
 python bootstrap/helpers/inject_github_env_vars.py \
@@ -153,13 +153,13 @@ VITE_AMPLIFY_CONSOLE_URL='...'
 
 Use **`VITE_WEBSOCKET_URL`** / staging variants from `env_config.py` or `production.json` `VARS`.
 
-Console frontend is deployed from the **releases** repo (`github_repo`) via GitHub Actions OIDC (`AWS_GITHUB_OIDC_ROLE_ARN` in `SECRETS`), not by Amplify Git integration.
+Console frontend is deployed from the **BOM** repo (`github_repo`) via GitHub Actions OIDC (`AWS_GITHUB_OIDC_ROLE_ARN` in `SECRETS`), not by Amplify Git integration.
 
 ### Local system environment
 
 For local dev setup, follow the product repo: [system README](https://github.com/renglo/system/blob/main/README.md).
 
-### Backend releases (container Lambda)
+### Backend deploy (container Lambda)
 
 Application backend is deployed via **ECR image + CodeDeploy** (aliases `production` / `staging`), not Zappa. CI uses GitHub OIDC role ARNs from `production.json` / `staging.json` `SECRETS` (`AWS_GITHUB_OIDC_ROLE_ARN`).
 

@@ -29,6 +29,7 @@ class StackA(Stack):
         email_hosted_zone_id: str = "",
         github_owner_id: str | None = None,
         github_repo_id: str | None = None,
+        package_registry: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -110,6 +111,7 @@ class StackA(Stack):
             github_repo_id=github_repo_id,
             create_github_oidc_condition=create_oidc_condition,
             ses_identity_arn=ses_identity_arn,
+            package_registry=package_registry,
         )
         ai_storage = AiStorageStack(
             self,
