@@ -29,7 +29,7 @@ cp customer-config.example.json customer-config.json
 | Field | Description |
 |-------|-------------|
 | `env_name` | Resource prefix and synth output folder name |
-| `github_repo` | Releases repo (backend OIDC) |
+| `github_repo` | BOM repo (backend OIDC) |
 | `github_handlers_repo` | Handlers/extensions repo |
 | `enable_staging` | `true` → staging Lambda + APIs + staging OIDC |
 | `compute_type` | `lambda_only` \| `fargate` \| `ec2` |

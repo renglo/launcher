@@ -3,7 +3,7 @@
 
   "env_name": "myenv",
 
-  "github_repo": "MyOrg/my-releases-repo",
+  "github_repo": "MyOrg/my-bom-repo",
   "github_handlers_repo": "MyOrg/my-extensions-repo",
 
   "extension_path": "my-extension-repo",
