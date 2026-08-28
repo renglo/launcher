@@ -29,8 +29,10 @@ cp customer-config.example.json customer-config.json
 | Field | Description |
 |-------|-------------|
 | `env_name` | Resource prefix and synth output folder name |
-| `github_repo` | BOM repo (backend OIDC) |
+| `github_repo` | BOM repo (`OWNER/REPO`) — SSM `GITHUB_REPOSITORY`, not the IAM `sub` |
+| `github_oidc_sub_prefix` | Optional. GitHub Actions OIDC subject prefix (`OWNER@ID/REPO@ID`). Copy from the repo **Settings → Actions → OIDC** page. Omit for name-only `sub` on older repos. Used for **both** staging and production deploy roles |
 | `github_handlers_repo` | Handlers/extensions repo |
+| `github_handlers_oidc_sub_prefix` | Optional. Same as `github_oidc_sub_prefix` for the handlers roles. Defaults to `github_oidc_sub_prefix` when the handlers repo is the BOM repo |
 | `enable_staging` | `true` → staging Lambda + APIs + staging OIDC |
 | `compute_type` | `lambda_only` \| `fargate` \| `ec2` |
 | `ec2_instance_type` | EC2 instance type for handlers ASG (only `ec2`) |

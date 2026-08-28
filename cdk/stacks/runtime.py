@@ -455,7 +455,7 @@ class RuntimeStack(Construct):
         env_name: str,
         aws_account: str,
         aws_region: str,
-        github_repo: str,
+        github_oidc_sub_repo: str,
         cognito_user_pool_id: str,
         s3_bucket_name: str,
         enable_staging: bool = True,
@@ -692,7 +692,9 @@ class RuntimeStack(Construct):
                             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
                         },
                         "StringLike": {
-                            "token.actions.githubusercontent.com:sub": f"repo:{github_repo}:environment:{stage}"
+                            "token.actions.githubusercontent.com:sub": (
+                                f"repo:{github_oidc_sub_repo}:environment:{stage}"
+                            )
                         },
                     },
                 ),

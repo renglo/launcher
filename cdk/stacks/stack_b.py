@@ -40,6 +40,7 @@ class StackB(Stack):
         env_name: str,
         github_repo: str,
         github_handlers_repo: str,
+        github_handlers_oidc_sub_repo: str = "",
         enable_staging: bool = True,
         architecture: str = "x86_64",
         compute_type: str = "fargate",
@@ -172,6 +173,8 @@ class StackB(Stack):
             ec2_desired_instances=ec2_desired_instances,
             ec2_max_instances=ec2_max_instances,
             github_handlers_repo=github_handlers_repo,
+            github_handlers_oidc_sub_repo=github_handlers_oidc_sub_repo
+            or github_handlers_repo,
             enable_staging=enable_staging,
             tenant_policy=tenant_policy,
             handlers_network_params=handlers_network_params,

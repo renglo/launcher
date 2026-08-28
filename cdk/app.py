@@ -42,6 +42,10 @@ from extension_loader import (  # noqa: E402
     load_extension_manifest,
     resolve_extension_folder,
 )
+from lib.github_oidc import (  # noqa: E402
+    resolve_github_handlers_oidc_repo,
+    resolve_github_oidc_repo,
+)
 from platform_defaults import architecture as platform_architecture  # noqa: E402
 
 _CONFIG_PATH = _ROOT / "customer-config.json"
@@ -66,6 +70,20 @@ def _require(key: str) -> str:
 env_name = _require("env_name")
 github_repo = _require("github_repo")
 github_handlers_repo = _cfg.get("github_handlers_repo", github_repo).strip() or github_repo
+github_oidc_sub_prefix = str(_cfg.get("github_oidc_sub_prefix", "") or "").strip()
+github_handlers_oidc_sub_prefix = str(
+    _cfg.get("github_handlers_oidc_sub_prefix", "") or ""
+).strip()
+github_oidc_sub_repo = resolve_github_oidc_repo(
+    github_repo=github_repo,
+    oidc_sub_prefix=github_oidc_sub_prefix,
+)
+github_handlers_oidc_sub_repo = resolve_github_handlers_oidc_repo(
+    github_repo=github_repo,
+    github_handlers_repo=github_handlers_repo,
+    github_oidc_sub_prefix=github_oidc_sub_prefix,
+    github_handlers_oidc_sub_prefix=github_handlers_oidc_sub_prefix,
+)
 enable_staging = bool(_cfg.get("enable_staging", True))
 architecture = platform_architecture(config_dir=_ROOT)
 compute_type = _cfg.get("compute_type", "fargate").strip() or "fargate"
@@ -98,6 +116,7 @@ stack_a = StackA(
     stack_a_id(env_name),
     env_name=env_name,
     github_repo=github_repo,
+    github_oidc_sub_repo=github_oidc_sub_repo,
     enable_staging=enable_staging,
     email_from=email_from,
     email_identity_type=email_identity_type,
@@ -119,6 +138,7 @@ stack_b = StackB(
     env_name=env_name,
     github_repo=github_repo,
     github_handlers_repo=github_handlers_repo,
+    github_handlers_oidc_sub_repo=github_handlers_oidc_sub_repo,
     enable_staging=enable_staging,
     architecture=architecture,
     compute_type=compute_type,

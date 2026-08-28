@@ -4,7 +4,9 @@
   "env_name": "myenv",
 
   "github_repo": "MyOrg/my-bom-repo",
+  "github_oidc_sub_prefix": "MyOrg@111111/my-bom-repo@222222",
   "github_handlers_repo": "MyOrg/my-extensions-repo",
+  "github_handlers_oidc_sub_prefix": "MyOrg@111111/my-extensions-repo@333333",
 
   "extension_path": "my-extension-repo",
 
@@ -28,6 +30,7 @@
   "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode / ExistingVpcId / ExistingSubnetIds (CommaDelimitedList) as CloudFormation parameters at deploy time — not in this file. Prefer the CFN console or quoted --parameter-overrides; see launcher/README.md Handlers network.",
   "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
   "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file",
+  "_github_oidc_sub_prefix_note": "Optional. GitHub repo Settings → Actions → OIDC → Default subject claim prefix (immutable OWNER@ID/REPO@ID). Paste with or without the leading repo:. Omit to trust the name-only sub (older repos). Do not put this in github_repo — that field stays OWNER/REPO for SSM. The same prefix is used for both staging and production roles (:environment:{stage} is appended). github_handlers_oidc_sub_prefix is only needed when github_handlers_repo is a different repo; otherwise it inherits github_oidc_sub_prefix.",
 
   "package_registry": {
     "domain": "renglo",
