@@ -43,6 +43,7 @@ from extension_loader import (  # noqa: E402
     resolve_extension_folder,
 )
 from platform_defaults import architecture as platform_architecture  # noqa: E402
+from lib.package_registry import validate_package_registry  # noqa: E402
 
 _CONFIG_PATH = _ROOT / "customer-config.json"
 if not _CONFIG_PATH.is_file():
@@ -102,9 +103,10 @@ if email_identity_type not in ("email", "domain"):
 
 app = cdk.App()
 
-package_registry = _cfg.get("package_registry")
-if package_registry is not None and not isinstance(package_registry, dict):
-    raise ValueError("customer-config.json: 'package_registry' must be an object")
+try:
+    package_registry = validate_package_registry(_cfg.get("package_registry"))
+except ValueError as exc:
+    raise ValueError(f"customer-config.json: {exc}") from exc
 
 stack_a = StackA(
     app,

@@ -18,6 +18,7 @@ from aws_cdk import custom_resources as cr
 from constructs import Construct
 
 from lib.github_oidc import github_environment_sub_claims
+from lib.package_registry import codeartifact_owners
 from platform_defaults import (
     backend_ecr_repository_name,
     backend_seed_image_tag,
@@ -282,17 +283,13 @@ def _codeartifact_read_statements(
     account: str,
     package_registry: dict | None = None,
 ) -> list[iam.PolicyStatement]:
-    """Allow the deploy role to pip/npm install from the publisher registry.
+    """Allow the deploy role to pip/npm install from CodeArtifact.
 
-    Same-account pull is always granted. Set package_registry.domain_owner when
-    the CodeArtifact domain lives in another AWS account.
+    Same-account pull is always granted. List foreign publisher AWS accounts in
+    ``package_registry.domain_owners`` (each must also list this tenant in
+    ``reader_aws_accounts`` on their publisher stack).
     """
-    owners = [account]
-    extra = ""
-    if isinstance(package_registry, dict):
-        extra = str(package_registry.get("domain_owner") or "").strip()
-    if extra and extra not in owners:
-        owners.append(extra)
+    owners = codeartifact_owners(account, package_registry)
 
     resources: list[str] = []
     for owner in owners:
