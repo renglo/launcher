@@ -17,6 +17,8 @@ from aws_cdk import aws_logs as logs
 from aws_cdk import custom_resources as cr
 from constructs import Construct
 
+from lib.github_oidc import github_environment_sub_claims
+from lib.package_registry import codeartifact_owners
 from platform_defaults import (
     backend_ecr_repository_name,
     backend_seed_image_tag,
@@ -281,17 +283,13 @@ def _codeartifact_read_statements(
     account: str,
     package_registry: dict | None = None,
 ) -> list[iam.PolicyStatement]:
-    """Allow the deploy role to pip/npm install from the publisher registry.
+    """Allow the deploy role to pip/npm install from CodeArtifact.
 
-    Same-account pull is always granted. Set package_registry.domain_owner when
-    the CodeArtifact domain lives in another AWS account.
+    Same-account pull is always granted. List foreign publisher AWS accounts in
+    ``package_registry.domain_owners`` (each must also list this tenant in
+    ``reader_aws_accounts`` on their publisher stack).
     """
-    owners = [account]
-    extra = ""
-    if isinstance(package_registry, dict):
-        extra = str(package_registry.get("domain_owner") or "").strip()
-    if extra and extra not in owners:
-        owners.append(extra)
+    owners = codeartifact_owners(account, package_registry)
 
     resources: list[str] = []
     for owner in owners:
@@ -455,11 +453,13 @@ class RuntimeStack(Construct):
         env_name: str,
         aws_account: str,
         aws_region: str,
-        github_oidc_sub_repo: str,
+        github_repo: str,
         cognito_user_pool_id: str,
         s3_bucket_name: str,
         enable_staging: bool = True,
         amplify_app_id: str | None = None,
+        github_owner_id: str | None = None,
+        github_repo_id: str | None = None,
         create_github_oidc_condition: CfnCondition | None = None,
         ses_identity_arn: str | None = None,
         package_registry: dict | None = None,
@@ -692,9 +692,12 @@ class RuntimeStack(Construct):
                             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
                         },
                         "StringLike": {
-                            "token.actions.githubusercontent.com:sub": (
-                                f"repo:{github_oidc_sub_repo}:environment:{stage}"
-                            )
+                            "token.actions.githubusercontent.com:sub": github_environment_sub_claims(
+                                github_repo,
+                                stage,
+                                owner_id=github_owner_id,
+                                repo_id=github_repo_id,
+                            ),
                         },
                     },
                 ),

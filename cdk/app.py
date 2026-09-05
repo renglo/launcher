@@ -42,11 +42,8 @@ from extension_loader import (  # noqa: E402
     load_extension_manifest,
     resolve_extension_folder,
 )
-from lib.github_oidc import (  # noqa: E402
-    resolve_github_handlers_oidc_repo,
-    resolve_github_oidc_repo,
-)
 from platform_defaults import architecture as platform_architecture  # noqa: E402
+from lib.package_registry import validate_package_registry  # noqa: E402
 
 _CONFIG_PATH = _ROOT / "customer-config.json"
 if not _CONFIG_PATH.is_file():
@@ -67,23 +64,22 @@ def _require(key: str) -> str:
     return v
 
 
+def _optional_id(key: str) -> str | None:
+    v = str(_cfg.get(key, "") or "").strip()
+    return v or None
+
+
 env_name = _require("env_name")
 github_repo = _require("github_repo")
 github_handlers_repo = _cfg.get("github_handlers_repo", github_repo).strip() or github_repo
-github_oidc_sub_prefix = str(_cfg.get("github_oidc_sub_prefix", "") or "").strip()
-github_handlers_oidc_sub_prefix = str(
-    _cfg.get("github_handlers_oidc_sub_prefix", "") or ""
-).strip()
-github_oidc_sub_repo = resolve_github_oidc_repo(
-    github_repo=github_repo,
-    oidc_sub_prefix=github_oidc_sub_prefix,
-)
-github_handlers_oidc_sub_repo = resolve_github_handlers_oidc_repo(
-    github_repo=github_repo,
-    github_handlers_repo=github_handlers_repo,
-    github_oidc_sub_prefix=github_oidc_sub_prefix,
-    github_handlers_oidc_sub_prefix=github_handlers_oidc_sub_prefix,
-)
+github_owner_id = _optional_id("github_owner_id")
+github_repo_id = _optional_id("github_repo_id")
+if github_handlers_repo == github_repo:
+    github_handlers_owner_id = github_owner_id
+    github_handlers_repo_id = github_repo_id
+else:
+    github_handlers_owner_id = _optional_id("github_handlers_owner_id")
+    github_handlers_repo_id = _optional_id("github_handlers_repo_id")
 enable_staging = bool(_cfg.get("enable_staging", True))
 architecture = platform_architecture(config_dir=_ROOT)
 compute_type = _cfg.get("compute_type", "fargate").strip() or "fargate"
@@ -107,20 +103,22 @@ if email_identity_type not in ("email", "domain"):
 
 app = cdk.App()
 
-package_registry = _cfg.get("package_registry")
-if package_registry is not None and not isinstance(package_registry, dict):
-    raise ValueError("customer-config.json: 'package_registry' must be an object")
+try:
+    package_registry = validate_package_registry(_cfg.get("package_registry"))
+except ValueError as exc:
+    raise ValueError(f"customer-config.json: {exc}") from exc
 
 stack_a = StackA(
     app,
     stack_a_id(env_name),
     env_name=env_name,
     github_repo=github_repo,
-    github_oidc_sub_repo=github_oidc_sub_repo,
     enable_staging=enable_staging,
     email_from=email_from,
     email_identity_type=email_identity_type,
     email_hosted_zone_id=email_hosted_zone_id,
+    github_owner_id=github_owner_id,
+    github_repo_id=github_repo_id,
     package_registry=package_registry,
 )
 
@@ -138,8 +136,9 @@ stack_b = StackB(
     env_name=env_name,
     github_repo=github_repo,
     github_handlers_repo=github_handlers_repo,
-    github_handlers_oidc_sub_repo=github_handlers_oidc_sub_repo,
     enable_staging=enable_staging,
+    github_handlers_owner_id=github_handlers_owner_id,
+    github_handlers_repo_id=github_handlers_repo_id,
     architecture=architecture,
     compute_type=compute_type,
     network_mode=network_mode,

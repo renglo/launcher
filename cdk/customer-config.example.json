@@ -4,9 +4,11 @@
   "env_name": "myenv",
 
   "github_repo": "MyOrg/my-bom-repo",
-  "github_oidc_sub_prefix": "MyOrg@111111/my-bom-repo@222222",
+  "github_owner_id": "123456789",
+  "github_repo_id": "987654321",
   "github_handlers_repo": "MyOrg/my-extensions-repo",
-  "github_handlers_oidc_sub_prefix": "MyOrg@111111/my-extensions-repo@333333",
+  "github_handlers_owner_id": "123456789",
+  "github_handlers_repo_id": "111222333",
 
   "extension_path": "my-extension-repo",
 
@@ -30,13 +32,10 @@
   "_handlers_network_note": "When compute_type is ec2, stack-b exposes HandlersNetworkMode / ExistingVpcId / ExistingSubnetIds (CommaDelimitedList) as CloudFormation parameters at deploy time — not in this file. Prefer the CFN console or quoted --parameter-overrides; see launcher/README.md Handlers network.",
   "_platform_defaults_note": "architecture, backend seed image URI/tag, etc. → launcher/cdk/platform_defaults.json",
   "_github_handlers_repo_note": "If github_repo == github_handlers_repo delete github_handlers_repo from this file",
-  "_github_oidc_sub_prefix_note": "Optional. GitHub repo Settings → Actions → OIDC → Default subject claim prefix (immutable OWNER@ID/REPO@ID). Paste with or without the leading repo:. Omit to trust the name-only sub (older repos). Do not put this in github_repo — that field stays OWNER/REPO for SSM. The same prefix is used for both staging and production roles (:environment:{stage} is appended). github_handlers_oidc_sub_prefix is only needed when github_handlers_repo is a different repo; otherwise it inherits github_oidc_sub_prefix.",
+  "_github_oidc_ids_note": "Optional GitHub owner/repo IDs for immutable OIDC subject claims (repo:ORG@ID/REPO@ID:environment:STAGE). When set, IAM trust policies accept both legacy and immutable sub formats. Find IDs via: gh api repos/ORG/REPO --jq '{owner_id: .owner.id, repo_id: .id}'. Omit github_handlers_* when same repo as github_repo — deploy IDs are reused.",
 
   "package_registry": {
-    "domain": "renglo",
-    "domain_owner": "",
-    "python_repository": "python-store",
-    "npm_repository": "npm-store"
+    "domain_owners": []
   },
-  "_package_registry_note": "Optional. Lets the GitHub deploy role pip/npm install from CodeArtifact. Omit domain_owner when the publisher domain is in this tenant account. Set domain_owner to the publisher AWS account for cross-account pull (that account must also list this tenant in reader_aws_accounts)."
+  "_package_registry_note": "Optional. Same-account CodeArtifact read is always granted — omit package_registry or use domain_owners: [] for internal-only. List foreign publisher AWS account IDs in domain_owners for cross-account pull (each publisher must also list this tenant in reader_aws_accounts)."
 }
