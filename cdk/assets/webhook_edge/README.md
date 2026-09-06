@@ -29,7 +29,7 @@ Lambda source: this folder (`handler.py`, `channels.py`). CDK construct: `ops/la
 
 ## Find your URLs and names
 
-Replace `<env>` with your environment name (e.g. `stanley0731`).
+Replace `<env>` with your environment name (e.g. `example0731`).
 
 ```bash
 export ENV=<env>
