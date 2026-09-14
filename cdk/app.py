@@ -159,6 +159,7 @@ stack_b = StackB(
     extension_manifest=extension_manifest,
     extension_config=extension_config,
     include_extension=extension_folder is not None and extension_manifest is not None,
+    package_registry=package_registry,
 )
 stack_b.add_dependency(stack_a)
 

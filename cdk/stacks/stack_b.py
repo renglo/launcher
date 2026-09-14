@@ -63,6 +63,7 @@ class StackB(Stack):
         extension_manifest: dict[str, Any] | None = None,
         extension_config: dict[str, Any] | None = None,
         include_extension: bool = False,
+        package_registry: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -179,6 +180,7 @@ class StackB(Stack):
             enable_staging=enable_staging,
             tenant_policy=tenant_policy,
             handlers_network_params=handlers_network_params,
+            package_registry=package_registry,
         )
 
         self.app = app
