@@ -1,0 +1,5433 @@
+{
+ "Description": "Reglo deployment — auth, storage, runtime (Cognito, S3, DynamoDB, ECR, seed CodeBuild, IAM, CodeDeploy, OIDC)",
+ "Parameters": {
+  "CreateGitHubOIDC": {
+   "Type": "String",
+   "Default": "false",
+   "AllowedValues": [
+    "true",
+    "false"
+   ],
+   "Description": "Create the GitHub Actions OIDC provider in this account. Set to true only if token.actions.githubusercontent.com is not already registered."
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Conditions": {
+  "CreateGitHubOIDCCondition": {
+   "Fn::Equals": [
+    {
+     "Ref": "CreateGitHubOIDC"
+    },
+    "true"
+   ]
+  },
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Resources": {
+  "StorageDataBucketB1B922FA": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "-",
+       {
+        "Ref": "AWS::Region"
+       }
+      ]
+     ]
+    },
+    "CorsConfiguration": {
+     "CorsRules": [
+      {
+       "AllowedHeaders": [
+        "*"
+       ],
+       "AllowedMethods": [
+        "GET",
+        "HEAD"
+       ],
+       "AllowedOrigins": [
+        "*"
+       ],
+       "MaxAge": 3000
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/DataBucket/Resource"
+   }
+  },
+  "StorageDataBucketPolicyC997B69E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "StorageDataBucketB1B922FA"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StorageDataBucketB1B922FA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StorageDataBucketB1B922FA",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/DataBucket/Policy/Resource"
+   }
+  },
+  "StorageDataBucketAutoDeleteObjectsCustomResource4BB14FB3": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "StorageDataBucketB1B922FA"
+    }
+   },
+   "DependsOn": [
+    "StorageDataBucketPolicyC997B69E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/DataBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "StorageTableBlueprintsFBB416B3": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "irn",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "version",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "irn",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "version",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitium0813_blueprints"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableBlueprints/Resource"
+   }
+  },
+  "StorageTableEntities44525C4B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "_id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "_id",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitium0813_entities"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableEntities/Resource"
+   }
+  },
+  "StorageTableRelC305BC50": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "rel",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "rel",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitium0813_rel"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableRel/Resource"
+   }
+  },
+  "StorageTableChatC1D62AE8": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "entity_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "entity_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitium0813_chat"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableChat/Resource"
+   }
+  },
+  "StorageTableSession285B74EB": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "entity_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "entity_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitium0813_session"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableSession/Resource"
+   }
+  },
+  "StorageTableSearch6846210E": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "search_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "search_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "arbitium0813_search"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableSearch/Resource"
+   }
+  },
+  "StorageTableDataBFCA9ACA": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "portfolio_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "doc_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "geo_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "path_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "time_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "portfolio_index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "doc_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "geo_index",
+      "KeySchema": [
+       {
+        "AttributeName": "portfolio_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "geo_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "KEYS_ONLY"
+      }
+     },
+     {
+      "IndexName": "path_index",
+      "KeySchema": [
+       {
+        "AttributeName": "portfolio_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "path_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "time_index",
+      "KeySchema": [
+       {
+        "AttributeName": "portfolio_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "time_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "path_index"
+       ],
+       "ProjectionType": "INCLUDE"
+      }
+     }
+    ],
+    "TableName": "arbitium0813_data"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableData/Resource"
+   }
+  },
+  "StorageTableGraph08DFE087": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "graph_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "forward_index",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "backward_index",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "graph_index",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "forward_index",
+      "KeyType": "RANGE"
+     }
+    ],
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "backward_index",
+      "KeySchema": [
+       {
+        "AttributeName": "graph_index",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "backward_index",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "TableName": "arbitium0813_graph"
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Storage/TableGraph/Resource"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "StorageDataBucketB1B922FA"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "ConsoleConsoleApp2C00C3B1": {
+   "Type": "AWS::Amplify::App",
+   "Properties": {
+    "CustomRules": [
+     {
+      "Source": "/<*>",
+      "Status": "404-200",
+      "Target": "/index.html"
+     }
+    ],
+    "Name": "arbitium0813-console",
+    "Platform": "WEB"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Console/ConsoleApp"
+   }
+  },
+  "ConsoleProductionBranch6A48783D": {
+   "Type": "AWS::Amplify::Branch",
+   "Properties": {
+    "AppId": {
+     "Fn::GetAtt": [
+      "ConsoleConsoleApp2C00C3B1",
+      "AppId"
+     ]
+    },
+    "BranchName": "production"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Console/ProductionBranch"
+   }
+  },
+  "ConsoleStagingBranch8B18A274": {
+   "Type": "AWS::Amplify::Branch",
+   "Properties": {
+    "AppId": {
+     "Fn::GetAtt": [
+      "ConsoleConsoleApp2C00C3B1",
+      "AppId"
+     ]
+    },
+    "BranchName": "staging"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Console/StagingBranch"
+   }
+  },
+  "AuthUserPool8115E87F": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true,
+     "InviteMessageTemplate": {
+      "EmailMessage": {
+       "Fn::Join": [
+        "",
+        [
+         "Your admin account has been created.\n\nEmail: {username}\nTemporary password (copy only the password below — not any punctuation after it):\n{####}\n\nOpen this link to enter your name and set a new password:\nhttps://production.",
+         {
+          "Fn::GetAtt": [
+           "ConsoleConsoleApp2C00C3B1",
+           "DefaultDomain"
+          ]
+         },
+         "/invite?setup=admin&email={username}\n"
+        ]
+       ]
+      },
+      "EmailSubject": "Complete your admin account setup",
+      "SMSMessage": "Admin account created. Username: {username}. Temporary password: {####}. Complete setup in the console invite screen."
+     }
+    },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "Schema": [
+     {
+      "Mutable": true,
+      "Name": "email",
+      "Required": true
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolName": "arbitium0813",
+    "UsernameAttributes": [
+     "email"
+    ],
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Auth/UserPool/Resource"
+   }
+  },
+  "AuthUserPoolDomain31C6792A": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "arbitium0813",
+    "UserPoolId": {
+     "Ref": "AuthUserPool8115E87F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Auth/UserPool/Domain/Resource"
+   }
+  },
+  "AuthUserPoolAppClient1D18298A": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AccessTokenValidity": 1440,
+    "AllowedOAuthFlows": [
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "openid",
+     "email",
+     "profile"
+    ],
+    "CallbackURLs": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://production.",
+        {
+         "Fn::GetAtt": [
+          "ConsoleConsoleApp2C00C3B1",
+          "DefaultDomain"
+         ]
+        },
+        "/"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://production.",
+        {
+         "Fn::GetAtt": [
+          "ConsoleConsoleApp2C00C3B1",
+          "DefaultDomain"
+         ]
+        },
+        "/callback"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://staging.",
+        {
+         "Fn::GetAtt": [
+          "ConsoleConsoleApp2C00C3B1",
+          "DefaultDomain"
+         ]
+        },
+        "/"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://staging.",
+        {
+         "Fn::GetAtt": [
+          "ConsoleConsoleApp2C00C3B1",
+          "DefaultDomain"
+         ]
+        },
+        "/callback"
+       ]
+      ]
+     },
+     "http://localhost:5173/",
+     "http://localhost:5173/callback"
+    ],
+    "ClientName": "arbitium0813_app",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "IdTokenValidity": 1440,
+    "LogoutURLs": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://production.",
+        {
+         "Fn::GetAtt": [
+          "ConsoleConsoleApp2C00C3B1",
+          "DefaultDomain"
+         ]
+        },
+        "/"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "https://staging.",
+        {
+         "Fn::GetAtt": [
+          "ConsoleConsoleApp2C00C3B1",
+          "DefaultDomain"
+         ]
+        },
+        "/"
+       ]
+      ]
+     }
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "TokenValidityUnits": {
+     "AccessToken": "minutes",
+     "IdToken": "minutes"
+    },
+    "UserPoolId": {
+     "Ref": "AuthUserPool8115E87F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Auth/UserPool/AppClient/Resource"
+   }
+  },
+  "EmailInviteFromIdentityF7261B8B": {
+   "Type": "AWS::SES::EmailIdentity",
+   "Properties": {
+    "EmailIdentity": "ricardo.cid@arbitium.com"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Email/InviteFromIdentity/Resource"
+   }
+  },
+  "RuntimeBackendEcrRepoC10B100E": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":10},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "arbitium0813_backend",
+    "RepositoryPolicyText": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchGetImage",
+        "ecr:DeleteRepositoryPolicy",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:SetRepositoryPolicy"
+       ],
+       "Condition": {
+        "StringLike": {
+         "aws:sourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":function:*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Sid": "LambdaECRPull"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/BackendEcrRepo/Resource"
+   }
+  },
+  "RuntimeTenantPolicy6EC9A05F": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "ManagedPolicyName": "arbitium0813_tt_policy",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:lambda:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":function:arbitium0813*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:lambda:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":function:arbitium0813*:*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "apigateway:DELETE",
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:apigateway:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::/apis/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:apigateway:",
+           {
+            "Ref": "AWS::Region"
+           },
+           "::/restapis/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:ListBucket",
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::arbitium0813-*",
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3:::arbitium0813-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "-",
+           {
+            "Ref": "AWS::Region"
+           }
+          ]
+         ]
+        }
+       ],
+       "Sid": "S3ListEnvBucket"
+      },
+      {
+       "Action": [
+        "s3:DeleteObject",
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::arbitium0813-*/*",
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3:::arbitium0813-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "-",
+           {
+            "Ref": "AWS::Region"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "S3ObjectsEnvBucket"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:GetLogEvents",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/lambda/arbitium0813*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/lambda/arbitium0813*:log-stream:*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/arbitium0813_backend"
+         ]
+        ]
+       },
+       "Sid": "EcrPullBackendImage"
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "EcrAuthToken"
+      },
+      {
+       "Action": [
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:dynamodb:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/arbitium0813_*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:dynamodb:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/arbitium0813_*/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ses:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":identity/",
+          {
+           "Ref": "EmailInviteFromIdentityF7261B8B"
+          }
+         ]
+        ]
+       },
+       "Sid": "SesSendEmail"
+      },
+      {
+       "Action": [
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminDeleteUser",
+        "cognito-idp:AdminInitiateAuth",
+        "cognito-idp:AdminSetUserPassword",
+        "cognito-idp:AdminUpdateUserAttributes",
+        "cognito-idp:ListUsers",
+        "cognito-idp:RespondToAuthChallenge"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:cognito-idp:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":userpool/",
+          {
+           "Ref": "AuthUserPool8115E87F"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:ListRules",
+        "events:ListTargetsByRule",
+        "events:PutRule",
+        "events:PutTargets",
+        "events:RemoveTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:events:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":rule/arbitium0813*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:events:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":event-bus/default"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "events.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:iam::",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":role/arbitium0813_tt_role"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "execute-api:Invoke",
+        "execute-api:ManageConnections"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":*/*/POST/@connections/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "events:DescribeApiDestination",
+        "events:InvokeApiDestination"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:events:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":api-destination/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "aoss:APIAccessAll",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ecs:DescribeClusters",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:RunTask"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster/arbitium0813-*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":task-definition/arbitium0813-*-ecs:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":task/arbitium0813-*/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "ECSRunTask"
+      },
+      {
+       "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/arbitium0813/bootstrap/peer-routes"
+         ]
+        ]
+       },
+       "Sid": "SsmReadPeerRoutes"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/arbitium0813-handlers-ecs-execution"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/arbitium0813-handlers-ecs-task"
+          ]
+         ]
+        }
+       ],
+       "Sid": "ECSPassRole"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:s3:::arbitium0813-handlers-ecs-",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "ECSHandshakeS3"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/TenantPolicy/Resource"
+   }
+  },
+  "RuntimeTenantRoleB259B5DF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "apigateway.amazonaws.com",
+         "events.amazonaws.com",
+         "lambda.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Ref": "RuntimeTenantPolicy6EC9A05F"
+     }
+    ],
+    "RoleName": "arbitium0813_tt_role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/TenantRole/Resource"
+   }
+  },
+  "RuntimeSeedImageBuilderRole87B2FFC6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedImageBuilder/Role/Resource"
+   }
+  },
+  "RuntimeSeedImageBuilderRoleDefaultPolicy910B6A5E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/codebuild/",
+           {
+            "Ref": "RuntimeSeedImageBuilder7A80A5D2"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/codebuild/",
+           {
+            "Ref": "RuntimeSeedImageBuilder7A80A5D2"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codebuild:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":report-group/",
+          {
+           "Ref": "RuntimeSeedImageBuilder7A80A5D2"
+          },
+          "-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "RuntimeBackendEcrRepoC10B100E",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ecr-public:GetAuthorizationToken",
+        "sts:GetServiceBearerToken"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "EcrPublicAuth"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedImageBuilderRoleDefaultPolicy910B6A5E",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedImageBuilderRole87B2FFC6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedImageBuilder/Role/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedImageBuilder7A80A5D2": {
+   "Type": "AWS::CodeBuild::Project",
+   "Properties": {
+    "Artifacts": {
+     "Type": "NO_ARTIFACTS"
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "Description": "Reglo Deployment — build and push backend seed image",
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "EnvironmentVariables": [
+      {
+       "Name": "REPO_URI",
+       "Type": "PLAINTEXT",
+       "Value": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::Select": [
+            4,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Fn::GetAtt": [
+                "RuntimeBackendEcrRepoC10B100E",
+                "Arn"
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          ".dkr.ecr.",
+          {
+           "Fn::Select": [
+            3,
+            {
+             "Fn::Split": [
+              ":",
+              {
+               "Fn::GetAtt": [
+                "RuntimeBackendEcrRepoC10B100E",
+                "Arn"
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          },
+          "/",
+          {
+           "Ref": "RuntimeBackendEcrRepoC10B100E"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Name": "IMAGE_TAG",
+       "Type": "PLAINTEXT",
+       "Value": "seed"
+      },
+      {
+       "Name": "DOCKER_PLATFORM",
+       "Type": "PLAINTEXT",
+       "Value": "linux/amd64"
+      }
+     ],
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": true,
+     "Type": "LINUX_CONTAINER"
+    },
+    "Name": "arbitium0813-seed-image",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "RuntimeSeedImageBuilderRole87B2FFC6",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"REGISTRY=$(echo \\\"$REPO_URI\\\" | cut -d/ -f1)\",\n        \"aws ecr get-login-password --region \\\"$AWS_DEFAULT_REGION\\\" | docker login --username AWS --password-stdin \\\"$REGISTRY\\\"\",\n        \"aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cat > Dockerfile <<'EOF'\\nFROM public.ecr.aws/lambda/python:3.12\\nCOPY app.py ${LAMBDA_TASK_ROOT}\\nCMD [\\\"app.handler\\\"]\\nEOF\",\n        \"cat > app.py <<'EOF'\\ndef handler(event, context):\\n    return {\\n        \\\"statusCode\\\": 200,\\n        \\\"body\\\": \\\"seed image ok\\\",\\n    }\\nEOF\",\n        \"docker build --platform \\\"$DOCKER_PLATFORM\\\" -t \\\"$REPO_URI:$IMAGE_TAG\\\" .\",\n        \"docker push \\\"$REPO_URI:$IMAGE_TAG\\\"\"\n      ]\n    }\n  }\n}",
+     "Type": "NO_SOURCE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedImageBuilder/Resource"
+   }
+  },
+  "RuntimeSeedBuildOnEventServiceRole05C34BBF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildOnEvent/ServiceRole/Resource"
+   }
+  },
+  "RuntimeSeedBuildOnEventServiceRoleDefaultPolicyFABB4D24": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "RuntimeSeedImageBuilder7A80A5D2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedBuildOnEventServiceRoleDefaultPolicyFABB4D24",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedBuildOnEventServiceRole05C34BBF"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildOnEvent/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedBuildOnEventDF1E0CE3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "import boto3\n\ncodebuild = boto3.client(\"codebuild\")\n\n\ndef on_event(event, context):\n    if event[\"RequestType\"] == \"Delete\":\n        return {\"PhysicalResourceId\": event.get(\"PhysicalResourceId\", \"seed-build\")}\n    project = event[\"ResourceProperties\"][\"ProjectName\"]\n    build = codebuild.start_build(projectName=project)[\"build\"]\n    return {\"PhysicalResourceId\": build[\"id\"], \"Data\": {\"BuildId\": build[\"id\"]}}\n\n\ndef is_complete(event, context):\n    if event[\"RequestType\"] == \"Delete\":\n        return {\"IsComplete\": True}\n    build_id = event[\"PhysicalResourceId\"]\n    builds = codebuild.batch_get_builds(ids=[build_id]).get(\"builds\", [])\n    if not builds:\n        return {\"IsComplete\": False}\n    status = builds[0][\"buildStatus\"]\n    if status == \"SUCCEEDED\":\n        return {\"IsComplete\": True}\n    if status == \"IN_PROGRESS\":\n        return {\"IsComplete\": False}\n    raise Exception(\"Seed build %s ended with status %s\" % (build_id, status))\n"
+    },
+    "Description": "Reglo Deployment — start seed CodeBuild",
+    "Handler": "index.on_event",
+    "Role": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildOnEventServiceRole05C34BBF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "RuntimeSeedBuildOnEventServiceRoleDefaultPolicyFABB4D24",
+    "RuntimeSeedBuildOnEventServiceRole05C34BBF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildOnEvent/Resource"
+   }
+  },
+  "RuntimeSeedBuildIsCompleteServiceRoleCAE36667": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildIsComplete/ServiceRole/Resource"
+   }
+  },
+  "RuntimeSeedBuildIsCompleteServiceRoleDefaultPolicy641B03BE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "RuntimeSeedImageBuilder7A80A5D2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedBuildIsCompleteServiceRoleDefaultPolicy641B03BE",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedBuildIsCompleteServiceRoleCAE36667"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildIsComplete/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedBuildIsComplete25B68D52": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "import boto3\n\ncodebuild = boto3.client(\"codebuild\")\n\n\ndef on_event(event, context):\n    if event[\"RequestType\"] == \"Delete\":\n        return {\"PhysicalResourceId\": event.get(\"PhysicalResourceId\", \"seed-build\")}\n    project = event[\"ResourceProperties\"][\"ProjectName\"]\n    build = codebuild.start_build(projectName=project)[\"build\"]\n    return {\"PhysicalResourceId\": build[\"id\"], \"Data\": {\"BuildId\": build[\"id\"]}}\n\n\ndef is_complete(event, context):\n    if event[\"RequestType\"] == \"Delete\":\n        return {\"IsComplete\": True}\n    build_id = event[\"PhysicalResourceId\"]\n    builds = codebuild.batch_get_builds(ids=[build_id]).get(\"builds\", [])\n    if not builds:\n        return {\"IsComplete\": False}\n    status = builds[0][\"buildStatus\"]\n    if status == \"SUCCEEDED\":\n        return {\"IsComplete\": True}\n    if status == \"IN_PROGRESS\":\n        return {\"IsComplete\": False}\n    raise Exception(\"Seed build %s ended with status %s\" % (build_id, status))\n"
+    },
+    "Description": "Reglo Deployment — poll seed CodeBuild status",
+    "Handler": "index.is_complete",
+    "Role": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildIsCompleteServiceRoleCAE36667",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "RuntimeSeedBuildIsCompleteServiceRoleDefaultPolicy641B03BE",
+    "RuntimeSeedBuildIsCompleteServiceRoleCAE36667"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildIsComplete/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonEventServiceRole8839A058": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/ServiceRole/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonEventServiceRoleDefaultPolicy9868A282": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildIsComplete25B68D52",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildOnEventDF1E0CE3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildIsComplete25B68D52",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildOnEventDF1E0CE3",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildIsComplete25B68D52",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildOnEventDF1E0CE3",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "RuntimeSeedBuildProviderwaiterstatemachine246F8B3B"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedBuildProviderframeworkonEventServiceRoleDefaultPolicy9868A282",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedBuildProviderframeworkonEventServiceRole8839A058"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonEventFDC39E23": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e16ffb3b34af185b8b30c88fdb19faa13b6c42bb38580485c4e84b384ee48b63.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (arbitium0813-stack-a/Runtime/SeedBuildProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "RuntimeSeedBuildOnEventDF1E0CE3",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "RuntimeSeedBuildIsComplete25B68D52",
+        "Arn"
+       ]
+      },
+      "WAITER_STATE_MACHINE_ARN": {
+       "Ref": "RuntimeSeedBuildProviderwaiterstatemachine246F8B3B"
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildProviderframeworkonEventServiceRole8839A058",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "RuntimeSeedBuildProviderframeworkonEventServiceRoleDefaultPolicy9868A282",
+    "RuntimeSeedBuildProviderframeworkonEventServiceRole8839A058"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/Resource",
+    "aws:asset:path": "asset.e16ffb3b34af185b8b30c88fdb19faa13b6c42bb38580485c4e84b384ee48b63",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonEventLogRetentionAA7AB537": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "RuntimeSeedBuildProviderframeworkonEventFDC39E23"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/LogRetention/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleF557E3E6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/ServiceRole/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleDefaultPolicy710FF8E1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildIsComplete25B68D52",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildOnEventDF1E0CE3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildIsComplete25B68D52",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildOnEventDF1E0CE3",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildIsComplete25B68D52",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildOnEventDF1E0CE3",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleDefaultPolicy710FF8E1",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleF557E3E6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkisComplete5C44F823": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e16ffb3b34af185b8b30c88fdb19faa13b6c42bb38580485c4e84b384ee48b63.zip"
+    },
+    "Description": "AWS CDK resource provider framework - isComplete (arbitium0813-stack-a/Runtime/SeedBuildProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "RuntimeSeedBuildOnEventDF1E0CE3",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "RuntimeSeedBuildIsComplete25B68D52",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.isComplete",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleF557E3E6",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleDefaultPolicy710FF8E1",
+    "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleF557E3E6"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/Resource",
+    "aws:asset:path": "asset.e16ffb3b34af185b8b30c88fdb19faa13b6c42bb38580485c4e84b384ee48b63",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkisCompleteLogRetention9CCE995F": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "RuntimeSeedBuildProviderframeworkisComplete5C44F823"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/LogRetention/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonTimeoutServiceRole64B0F11C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/ServiceRole/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonTimeoutServiceRoleDefaultPolicyBEADBA1A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildIsComplete25B68D52",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildOnEventDF1E0CE3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildIsComplete25B68D52",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildOnEventDF1E0CE3",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildIsComplete25B68D52",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildOnEventDF1E0CE3",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedBuildProviderframeworkonTimeoutServiceRoleDefaultPolicyBEADBA1A",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedBuildProviderframeworkonTimeoutServiceRole64B0F11C"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonTimeout2CC251BC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e16ffb3b34af185b8b30c88fdb19faa13b6c42bb38580485c4e84b384ee48b63.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onTimeout (arbitium0813-stack-a/Runtime/SeedBuildProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "RuntimeSeedBuildOnEventDF1E0CE3",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "RuntimeSeedBuildIsComplete25B68D52",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onTimeout",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildProviderframeworkonTimeoutServiceRole64B0F11C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "RuntimeSeedBuildProviderframeworkonTimeoutServiceRoleDefaultPolicyBEADBA1A",
+    "RuntimeSeedBuildProviderframeworkonTimeoutServiceRole64B0F11C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/Resource",
+    "aws:asset:path": "asset.e16ffb3b34af185b8b30c88fdb19faa13b6c42bb38580485c4e84b384ee48b63",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RuntimeSeedBuildProviderframeworkonTimeoutLogRetention647D0761": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "RuntimeSeedBuildProviderframeworkonTimeout2CC251BC"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 7
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/LogRetention/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderwaiterstatemachineRole2ECA8574": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/waiter-state-machine/Role/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderwaiterstatemachineRoleDefaultPolicy82B57FD1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildProviderframeworkisComplete5C44F823",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "RuntimeSeedBuildProviderframeworkonTimeout2CC251BC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildProviderframeworkisComplete5C44F823",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RuntimeSeedBuildProviderframeworkonTimeout2CC251BC",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RuntimeSeedBuildProviderwaiterstatemachineRoleDefaultPolicy82B57FD1",
+    "Roles": [
+     {
+      "Ref": "RuntimeSeedBuildProviderwaiterstatemachineRole2ECA8574"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/waiter-state-machine/Role/DefaultPolicy/Resource"
+   }
+  },
+  "RuntimeSeedBuildProviderwaiterstatemachine246F8B3B": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":15,\"MaxAttempts\":120,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "RuntimeSeedBuildProviderframeworkisComplete5C44F823",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "RuntimeSeedBuildProviderframeworkonTimeout2CC251BC",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildProviderwaiterstatemachineRole2ECA8574",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "RuntimeSeedBuildProviderwaiterstatemachineRoleDefaultPolicy82B57FD1",
+    "RuntimeSeedBuildProviderwaiterstatemachineRole2ECA8574"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildProvider/waiter-state-machine/Resource"
+   }
+  },
+  "RuntimeSeedBuildRunner0DAE7324": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "RuntimeSeedBuildProviderframeworkonEventFDC39E23",
+      "Arn"
+     ]
+    },
+    "ProjectName": {
+     "Ref": "RuntimeSeedImageBuilder7A80A5D2"
+    }
+   },
+   "DependsOn": [
+    "RuntimeSeedImageBuilder7A80A5D2",
+    "RuntimeSeedImageBuilderRoleDefaultPolicy910B6A5E",
+    "RuntimeSeedImageBuilderRole87B2FFC6"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/SeedBuildRunner/Default"
+   }
+  },
+  "RuntimeCodeDeployServiceRole5372C7F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codedeploy.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "arbitium0813-codedeploy-lambda-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/CodeDeployServiceRole/Resource"
+   }
+  },
+  "RuntimeCodeDeployAppEB3231F7": {
+   "Type": "AWS::CodeDeploy::Application",
+   "Properties": {
+    "ApplicationName": "arbitium0813-backend-codedeploy",
+    "ComputePlatform": "Lambda"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/CodeDeployApp"
+   }
+  },
+  "RuntimeCodeDeployGroupProductionD5CAF94E": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": "arbitium0813-backend-codedeploy",
+    "DeploymentConfigName": "CodeDeployDefault.LambdaCanary10Percent10Minutes",
+    "DeploymentGroupName": "arbitium0813-backend-production",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "RuntimeCodeDeployServiceRole5372C7F0",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/CodeDeployGroupProduction"
+   }
+  },
+  "RuntimeCodeDeployGroupStaging37B8198C": {
+   "Type": "AWS::CodeDeploy::DeploymentGroup",
+   "Properties": {
+    "ApplicationName": "arbitium0813-backend-codedeploy",
+    "DeploymentConfigName": "CodeDeployDefault.LambdaAllAtOnce",
+    "DeploymentGroupName": "arbitium0813-backend-staging",
+    "DeploymentStyle": {
+     "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+     "DeploymentType": "BLUE_GREEN"
+    },
+    "ServiceRoleArn": {
+     "Fn::GetAtt": [
+      "RuntimeCodeDeployServiceRole5372C7F0",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/CodeDeployGroupStaging"
+   }
+  },
+  "RuntimeGitHubOidcProviderResource60760A72": {
+   "Type": "AWS::IAM::OIDCProvider",
+   "Properties": {
+    "ClientIdList": [
+     "sts.amazonaws.com"
+    ],
+    "ThumbprintList": [
+     "6938fd4d98bab03faadb97b34396831e3780aea1"
+    ],
+    "Url": "https://token.actions.githubusercontent.com"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/GitHubOidcProviderResource"
+   },
+   "Condition": "CreateGitHubOIDCCondition"
+  },
+  "RuntimeOidcDeployRoleProduction76FE6787": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+         "token.actions.githubusercontent.com:sub": [
+          "repo:Arbitium/arbitium-bom:environment:production",
+          "repo:Arbitium@223699384/arbitium-bom@1225933723:environment:production"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":oidc-provider/token.actions.githubusercontent.com"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:GetCallerIdentity",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ReadIdentity"
+        },
+        {
+         "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ecr:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":repository/arbitium0813_backend"
+           ]
+          ]
+         },
+         "Sid": "EcrPushPull"
+        },
+        {
+         "Action": "ecr:GetAuthorizationToken",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcrAuthToken"
+        },
+        {
+         "Action": [
+          "lambda:AddPermission",
+          "lambda:CreateAlias",
+          "lambda:CreateFunction",
+          "lambda:GetAlias",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:PublishVersion",
+          "lambda:UpdateAlias",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:arbitium0813-backend-production"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:arbitium0813-backend-production:*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "BackendLambdaDeploy"
+        },
+        {
+         "Action": [
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetApplication",
+          "codedeploy:GetDeployment",
+          "codedeploy:GetDeploymentConfig",
+          "codedeploy:GetDeploymentGroup",
+          "codedeploy:RegisterApplicationRevision"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codedeploy:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":application:arbitium0813-backend-codedeploy"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codedeploy:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":deploymentconfig:*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codedeploy:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":deploymentgroup:arbitium0813-backend-codedeploy/*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "CodeDeployLambdaRelease"
+        },
+        {
+         "Action": "iam:PassRole",
+         "Condition": {
+          "StringEquals": {
+           "iam:PassedToService": "lambda.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/arbitium0813_tt_role"
+           ]
+          ]
+         },
+         "Sid": "PassExecutionRole"
+        },
+        {
+         "Action": "cloudformation:DescribeStacks",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CloudFormationDescribe"
+        },
+        {
+         "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-security-groups"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-subnets"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-vpc"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/platform-vars/production"
+            ]
+           ]
+          }
+         ],
+         "Sid": "SsmReadPlatformVars"
+        },
+        {
+         "Action": [
+          "amplify:CreateDeployment",
+          "amplify:GetApp",
+          "amplify:GetBranch",
+          "amplify:GetJob",
+          "amplify:StartDeployment",
+          "amplify:StopJob"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:amplify:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":apps/",
+            {
+             "Fn::GetAtt": [
+              "ConsoleConsoleApp2C00C3B1",
+              "AppId"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         },
+         "Sid": "AmplifyConsoleDeploy"
+        },
+        {
+         "Action": [
+          "codeartifact:DescribeDomain",
+          "codeartifact:DescribePackageVersion",
+          "codeartifact:DescribeRepository",
+          "codeartifact:GetAuthorizationToken",
+          "codeartifact:GetPackageVersionAsset",
+          "codeartifact:GetPackageVersionReadme",
+          "codeartifact:GetRepositoryEndpoint",
+          "codeartifact:ListPackageVersionAssets",
+          "codeartifact:ListPackageVersionDependencies",
+          "codeartifact:ListPackageVersions",
+          "codeartifact:ListPackages",
+          "codeartifact:ReadFromRepository"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:repository/*/*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "CodeArtifactRead"
+        },
+        {
+         "Action": "sts:GetServiceBearerToken",
+         "Condition": {
+          "StringEquals": {
+           "sts:AWSServiceName": "codeartifact.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CodeArtifactBearerToken"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "GitHubActionsDeployPolicy-arbitium0813-production"
+     }
+    ],
+    "RoleName": "GitHubActionsDeployRole-arbitium0813-production"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/OidcDeployRoleProduction/Resource"
+   }
+  },
+  "RuntimeOidcDeployRoleStaging6514A1CD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+         "token.actions.githubusercontent.com:sub": [
+          "repo:Arbitium/arbitium-bom:environment:staging",
+          "repo:Arbitium@223699384/arbitium-bom@1225933723:environment:staging"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":oidc-provider/token.actions.githubusercontent.com"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:GetCallerIdentity",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ReadIdentity"
+        },
+        {
+         "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ecr:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":repository/arbitium0813_backend"
+           ]
+          ]
+         },
+         "Sid": "EcrPushPull"
+        },
+        {
+         "Action": "ecr:GetAuthorizationToken",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcrAuthToken"
+        },
+        {
+         "Action": [
+          "lambda:AddPermission",
+          "lambda:CreateAlias",
+          "lambda:CreateFunction",
+          "lambda:GetAlias",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:PublishVersion",
+          "lambda:UpdateAlias",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:arbitium0813-backend-staging"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:arbitium0813-backend-staging:*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "BackendLambdaDeploy"
+        },
+        {
+         "Action": [
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetApplication",
+          "codedeploy:GetDeployment",
+          "codedeploy:GetDeploymentConfig",
+          "codedeploy:GetDeploymentGroup",
+          "codedeploy:RegisterApplicationRevision"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codedeploy:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":application:arbitium0813-backend-codedeploy"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codedeploy:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":deploymentconfig:*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codedeploy:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":deploymentgroup:arbitium0813-backend-codedeploy/*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "CodeDeployLambdaRelease"
+        },
+        {
+         "Action": "iam:PassRole",
+         "Condition": {
+          "StringEquals": {
+           "iam:PassedToService": "lambda.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/arbitium0813_tt_role"
+           ]
+          ]
+         },
+         "Sid": "PassExecutionRole"
+        },
+        {
+         "Action": "cloudformation:DescribeStacks",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CloudFormationDescribe"
+        },
+        {
+         "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-security-groups"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-subnets"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-vpc"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/platform-vars/staging"
+            ]
+           ]
+          }
+         ],
+         "Sid": "SsmReadPlatformVars"
+        },
+        {
+         "Action": [
+          "amplify:CreateDeployment",
+          "amplify:GetApp",
+          "amplify:GetBranch",
+          "amplify:GetJob",
+          "amplify:StartDeployment",
+          "amplify:StopJob"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:amplify:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":apps/",
+            {
+             "Fn::GetAtt": [
+              "ConsoleConsoleApp2C00C3B1",
+              "AppId"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         },
+         "Sid": "AmplifyConsoleDeploy"
+        },
+        {
+         "Action": [
+          "codeartifact:DescribeDomain",
+          "codeartifact:DescribePackageVersion",
+          "codeartifact:DescribeRepository",
+          "codeartifact:GetAuthorizationToken",
+          "codeartifact:GetPackageVersionAsset",
+          "codeartifact:GetPackageVersionReadme",
+          "codeartifact:GetRepositoryEndpoint",
+          "codeartifact:ListPackageVersionAssets",
+          "codeartifact:ListPackageVersionDependencies",
+          "codeartifact:ListPackageVersions",
+          "codeartifact:ListPackages",
+          "codeartifact:ReadFromRepository"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:repository/*/*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "CodeArtifactRead"
+        },
+        {
+         "Action": "sts:GetServiceBearerToken",
+         "Condition": {
+          "StringEquals": {
+           "sts:AWSServiceName": "codeartifact.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CodeArtifactBearerToken"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "GitHubActionsDeployPolicy-arbitium0813-staging"
+     }
+    ],
+    "RoleName": "GitHubActionsDeployRole-arbitium0813-staging"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/Runtime/OidcDeployRoleStaging/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs24.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "AiStorageRagDocsBucket207122BB": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-rag-docs-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/RagDocsBucket/Resource"
+   }
+  },
+  "AiStorageRagDocsBucketPolicyFD06D9B8": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "AiStorageRagDocsBucket207122BB"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AiStorageRagDocsBucket207122BB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AiStorageRagDocsBucket207122BB",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/RagDocsBucket/Policy/Resource"
+   }
+  },
+  "AiStorageRagDocsBucketAutoDeleteObjectsCustomResource912E940B": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "AiStorageRagDocsBucket207122BB"
+    }
+   },
+   "DependsOn": [
+    "AiStorageRagDocsBucketPolicyFD06D9B8"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/RagDocsBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "AiStoragePlatformVectorBucket17B39749": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformVectorBucket"
+   }
+  },
+  "AiStorageRagKbIndexB7E73F6C": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "IndexName": "rag-kb",
+    "VectorBucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "AiStoragePlatformVectorBucket17B39749"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/RagKbIndex"
+   }
+  },
+  "AiStoragePlatformKnowledgeBaseRole3A05266B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Platform Bedrock KB access to RAG docs S3 + S3 Vectors"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformKnowledgeBaseRole/Resource"
+   }
+  },
+  "AiStoragePlatformKnowledgeBaseRoleDefaultPolicy58CC7CD3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AiStorageRagDocsBucket207122BB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AiStorageRagDocsBucket207122BB",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "bedrock:InvokeModel",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/amazon.titan-embed-text-v2:0"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3vectors:DeleteVectors",
+        "s3vectors:GetIndex",
+        "s3vectors:GetVectors",
+        "s3vectors:ListIndexes",
+        "s3vectors:ListVectors",
+        "s3vectors:PutVectors",
+        "s3vectors:QueryVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3vectors:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":bucket/arbitium0813-vectors-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3vectors:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":bucket/arbitium0813-vectors-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/index/rag-kb"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3vectors:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":bucket/arbitium0813-vectors-",
+           {
+            "Ref": "AWS::AccountId"
+           }
+          ]
+         ]
+        }
+       ],
+       "Sid": "S3VectorsKnowledgeBaseAccess"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AiStoragePlatformKnowledgeBaseRoleDefaultPolicy58CC7CD3",
+    "Roles": [
+     {
+      "Ref": "AiStoragePlatformKnowledgeBaseRole3A05266B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformKnowledgeBaseRole/DefaultPolicy/Resource"
+   }
+  },
+  "AiStoragePlatformVectorBucketPolicy81744C09": {
+   "Type": "AWS::S3Vectors::VectorBucketPolicy",
+   "Properties": {
+    "VectorBucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "Policy": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Sid": "AllowBedrockKbRoleAccess",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "AiStoragePlatformKnowledgeBaseRole3A05266B",
+          "Arn"
+         ]
+        }
+       },
+       "Action": [
+        "s3vectors:GetIndex",
+        "s3vectors:ListIndexes",
+        "s3vectors:QueryVectors",
+        "s3vectors:PutVectors",
+        "s3vectors:GetVectors",
+        "s3vectors:ListVectors",
+        "s3vectors:DeleteVectors"
+       ],
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3vectors:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":bucket/arbitium0813-vectors-",
+           {
+            "Ref": "AWS::AccountId"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3vectors:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":bucket/arbitium0813-vectors-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "AiStoragePlatformVectorBucket17B39749"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformVectorBucketPolicy"
+   }
+  },
+  "AiStoragePlatformKnowledgeBaseC5281373": {
+   "Type": "AWS::Bedrock::KnowledgeBase",
+   "Properties": {
+    "Name": "arbitium0813-platform-kb",
+    "Description": "Platform default knowledge base (S3 Vectors backend)",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AiStoragePlatformKnowledgeBaseRole3A05266B",
+      "Arn"
+     ]
+    },
+    "KnowledgeBaseConfiguration": {
+     "Type": "VECTOR",
+     "VectorKnowledgeBaseConfiguration": {
+      "EmbeddingModelArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:aws:bedrock:",
+         {
+          "Ref": "AWS::Region"
+         },
+         "::foundation-model/amazon.titan-embed-text-v2:0"
+        ]
+       ]
+      }
+     }
+    },
+    "StorageConfiguration": {
+     "Type": "S3_VECTORS",
+     "S3VectorsConfiguration": {
+      "VectorBucketArn": {
+       "Fn::GetAtt": [
+        "AiStoragePlatformVectorBucket17B39749",
+        "VectorBucketArn"
+       ]
+      },
+      "IndexArn": {
+       "Fn::GetAtt": [
+        "AiStorageRagKbIndexB7E73F6C",
+        "IndexArn"
+       ]
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "AiStoragePlatformKnowledgeBaseRoleDefaultPolicy58CC7CD3",
+    "AiStoragePlatformVectorBucketPolicy81744C09",
+    "AiStorageRagKbIndexB7E73F6C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformKnowledgeBase"
+   }
+  },
+  "AiStoragePlatformKbDataSource4AB2D761": {
+   "Type": "AWS::Bedrock::DataSource",
+   "Properties": {
+    "KnowledgeBaseId": {
+     "Fn::GetAtt": [
+      "AiStoragePlatformKnowledgeBaseC5281373",
+      "KnowledgeBaseId"
+     ]
+    },
+    "Name": "arbitium0813-platform-kb-docs",
+    "Description": "Platform RAG docs prefix",
+    "DataSourceConfiguration": {
+     "Type": "S3",
+     "S3Configuration": {
+      "BucketArn": {
+       "Fn::GetAtt": [
+        "AiStorageRagDocsBucket207122BB",
+        "Arn"
+       ]
+      },
+      "InclusionPrefixes": [
+       "rag/"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "AiStoragePlatformKnowledgeBaseC5281373"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformKbDataSource"
+   }
+  },
+  "AiStoragePlatformAiPolicy64662F47": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "Platform AI amenities: Bedrock embeddings/RAG + S3 Vectors + RAG docs",
+    "ManagedPolicyName": "arbitium0813_ai_tt_policy",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock:GetDataSource",
+        "bedrock:GetIngestionJob",
+        "bedrock:GetKnowledgeBase",
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream",
+        "bedrock:ListDataSources",
+        "bedrock:ListIngestionJobs",
+        "bedrock:ListKnowledgeBases",
+        "bedrock:Retrieve",
+        "bedrock:RetrieveAndGenerate",
+        "bedrock:StartIngestionJob"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "BedrockEmbeddingsAndRag"
+      },
+      {
+       "Action": [
+        "s3vectors:CreateIndex",
+        "s3vectors:DeleteVectors",
+        "s3vectors:GetIndex",
+        "s3vectors:GetVectorBucket",
+        "s3vectors:GetVectors",
+        "s3vectors:ListIndexes",
+        "s3vectors:ListVectorBuckets",
+        "s3vectors:ListVectors",
+        "s3vectors:PutVectors",
+        "s3vectors:QueryVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "S3VectorsAccess"
+      },
+      {
+       "Action": [
+        "s3:AbortMultipartUpload",
+        "s3:DeleteObject",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AiStorageRagDocsBucket207122BB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AiStorageRagDocsBucket207122BB",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "RagDocsBucket"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Ref": "RuntimeTenantRoleB259B5DF"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/AiStorage/PlatformAiPolicy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/6VT247TMBD9lu2za6CVkJa3bgpoJVaNCogHhCrHnqbe+hL5AlSW/x1fmk0WnlY8+cyZM86ZGWeFV29v8esb8ssuKTsvBe9w+OwIPaPmqFpiiAQHJgeNVow7rhVK4kOwaxzuPD2Dy8mKvoeF5L+5WrxbzC/M+iQvKYurdOOd3oJIl++6R6DOLiL6r+ofqKZaLTi9TJ5q/AJntSDNwIEE9UJj/xaPvu6IhYjYRRGpWRryF9IJyDYLiIjIQfDjBYdEbYahNGCIoqeIqO4VdxqHrxZMq7XIySc8gq2WhKt56sqMYSN4sjQXVCYiCxaH90ks7lkiuCvze0ZEBNTgsIdB2+TFFMUURcSJxOGBKNIDm3bwnNjr2nI5J9GEdvfbpjX6J2dgct8MOs8FwyGRec9FXWFEgsiOERw+eEXLu0zJEaee1gdiLTiLN/lAQvcWf9L9Pj0aVeTWwXC86i1OxWVtD4SeuILycQaD0E8rSSbJ+J1tyeQVfzTaDzGixlun5R6s9obWLkc8J3feDd79pR5bzm8EFbvJSs9Vj2jRHcxVaMskihZ9Izz9mXPPyUV7cSetXq3xmxW+vXm0nC+NT+1KwPt6/gGClJ7/8gMAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-a/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "StorageTableBlueprintsArnFFBCC25C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableBlueprintsFBB416B3",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableEntitiesArnADF600E8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableEntities44525C4B",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableRelArnA9A3531E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableRelC305BC50",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableChatArnB3F203A3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableChatC1D62AE8",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableSessionArnFF6F7186": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableSession285B74EB",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableSearchArn4F68FB5B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableSearch6846210E",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableDataArn09338C9B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableDataBFCA9ACA",
+     "Arn"
+    ]
+   }
+  },
+  "StorageTableGraphArn3628D2E1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageTableGraph08DFE087",
+     "Arn"
+    ]
+   }
+  },
+  "StorageDataBucketName4ED5ABEB": {
+   "Value": {
+    "Ref": "StorageDataBucketB1B922FA"
+   }
+  },
+  "StorageDataBucketArnF0D56E96": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageDataBucketB1B922FA",
+     "Arn"
+    ]
+   }
+  },
+  "StorageEnvName62F70F77": {
+   "Value": "arbitium0813"
+  },
+  "ConsoleAmplifyAppId91397C31": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConsoleConsoleApp2C00C3B1",
+     "AppId"
+    ]
+   }
+  },
+  "ConsoleAmplifyDefaultDomainB2CB8A9A": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConsoleConsoleApp2C00C3B1",
+     "DefaultDomain"
+    ]
+   }
+  },
+  "AuthUserPoolIdC0605E59": {
+   "Value": {
+    "Ref": "AuthUserPool8115E87F"
+   }
+  },
+  "AuthUserPoolArn85C0FF89": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AuthUserPool8115E87F",
+     "Arn"
+    ]
+   }
+  },
+  "AuthAppClientId23A297AC": {
+   "Value": {
+    "Ref": "AuthUserPoolAppClient1D18298A"
+   }
+  },
+  "AuthCognitoDomain994E45B2": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arbitium0813.auth.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazoncognito.com"
+     ]
+    ]
+   }
+  },
+  "EmailFromEmail4EB08ED3": {
+   "Value": "ricardo.cid@arbitium.com"
+  },
+  "EmailSesIdentityName09C727FB": {
+   "Value": "ricardo.cid@arbitium.com"
+  },
+  "EmailSesIdentityType4A7C0483": {
+   "Value": "email"
+  },
+  "EmailSesDnsMode75F1EC0B": {
+   "Description": "route53_auto: DKIM records created in email_hosted_zone_id. manual_dns: add DkimRecord* outputs at your DNS provider. email_inbox: confirm the SES verification email to email_from.",
+   "Value": "email_inbox"
+  },
+  "EmailEnvName585BB579": {
+   "Value": "arbitium0813"
+  },
+  "RuntimeBackendEcrRepoNameE3973B62": {
+   "Value": {
+    "Ref": "RuntimeBackendEcrRepoC10B100E"
+   }
+  },
+  "RuntimeBackendEcrRepoUri1ECF7F45": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "RuntimeBackendEcrRepoC10B100E",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "RuntimeBackendEcrRepoC10B100E",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "RuntimeBackendEcrRepoC10B100E"
+      }
+     ]
+    ]
+   }
+  },
+  "RuntimeSeedCodeBuildProjectNameEA6AA04F": {
+   "Value": {
+    "Ref": "RuntimeSeedImageBuilder7A80A5D2"
+   }
+  },
+  "RuntimeTenantPolicyArn40D9BB1C": {
+   "Value": {
+    "Ref": "RuntimeTenantPolicy6EC9A05F"
+   }
+  },
+  "RuntimeTenantRoleArn41051846": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeTenantRoleB259B5DF",
+     "Arn"
+    ]
+   }
+  },
+  "RuntimeCodeDeployAppName95751303": {
+   "Value": "arbitium0813-backend-codedeploy"
+  },
+  "RuntimeOidcProviderArn440C695F": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:iam::",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":oidc-provider/token.actions.githubusercontent.com"
+     ]
+    ]
+   }
+  },
+  "RuntimeOidcDeployRoleArnProduction66855011": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeOidcDeployRoleProduction76FE6787",
+     "Arn"
+    ]
+   }
+  },
+  "RuntimeOidcDeployRoleArnStagingA2783588": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeOidcDeployRoleStaging6514A1CD",
+     "Arn"
+    ]
+   }
+  },
+  "AiStorageS3VectorsBucketNameEB3C4577": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arbitium0813-vectors-",
+      {
+       "Ref": "AWS::AccountId"
+      }
+     ]
+    ]
+   }
+  },
+  "AiStorageS3VectorsBucketArn5B46D121": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformVectorBucket17B39749",
+     "VectorBucketArn"
+    ]
+   }
+  },
+  "AiStorageS3VectorsIndexRagKb88C307FD": {
+   "Value": "rag-kb"
+  },
+  "AiStorageRagDocsBucketNameC9315D6D": {
+   "Value": {
+    "Ref": "AiStorageRagDocsBucket207122BB"
+   }
+  },
+  "AiStorageRagDocsPrefix7A270E26": {
+   "Value": "rag/"
+  },
+  "AiStorageKbId4CA1B9E4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformKnowledgeBaseC5281373",
+     "KnowledgeBaseId"
+    ]
+   }
+  },
+  "AiStorageRagDataSourceId8A4DF6E3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformKbDataSource4AB2D761",
+     "DataSourceId"
+    ]
+   }
+  },
+  "AiStorageEmbeddingModelIdB372983C": {
+   "Value": "amazon.titan-embed-text-v2:0"
+  },
+  "AiStoragePlatformAiPolicyArn3C6778C7": {
+   "Value": {
+    "Ref": "AiStoragePlatformAiPolicy64662F47"
+   }
+  },
+  "AwsAccountId": {
+   "Value": {
+    "Ref": "AWS::AccountId"
+   }
+  },
+  "AwsRegion": {
+   "Value": {
+    "Ref": "AWS::Region"
+   }
+  },
+  "UserPoolId": {
+   "Value": {
+    "Ref": "AuthUserPool8115E87F"
+   }
+  },
+  "UserPoolArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AuthUserPool8115E87F",
+     "Arn"
+    ]
+   }
+  },
+  "AppClientId": {
+   "Value": {
+    "Ref": "AuthUserPoolAppClient1D18298A"
+   }
+  },
+  "CognitoDomain": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arbitium0813.auth.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazoncognito.com"
+     ]
+    ]
+   }
+  },
+  "DataBucketName": {
+   "Value": {
+    "Ref": "StorageDataBucketB1B922FA"
+   }
+  },
+  "DataBucketArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StorageDataBucketB1B922FA",
+     "Arn"
+    ]
+   }
+  },
+  "EnvName": {
+   "Value": "arbitium0813"
+  },
+  "AmplifyAppId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConsoleConsoleApp2C00C3B1",
+     "AppId"
+    ]
+   }
+  },
+  "AmplifyDefaultDomain": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConsoleConsoleApp2C00C3B1",
+     "DefaultDomain"
+    ]
+   }
+  },
+  "AmplifyConsoleUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://production.",
+      {
+       "Fn::GetAtt": [
+        "ConsoleConsoleApp2C00C3B1",
+        "DefaultDomain"
+       ]
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "AmplifyConsoleUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://staging.",
+      {
+       "Fn::GetAtt": [
+        "ConsoleConsoleApp2C00C3B1",
+        "DefaultDomain"
+       ]
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "FromEmail": {
+   "Value": "ricardo.cid@arbitium.com"
+  },
+  "SesIdentityName": {
+   "Value": "ricardo.cid@arbitium.com"
+  },
+  "SesDnsMode": {
+   "Value": "email_inbox"
+  },
+  "BackendEcrRepoName": {
+   "Value": {
+    "Ref": "RuntimeBackendEcrRepoC10B100E"
+   }
+  },
+  "BackendEcrRepoUri": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "RuntimeBackendEcrRepoC10B100E",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "RuntimeBackendEcrRepoC10B100E",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "RuntimeBackendEcrRepoC10B100E"
+      }
+     ]
+    ]
+   }
+  },
+  "SeedCodeBuildProjectName": {
+   "Value": {
+    "Ref": "RuntimeSeedImageBuilder7A80A5D2"
+   }
+  },
+  "TenantPolicyArn": {
+   "Value": {
+    "Ref": "RuntimeTenantPolicy6EC9A05F"
+   }
+  },
+  "TenantRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeTenantRoleB259B5DF",
+     "Arn"
+    ]
+   }
+  },
+  "CodeDeployAppName": {
+   "Value": "arbitium0813-backend-codedeploy"
+  },
+  "OidcProviderArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:iam::",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":oidc-provider/token.actions.githubusercontent.com"
+     ]
+    ]
+   }
+  },
+  "OidcDeployRoleArnProduction": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeOidcDeployRoleProduction76FE6787",
+     "Arn"
+    ]
+   }
+  },
+  "OidcDeployRoleArnStaging": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeOidcDeployRoleStaging6514A1CD",
+     "Arn"
+    ]
+   }
+  },
+  "S3VECTORSBUCKET": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arbitium0813-vectors-",
+      {
+       "Ref": "AWS::AccountId"
+      }
+     ]
+    ]
+   }
+  },
+  "S3VECTORSBUCKETARN": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformVectorBucket17B39749",
+     "VectorBucketArn"
+    ]
+   }
+  },
+  "S3VECTORSINDEXRAGKB": {
+   "Value": "rag-kb"
+  },
+  "RAGDOCSBUCKET": {
+   "Value": {
+    "Ref": "AiStorageRagDocsBucket207122BB"
+   }
+  },
+  "RAGDOCSPREFIX": {
+   "Value": "rag/"
+  },
+  "KBID": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformKnowledgeBaseC5281373",
+     "KnowledgeBaseId"
+    ]
+   }
+  },
+  "RAGDATASOURCEID": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformKbDataSource4AB2D761",
+     "DataSourceId"
+    ]
+   }
+  },
+  "EMBEDDINGMODELID": {
+   "Value": "amazon.titan-embed-text-v2:0"
+  },
+  "PlatformAiPolicyArn": {
+   "Value": {
+    "Ref": "AiStoragePlatformAiPolicy64662F47"
+   }
+  },
+  "ExportsOutputRefRuntimeTenantPolicy6EC9A05F0821994A": {
+   "Value": {
+    "Ref": "RuntimeTenantPolicy6EC9A05F"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefRuntimeTenantPolicy6EC9A05F0821994A"
+   }
+  },
+  "ExportsOutputRefAiStoragePlatformAiPolicy64662F478CBBABC4": {
+   "Value": {
+    "Ref": "AiStoragePlatformAiPolicy64662F47"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefAiStoragePlatformAiPolicy64662F478CBBABC4"
+   }
+  },
+  "ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeTenantRoleB259B5DF",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC"
+   }
+  },
+  "ExportsOutputRefRuntimeTenantRoleB259B5DF59B87888": {
+   "Value": {
+    "Ref": "RuntimeTenantRoleB259B5DF"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefRuntimeTenantRoleB259B5DF59B87888"
+   }
+  },
+  "ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConsoleConsoleApp2C00C3B1",
+     "DefaultDomain"
+    ]
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+   }
+  },
+  "ExportsOutputRefAuthUserPool8115E87F4F9C6D4C": {
+   "Value": {
+    "Ref": "AuthUserPool8115E87F"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefAuthUserPool8115E87F4F9C6D4C"
+   }
+  },
+  "ExportsOutputRefAuthUserPoolAppClient1D18298A53AF1D0B": {
+   "Value": {
+    "Ref": "AuthUserPoolAppClient1D18298A"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefAuthUserPoolAppClient1D18298A53AF1D0B"
+   }
+  },
+  "ExportsOutputRefStorageDataBucketB1B922FA1C3AE375": {
+   "Value": {
+    "Ref": "StorageDataBucketB1B922FA"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefStorageDataBucketB1B922FA1C3AE375"
+   }
+  },
+  "ExportsOutputRefRuntimeBackendEcrRepoC10B100E42DABFEB": {
+   "Value": {
+    "Ref": "RuntimeBackendEcrRepoC10B100E"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefRuntimeBackendEcrRepoC10B100E42DABFEB"
+   }
+  },
+  "ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1AppIdE09B0E44": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConsoleConsoleApp2C00C3B1",
+     "AppId"
+    ]
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1AppIdE09B0E44"
+   }
+  },
+  "ExportsOutputFnGetAttAiStoragePlatformVectorBucket17B39749VectorBucketArn769C540C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformVectorBucket17B39749",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformVectorBucket17B39749VectorBucketArn769C540C"
+   }
+  },
+  "ExportsOutputRefAiStorageRagDocsBucket207122BB41B0E725": {
+   "Value": {
+    "Ref": "AiStorageRagDocsBucket207122BB"
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputRefAiStorageRagDocsBucket207122BB41B0E725"
+   }
+  },
+  "ExportsOutputFnGetAttAiStoragePlatformKnowledgeBaseC5281373KnowledgeBaseIdD3B95105": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformKnowledgeBaseC5281373",
+     "KnowledgeBaseId"
+    ]
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKnowledgeBaseC5281373KnowledgeBaseIdD3B95105"
+   }
+  },
+  "ExportsOutputFnGetAttAiStoragePlatformKbDataSource4AB2D761DataSourceId0040D196": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AiStoragePlatformKbDataSource4AB2D761",
+     "DataSourceId"
+    ]
+   },
+   "Export": {
+    "Name": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKbDataSource4AB2D761DataSourceId0040D196"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

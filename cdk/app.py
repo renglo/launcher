@@ -22,17 +22,11 @@ Deploy order:
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
 import aws_cdk as cdk
 
 _ROOT = Path(__file__).resolve().parent
-_EXTENSIONS_DIR = _ROOT / "extensions"
-if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
-    sys.path.insert(0, str(_EXTENSIONS_DIR))
-else:
-    sys.path.insert(0, str(_ROOT.parents[2] / "extensions-service" / "scripts"))
 
 from stack_names import stack_a_id, stack_b_id  # noqa: E402
 from stacks.stack_a import StackA  # noqa: E402
@@ -159,6 +153,7 @@ stack_b = StackB(
     extension_manifest=extension_manifest,
     extension_config=extension_config,
     include_extension=extension_folder is not None and extension_manifest is not None,
+    package_registry=package_registry,
 )
 stack_b.add_dependency(stack_a)
 

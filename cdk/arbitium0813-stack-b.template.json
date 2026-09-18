@@ -1,0 +1,4190 @@
+{
+ "Description": "Reglo deployment — app, compute, extension (backend Lambda/API Gateway; handlers Lambda/ECS/EC2; extension S3/IAM)",
+ "Resources": {
+  "AppBackendLambdaProductionEBFBCBE6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "ImageUri": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ".dkr.ecr.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".amazonaws.com/arbitium0813_backend:seed"
+       ]
+      ]
+     }
+    },
+    "Description": "Reglo Deployment",
+    "FunctionName": "arbitium0813-backend-production",
+    "MemorySize": 512,
+    "PackageType": "Image",
+    "Role": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/arbitium0813_tt_role"
+      ]
+     ]
+    },
+    "Timeout": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaProduction"
+   }
+  },
+  "AppBackendLambdaVersionProductionC609183A": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "Description": "Seed version — production",
+    "FunctionName": {
+     "Ref": "AppBackendLambdaProductionEBFBCBE6"
+    }
+   },
+   "DependsOn": [
+    "AppBackendLambdaProductionEBFBCBE6"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaVersionProduction"
+   }
+  },
+  "AppBackendLambdaAliasProduction88466E92": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "Description": "Reglo Deployment production traffic alias",
+    "FunctionName": {
+     "Ref": "AppBackendLambdaProductionEBFBCBE6"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "AppBackendLambdaVersionProductionC609183A",
+      "Version"
+     ]
+    },
+    "Name": "production"
+   },
+   "DependsOn": [
+    "AppBackendLambdaVersionProductionC609183A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaAliasProduction"
+   }
+  },
+  "AppBackendLambdaLogGroupProduction2D8050AD": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/arbitium0813-backend-production",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaLogGroupProduction/Resource"
+   }
+  },
+  "AppRestApiProduction412BD8A4": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitium0813-api-production"
+   },
+   "DependsOn": [
+    "AppBackendLambdaAliasProduction88466E92"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiProduction"
+   }
+  },
+  "AppRestApiProxyResourceProduction5963C85C": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "AppRestApiProduction412BD8A4",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "AppRestApiProduction412BD8A4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiProxyResourceProduction"
+   }
+  },
+  "AppRestApiMethodAnyRootProduction3C2BFBDE": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/arn:aws:lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":function:arbitium0813-backend-production:production/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "AppRestApiProduction412BD8A4",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "AppRestApiProduction412BD8A4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiMethodAnyRootProduction"
+   }
+  },
+  "AppRestApiMethodAnyProxyProduction3919D576": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/arn:aws:lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":function:arbitium0813-backend-production:production/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "AppRestApiProxyResourceProduction5963C85C"
+    },
+    "RestApiId": {
+     "Ref": "AppRestApiProduction412BD8A4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiMethodAnyProxyProduction"
+   }
+  },
+  "AppBackendLambdaPermissionRestApiProductionE518A327": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": "arbitium0813-backend-production:production",
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "AppRestApiProduction412BD8A4"
+       },
+       "/*/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaPermissionRestApiProduction"
+   }
+  },
+  "AppRestApiDeploymentProductionBE2D79B5": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "RestApiId": {
+     "Ref": "AppRestApiProduction412BD8A4"
+    }
+   },
+   "DependsOn": [
+    "AppBackendLambdaPermissionRestApiProductionE518A327",
+    "AppRestApiMethodAnyProxyProduction3919D576",
+    "AppRestApiMethodAnyRootProduction3C2BFBDE",
+    "AppRestApiProxyResourceProduction5963C85C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiDeploymentProduction"
+   }
+  },
+  "AppRestApiStageProductionFB310CEB": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "AppRestApiDeploymentProductionBE2D79B5"
+    },
+    "Description": "Reglo Deployment",
+    "RestApiId": {
+     "Ref": "AppRestApiProduction412BD8A4"
+    },
+    "StageName": "production"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiStageProduction"
+   }
+  },
+  "AppWsApiProductionBEEBC97C": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitium0813-websocket-production",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsApiProduction"
+   }
+  },
+  "AppWsIntegrationProductionEFB22F3B": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "AppWsApiProductionBEEBC97C"
+    },
+    "ContentHandlingStrategy": "CONVERT_TO_TEXT",
+    "IntegrationMethod": "POST",
+    "IntegrationType": "HTTP",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "AppRestApiProduction412BD8A4"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production/_chat/message"
+      ]
+     ]
+    },
+    "PassthroughBehavior": "WHEN_NO_MATCH",
+    "PayloadFormatVersion": "1.0",
+    "RequestTemplates": {
+     "message_template": "#set($action = $input.path('$.action'))\n#set($data = $input.path('$.data'))\n#set($entity_type = $input.path('$.entity_type'))\n#set($entity_id = $input.path('$.entity_id'))\n#set($thread = $input.path('$.thread'))\n#set($portfolio = $input.path('$.portfolio'))\n#set($org = $input.path('$.org'))\n#set($core = $input.path('$.core'))\n#set($next = $input.path('$.next'))\n#set($auth = $input.path('$.auth'))\n{\n  \"action\": \"$util.escapeJavaScript($action)\",\n  \"data\": $input.json('$.data'),\n  \"entity_type\": \"$util.escapeJavaScript($entity_type)\",\n  \"entity_id\": \"$util.escapeJavaScript($entity_id)\",\n  \"thread\": \"$util.escapeJavaScript($thread)\",\n  \"portfolio\": \"$util.escapeJavaScript($portfolio)\",\n  \"org\": \"$util.escapeJavaScript($org)\",\n  \"core\": \"$util.escapeJavaScript($core)\",\n  \"next\": \"$util.escapeJavaScript($util.defaultIfNullOrEmpty($next, ''))\",\n  \"connectionId\": \"$context.connectionId\",\n  \"auth\": \"$util.escapeJavaScript($auth)\"\n}"
+    },
+    "TemplateSelectionExpression": "message_template",
+    "TimeoutInMillis": 29000
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsIntegrationProduction"
+   }
+  },
+  "AppWsRouteProductionBD870288": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "AppWsApiProductionBEEBC97C"
+    },
+    "RouteKey": "chat_message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "AppWsIntegrationProductionEFB22F3B"
+       }
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppWsIntegrationProductionEFB22F3B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsRouteProduction"
+   }
+  },
+  "AppWsStageProduction9A9F70AA": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "AppWsApiProductionBEEBC97C"
+    },
+    "AutoDeploy": true,
+    "StageName": "production"
+   },
+   "DependsOn": [
+    "AppWsRouteProductionBD870288"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsStageProduction"
+   }
+  },
+  "AppBackendLambdaStaging591ABC97": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "ImageUri": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ".dkr.ecr.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".amazonaws.com/arbitium0813_backend:seed"
+       ]
+      ]
+     }
+    },
+    "Description": "Reglo Deployment",
+    "FunctionName": "arbitium0813-backend-staging",
+    "MemorySize": 512,
+    "PackageType": "Image",
+    "Role": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/arbitium0813_tt_role"
+      ]
+     ]
+    },
+    "Timeout": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaStaging"
+   }
+  },
+  "AppBackendLambdaVersionStaging4BD10470": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "Description": "Seed version — staging",
+    "FunctionName": {
+     "Ref": "AppBackendLambdaStaging591ABC97"
+    }
+   },
+   "DependsOn": [
+    "AppBackendLambdaStaging591ABC97"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaVersionStaging"
+   }
+  },
+  "AppBackendLambdaAliasStaging99352ACF": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "Description": "Reglo Deployment staging traffic alias",
+    "FunctionName": {
+     "Ref": "AppBackendLambdaStaging591ABC97"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "AppBackendLambdaVersionStaging4BD10470",
+      "Version"
+     ]
+    },
+    "Name": "staging"
+   },
+   "DependsOn": [
+    "AppBackendLambdaVersionStaging4BD10470"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaAliasStaging"
+   }
+  },
+  "AppBackendLambdaLogGroupStagingB63CE9FD": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/arbitium0813-backend-staging",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaLogGroupStaging/Resource"
+   }
+  },
+  "AppRestApiStaging28FCC49C": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitium0813-api-staging"
+   },
+   "DependsOn": [
+    "AppBackendLambdaAliasStaging99352ACF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiStaging"
+   }
+  },
+  "AppRestApiProxyResourceStaging76DDC5C7": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "AppRestApiStaging28FCC49C",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "AppRestApiStaging28FCC49C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiProxyResourceStaging"
+   }
+  },
+  "AppRestApiMethodAnyRootStaging725985FE": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/arn:aws:lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":function:arbitium0813-backend-staging:staging/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "AppRestApiStaging28FCC49C",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "AppRestApiStaging28FCC49C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiMethodAnyRootStaging"
+   }
+  },
+  "AppRestApiMethodAnyProxyStagingE8D00FCD": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/arn:aws:lambda:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":function:arbitium0813-backend-staging:staging/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "AppRestApiProxyResourceStaging76DDC5C7"
+    },
+    "RestApiId": {
+     "Ref": "AppRestApiStaging28FCC49C"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiMethodAnyProxyStaging"
+   }
+  },
+  "AppBackendLambdaPermissionRestApiStaging1A7B1574": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": "arbitium0813-backend-staging:staging",
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "AppRestApiStaging28FCC49C"
+       },
+       "/*/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/BackendLambdaPermissionRestApiStaging"
+   }
+  },
+  "AppRestApiDeploymentStaging884A3A6A": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "RestApiId": {
+     "Ref": "AppRestApiStaging28FCC49C"
+    }
+   },
+   "DependsOn": [
+    "AppBackendLambdaPermissionRestApiStaging1A7B1574",
+    "AppRestApiMethodAnyProxyStagingE8D00FCD",
+    "AppRestApiMethodAnyRootStaging725985FE",
+    "AppRestApiProxyResourceStaging76DDC5C7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiDeploymentStaging"
+   }
+  },
+  "AppRestApiStageStaging1305AA4A": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "AppRestApiDeploymentStaging884A3A6A"
+    },
+    "Description": "Reglo Deployment",
+    "RestApiId": {
+     "Ref": "AppRestApiStaging28FCC49C"
+    },
+    "StageName": "staging"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/RestApiStageStaging"
+   }
+  },
+  "AppWsApiStagingA90D5816": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Description": "Reglo Deployment",
+    "Name": "arbitium0813-websocket-staging",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsApiStaging"
+   }
+  },
+  "AppWsIntegrationStaging0CFB793E": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "AppWsApiStagingA90D5816"
+    },
+    "ContentHandlingStrategy": "CONVERT_TO_TEXT",
+    "IntegrationMethod": "POST",
+    "IntegrationType": "HTTP",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "AppRestApiStaging28FCC49C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/staging/_chat/message"
+      ]
+     ]
+    },
+    "PassthroughBehavior": "WHEN_NO_MATCH",
+    "PayloadFormatVersion": "1.0",
+    "RequestTemplates": {
+     "message_template": "#set($action = $input.path('$.action'))\n#set($data = $input.path('$.data'))\n#set($entity_type = $input.path('$.entity_type'))\n#set($entity_id = $input.path('$.entity_id'))\n#set($thread = $input.path('$.thread'))\n#set($portfolio = $input.path('$.portfolio'))\n#set($org = $input.path('$.org'))\n#set($core = $input.path('$.core'))\n#set($next = $input.path('$.next'))\n#set($auth = $input.path('$.auth'))\n{\n  \"action\": \"$util.escapeJavaScript($action)\",\n  \"data\": $input.json('$.data'),\n  \"entity_type\": \"$util.escapeJavaScript($entity_type)\",\n  \"entity_id\": \"$util.escapeJavaScript($entity_id)\",\n  \"thread\": \"$util.escapeJavaScript($thread)\",\n  \"portfolio\": \"$util.escapeJavaScript($portfolio)\",\n  \"org\": \"$util.escapeJavaScript($org)\",\n  \"core\": \"$util.escapeJavaScript($core)\",\n  \"next\": \"$util.escapeJavaScript($util.defaultIfNullOrEmpty($next, ''))\",\n  \"connectionId\": \"$context.connectionId\",\n  \"auth\": \"$util.escapeJavaScript($auth)\"\n}"
+    },
+    "TemplateSelectionExpression": "message_template",
+    "TimeoutInMillis": 29000
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsIntegrationStaging"
+   }
+  },
+  "AppWsRouteStaging69784F10": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "AppWsApiStagingA90D5816"
+    },
+    "RouteKey": "chat_message",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "AppWsIntegrationStaging0CFB793E"
+       }
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "AppWsIntegrationStaging0CFB793E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsRouteStaging"
+   }
+  },
+  "AppWsStageStaging9D62DC2B": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "AppWsApiStagingA90D5816"
+    },
+    "AutoDeploy": true,
+    "StageName": "staging"
+   },
+   "DependsOn": [
+    "AppWsRouteStaging69784F10"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/App/WsStageStaging"
+   }
+  },
+  "ComputeHandlersPolicyA9144691": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "ManagedPolicyName": "Arbitium0813HandlersPolicy",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecs:DescribeClusters",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:RunTask"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster/arbitium0813-handlers"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":task-definition/arbitium0813-handlers-ecs:*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":task/arbitium0813-handlers/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "ECSRunTask"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/arbitium0813-handlers-ecs-execution"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/arbitium0813-handlers-ecs-task"
+          ]
+         ]
+        }
+       ],
+       "Sid": "ECSPassRole"
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:s3:::arbitium0813-handlers-ecs-",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "ECSHandshakeS3"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Compute/HandlersPolicy/Resource"
+   }
+  },
+  "ComputeHandlersLambdaRole7EA2F2BD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Ref": "ComputeHandlersPolicyA9144691"
+     },
+     {
+      "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefRuntimeTenantPolicy6EC9A05F0821994A"
+     },
+     {
+      "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAiStoragePlatformAiPolicy64662F478CBBABC4"
+     }
+    ],
+    "RoleName": "arbitium0813-handlers-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Compute/HandlersLambdaRole/Resource"
+   }
+  },
+  "ComputeHandlersLambdaLogGroupB03E2C66": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/arbitium0813-handlers",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Compute/HandlersLambdaLogGroup/Resource"
+   }
+  },
+  "ComputeHandlersLambda8EEE3466": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context):\n    return {'statusCode': 200, 'body': 'seed'}\n"
+    },
+    "Description": "Reglo Deployment",
+    "FunctionName": "arbitium0813-handlers",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "ComputeHandlersLambdaRole7EA2F2BD",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "ComputeHandlersLambdaRole7EA2F2BD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Compute/HandlersLambda"
+   }
+  },
+  "ComputeHandlersOidcDeployRoleProduction05C7B835": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+         "token.actions.githubusercontent.com:sub": [
+          "repo:Arbitium/arbitium-bom:environment:production",
+          "repo:Arbitium@223699384/arbitium-bom@1225933723:environment:production"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":oidc-provider/token.actions.githubusercontent.com"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:GetCallerIdentity",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ReadIdentity"
+        },
+        {
+         "Action": "ecr:GetAuthorizationToken",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcrAuthToken"
+        },
+        {
+         "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:DescribeRepositories",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ecr:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":repository/arbitium0813-handlers-ecs"
+           ]
+          ]
+         },
+         "Sid": "EcrPushScoped"
+        },
+        {
+         "Action": [
+          "ecs:DescribeCapacityProviders",
+          "ecs:DescribeClusters",
+          "ecs:DescribeTaskDefinition",
+          "ecs:ListContainerInstances",
+          "ecs:ListTaskDefinitions",
+          "ecs:RegisterTaskDefinition"
+         ],
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcsTaskDefinition"
+        },
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:PutRetentionPolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:logs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":log-group:/ecs/arbitium0813-handlers-ecs*"
+           ]
+          ]
+         },
+         "Sid": "LogsHandlers"
+        },
+        {
+         "Action": [
+          "s3:CreateBucket",
+          "s3:DeleteObject",
+          "s3:GetBucketLocation",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetObject",
+          "s3:HeadBucket",
+          "s3:ListBucket",
+          "s3:PutLifecycleConfiguration",
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:s3:::arbitium0813-handlers-ecs-",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             "/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:s3:::arbitium0813-handlers-ecs-",
+             {
+              "Ref": "AWS::AccountId"
+             }
+            ]
+           ]
+          }
+         ],
+         "Sid": "S3ResultsBucket"
+        },
+        {
+         "Action": "iam:PassRole",
+         "Condition": {
+          "StringEquals": {
+           "iam:PassedToService": "ecs-tasks.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:iam::",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":role/arbitium0813-handlers-ecs-execution"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:iam::",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":role/arbitium0813-handlers-ecs-task"
+            ]
+           ]
+          }
+         ],
+         "Sid": "PassEcsRoles"
+        },
+        {
+         "Action": [
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":function:arbitium0813-handlers"
+           ]
+          ]
+         },
+         "Sid": "LambdaHandlersOptional"
+        },
+        {
+         "Action": [
+          "iam:GetRole",
+          "iam:PassRole"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/arbitium0813-handlers-role"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/deploy-input"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-security-groups"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-subnets"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-vpc"
+            ]
+           ]
+          }
+         ],
+         "Sid": "SsmReadDeployInput"
+        },
+        {
+         "Action": "cloudformation:DescribeStacks",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CfnDescribePeerStack"
+        },
+        {
+         "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:PutParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/peer-routes"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/platform-vars/production"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/platform-vars/staging"
+            ]
+           ]
+          }
+         ],
+         "Sid": "SsmPeerRoutes"
+        },
+        {
+         "Action": [
+          "codeartifact:DescribeDomain",
+          "codeartifact:DescribePackageVersion",
+          "codeartifact:DescribeRepository",
+          "codeartifact:GetAuthorizationToken",
+          "codeartifact:GetPackageVersionAsset",
+          "codeartifact:GetPackageVersionReadme",
+          "codeartifact:GetRepositoryEndpoint",
+          "codeartifact:ListPackageVersionAssets",
+          "codeartifact:ListPackageVersionDependencies",
+          "codeartifact:ListPackageVersions",
+          "codeartifact:ListPackages",
+          "codeartifact:ReadFromRepository"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:repository/*/*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "CodeArtifactRead"
+        },
+        {
+         "Action": "sts:GetServiceBearerToken",
+         "Condition": {
+          "StringEquals": {
+           "sts:AWSServiceName": "codeartifact.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CodeArtifactBearerToken"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "GitHubActionsHandlersPolicy-arbitium0813-production"
+     }
+    ],
+    "RoleName": "GitHubActionsHandlersRole-arbitium0813-production"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Compute/HandlersOidcDeployRoleProduction/Resource"
+   }
+  },
+  "ComputeHandlersOidcDeployRoleStaging7DC6BBBB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+         "token.actions.githubusercontent.com:sub": [
+          "repo:Arbitium/arbitium-bom:environment:staging",
+          "repo:Arbitium@223699384/arbitium-bom@1225933723:environment:staging"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":oidc-provider/token.actions.githubusercontent.com"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Reglo Deployment",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:GetCallerIdentity",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ReadIdentity"
+        },
+        {
+         "Action": "ecr:GetAuthorizationToken",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcrAuthToken"
+        },
+        {
+         "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:DescribeRepositories",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ecr:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":repository/arbitium0813-handlers-ecs"
+           ]
+          ]
+         },
+         "Sid": "EcrPushScoped"
+        },
+        {
+         "Action": [
+          "ecs:DescribeCapacityProviders",
+          "ecs:DescribeClusters",
+          "ecs:DescribeTaskDefinition",
+          "ecs:ListContainerInstances",
+          "ecs:ListTaskDefinitions",
+          "ecs:RegisterTaskDefinition"
+         ],
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "EcsTaskDefinition"
+        },
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:PutRetentionPolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:logs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":log-group:/ecs/arbitium0813-handlers-ecs*"
+           ]
+          ]
+         },
+         "Sid": "LogsHandlers"
+        },
+        {
+         "Action": [
+          "s3:CreateBucket",
+          "s3:DeleteObject",
+          "s3:GetBucketLocation",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetObject",
+          "s3:HeadBucket",
+          "s3:ListBucket",
+          "s3:PutLifecycleConfiguration",
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:s3:::arbitium0813-handlers-ecs-",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             "/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:s3:::arbitium0813-handlers-ecs-",
+             {
+              "Ref": "AWS::AccountId"
+             }
+            ]
+           ]
+          }
+         ],
+         "Sid": "S3ResultsBucket"
+        },
+        {
+         "Action": "iam:PassRole",
+         "Condition": {
+          "StringEquals": {
+           "iam:PassedToService": "ecs-tasks.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:iam::",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":role/arbitium0813-handlers-ecs-execution"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:iam::",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":role/arbitium0813-handlers-ecs-task"
+            ]
+           ]
+          }
+         ],
+         "Sid": "PassEcsRoles"
+        },
+        {
+         "Action": [
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":function:arbitium0813-handlers"
+           ]
+          ]
+         },
+         "Sid": "LambdaHandlersOptional"
+        },
+        {
+         "Action": [
+          "iam:GetRole",
+          "iam:PassRole"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/arbitium0813-handlers-role"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/deploy-input"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-security-groups"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-subnets"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/ecs-vpc"
+            ]
+           ]
+          }
+         ],
+         "Sid": "SsmReadDeployInput"
+        },
+        {
+         "Action": "cloudformation:DescribeStacks",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CfnDescribePeerStack"
+        },
+        {
+         "Action": [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:PutParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/peer-routes"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/platform-vars/production"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/arbitium0813/bootstrap/platform-vars/staging"
+            ]
+           ]
+          }
+         ],
+         "Sid": "SsmPeerRoutes"
+        },
+        {
+         "Action": [
+          "codeartifact:DescribeDomain",
+          "codeartifact:DescribePackageVersion",
+          "codeartifact:DescribeRepository",
+          "codeartifact:GetAuthorizationToken",
+          "codeartifact:GetPackageVersionAsset",
+          "codeartifact:GetPackageVersionReadme",
+          "codeartifact:GetRepositoryEndpoint",
+          "codeartifact:ListPackageVersionAssets",
+          "codeartifact:ListPackageVersionDependencies",
+          "codeartifact:ListPackageVersions",
+          "codeartifact:ListPackages",
+          "codeartifact:ReadFromRepository"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:domain/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:package/*/*/*/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:codeartifact:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":339713094352:repository/*/*"
+            ]
+           ]
+          }
+         ],
+         "Sid": "CodeArtifactRead"
+        },
+        {
+         "Action": "sts:GetServiceBearerToken",
+         "Condition": {
+          "StringEquals": {
+           "sts:AWSServiceName": "codeartifact.amazonaws.com"
+          }
+         },
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "CodeArtifactBearerToken"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "GitHubActionsHandlersPolicy-arbitium0813-staging"
+     }
+    ],
+    "RoleName": "GitHubActionsHandlersRole-arbitium0813-staging"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Compute/HandlersOidcDeployRoleStaging/Resource"
+   }
+  },
+  "WebhookIngressIngressSecretE261904A": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Shared EventBridge → Renglo API ingress secret",
+    "GenerateSecretString": {
+     "ExcludeCharacters": "\"'\\",
+     "ExcludePunctuation": true,
+     "PasswordLength": 64
+    },
+    "Name": "arbitium0813/renglo/ingress-secret"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/IngressSecret/Resource"
+   }
+  },
+  "WebhookIngressWebhookEdgeRole4DFDED3E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "arbitium0813-webhook-edge-role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookEdgeRole/Resource"
+   }
+  },
+  "WebhookIngressWebhookEdgeRoleDefaultPolicy9BDDF8B4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:events:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":event-bus/default"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "dynamodb:GetItem",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:dynamodb:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":table/arbitium0813_data"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WebhookIngressWebhookEdgeRoleDefaultPolicy9BDDF8B4",
+    "Roles": [
+     {
+      "Ref": "WebhookIngressWebhookEdgeRole4DFDED3E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookEdgeRole/DefaultPolicy/Resource"
+   }
+  },
+  "WebhookIngressWebhookEdgeFn66256064": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1f20db73278fd3e1fdfc0b5f5e273e4e2b44c34a3aecc2b540f642f1291c6200.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "ENVIRONMENT": "arbitium0813",
+      "DYNAMODB_DATA_TABLE": "arbitium0813_data",
+      "EVENT_BUS_NAME": "default"
+     }
+    },
+    "FunctionName": "arbitium0813-webhook-edge",
+    "Handler": "handler.lambda_handler",
+    "MemorySize": 128,
+    "Role": {
+     "Fn::GetAtt": [
+      "WebhookIngressWebhookEdgeRole4DFDED3E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "WebhookIngressWebhookEdgeRoleDefaultPolicy9BDDF8B4",
+    "WebhookIngressWebhookEdgeRole4DFDED3E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookEdgeFn/Resource",
+    "aws:asset:path": "asset.1f20db73278fd3e1fdfc0b5f5e273e4e2b44c34a3aecc2b540f642f1291c6200",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "WebhookIngressWebhookHttpApiF585272E": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Description": "Renglo native webhook edge",
+    "Name": "arbitium0813-webhook-edge",
+    "ProtocolType": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/Resource"
+   }
+  },
+  "WebhookIngressWebhookHttpApiDefaultStageA17C3B65": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/DefaultStage/Resource"
+   }
+  },
+  "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegration6BC2C2FE": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "WebhookIngressWebhookEdgeFn66256064",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}--{channel}/WebhookIntegration/Resource"
+   }
+  },
+  "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegrationPermission4C95BAFC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "WebhookIngressWebhookEdgeFn66256064",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiF585272E"
+       },
+       "/*/*/{portfolio}/{org}/{channel}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}--{channel}/WebhookIntegration-Permission"
+   }
+  },
+  "WebhookIngressWebhookHttpApiGETportfolioorgchannel75B06A05": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /{portfolio}/{org}/{channel}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegration6BC2C2FE"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}--{channel}/Resource"
+   }
+  },
+  "WebhookIngressWebhookHttpApiPOSTportfolioorgchannelWebhookIntegrationPermissionC23B83C9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "WebhookIngressWebhookEdgeFn66256064",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiF585272E"
+       },
+       "/*/*/{portfolio}/{org}/{channel}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}--{channel}/WebhookIntegration-Permission"
+   }
+  },
+  "WebhookIngressWebhookHttpApiPOSTportfolioorgchannel357DA13E": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /{portfolio}/{org}/{channel}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegration6BC2C2FE"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}--{channel}/Resource"
+   }
+  },
+  "WebhookIngressWebhookHttpApiGETportfolioorgWebhookIntegrationPermission75AC81DE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "WebhookIngressWebhookEdgeFn66256064",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiF585272E"
+       },
+       "/*/*/{portfolio}/{org}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}/WebhookIntegration-Permission"
+   }
+  },
+  "WebhookIngressWebhookHttpApiGETportfolioorgBD6343E7": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /{portfolio}/{org}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegration6BC2C2FE"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}/Resource"
+   }
+  },
+  "WebhookIngressWebhookHttpApiPOSTportfolioorgWebhookIntegrationPermission138DD849": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "WebhookIngressWebhookEdgeFn66256064",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiF585272E"
+       },
+       "/*/*/{portfolio}/{org}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}/WebhookIntegration-Permission"
+   }
+  },
+  "WebhookIngressWebhookHttpApiPOSTportfolioorg2A1D10A6": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /{portfolio}/{org}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegration6BC2C2FE"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}/Resource"
+   }
+  },
+  "WebhookIngressIngressConnectionB91C4450": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthParameters": {
+     "ApiKeyAuthParameters": {
+      "ApiKeyName": "X-Renglo-Ingress-Secret",
+      "ApiKeyValue": {
+       "Fn::Join": [
+        "",
+        [
+         "{{resolve:secretsmanager:",
+         {
+          "Ref": "WebhookIngressIngressSecretE261904A"
+         },
+         ":SecretString:::}}"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizationType": "API_KEY",
+    "Description": "EventBridge → Renglo universal /_schd/ingress",
+    "Name": "arbitium0813-renglo-ingress"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/IngressConnection/Connection"
+   }
+  },
+  "WebhookIngressIngressDestinationApiDestination7865454A": {
+   "Type": "AWS::Events::ApiDestination",
+   "Properties": {
+    "ConnectionArn": {
+     "Fn::GetAtt": [
+      "WebhookIngressIngressConnectionB91C4450",
+      "Arn"
+     ]
+    },
+    "Description": "POST webhook events to Renglo /_schd/ingress",
+    "HttpMethod": "POST",
+    "InvocationEndpoint": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "AppRestApiProduction412BD8A4"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production/_schd/ingress"
+      ]
+     ]
+    },
+    "InvocationRateLimitPerSecond": 20,
+    "Name": "arbitium0813-renglo-process"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/IngressDestination/ApiDestination"
+   }
+  },
+  "WebhookIngressWebhookRule4AA6353A": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Route platform webhook edge events to Renglo API ingress",
+    "EventPattern": {
+     "source": [
+      "custom.renglo.webhook"
+     ],
+     "detail-type": [
+      "WebhookReceived"
+     ]
+    },
+    "Name": "arbitium0813-renglo-webhook",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "WebhookIngressIngressDestinationApiDestination7865454A",
+        "Arn"
+       ]
+      },
+      "HttpParameters": {
+       "HeaderParameters": {
+        "Content-Type": "application/json"
+       }
+      },
+      "Id": "renglo-ingress",
+      "RoleArn": {
+       "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC"
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "WebhookIngressIngressDestinationApiDestination7865454A"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/WebhookIngress/WebhookRule"
+   }
+  },
+  "ExtensionActionsPolicy55958A58": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "Arbitiumtriage domain handlers (indexes declared on platform vector bucket)",
+    "ManagedPolicyName": "arbitium0813-arbitiumtriage-actions",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "TriageDomainPlaceholder"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefRuntimeTenantRoleB259B5DF59B87888"
+     },
+     {
+      "Ref": "ComputeHandlersLambdaRole7EA2F2BD"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Extension/ActionsPolicy/Resource"
+   }
+  },
+  "ExtensionThreatEventsIndex41BF66CB": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "IndexName": "threat-events",
+    "VectorBucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Extension/ThreatEventsIndex"
+   }
+  },
+  "ExtensionCatalogIndex56DD066B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "IndexName": "catalog",
+    "VectorBucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Extension/CatalogIndex"
+   }
+  },
+  "ExtensionCampaignsIndexA30B92B2": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "IndexName": "campaigns",
+    "VectorBucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/Extension/CampaignsIndex"
+   }
+  },
+  "BootstrapConfigPlatformVarsProductionAE602EA0": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/arbitium0813/bootstrap/platform-vars/production",
+    "Tier": "Standard",
+    "Type": "String",
+    "Value": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"GITHUB_REPOSITORY\":\"Arbitium/arbitium-bom\",\"ENVIRONMENT\":\"production\",\"VARS\":{\"WL_NAME\":\"arbitium0813\",\"BASE_URL\":\"https://",
+       {
+        "Ref": "AppRestApiProduction412BD8A4"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production\",\"FE_BASE_URL\":\"https://production.",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "/\",\"FROM_EMAIL\":\"ricardo.cid@arbitium.com\",\"LAMBDA_BACKEND_ARN\":\"arn:aws:lambda:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":function:arbitium0813-backend-production\",\"LAMBDA_EXTERNAL_HANDLERS_ARN\":\"arn:aws:lambda:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":function:arbitium0813-handlers\",\"ROLE_ARN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC"
+       },
+       "\",\"DYNAMODB_ENTITY_TABLE\":\"arbitium0813_entities\",\"DYNAMODB_BLUEPRINT_TABLE\":\"arbitium0813_blueprints\",\"DYNAMODB_RINGDATA_TABLE\":\"arbitium0813_data\",\"DYNAMODB_REL_TABLE\":\"arbitium0813_rel\",\"DYNAMODB_CHAT_TABLE\":\"arbitium0813_chat\",\"DYNAMODB_SESSION_TABLE\":\"arbitium0813_session\",\"DYNAMODB_SEARCH_TABLE\":\"arbitium0813_search\",\"DYNAMODB_GRAPH_TABLE\":\"arbitium0813_graph\",\"COGNITO_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"COGNITO_USERPOOL_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAuthUserPool8115E87F4F9C6D4C"
+       },
+       "\",\"COGNITO_APP_CLIENT_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAuthUserPoolAppClient1D18298A53AF1D0B"
+       },
+       "\",\"COGNITO_DOMAIN\":\"arbitium0813.auth.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazoncognito.com\",\"VITE_COGNITO_DOMAIN\":\"arbitium0813.auth.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazoncognito.com\",\"COGNITO_CHECK_TOKEN_EXPIRATION\":\"True\",\"PREVIEW_LAYER\":\"2\",\"S3_BUCKET_NAME\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefStorageDataBucketB1B922FA1C3AE375"
+       },
+       "\",\"ALLOW_DEV_ORIGINS\":\"true\",\"CODEDEPLOY_APPLICATION_NAME\":\"arbitium0813-backend-codedeploy\",\"CODEDEPLOY_DEPLOYMENT_GROUP_NAME\":\"arbitium0813-backend-production\",\"CODEDEPLOY_DEPLOYMENT_CONFIG_NAME\":\"CodeDeployDefault.LambdaCanary10Percent10Minutes\",\"AWS_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"AWS_DEFAULT_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"AWS_ECR_REPOSITORY\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefRuntimeBackendEcrRepoC10B100E42DABFEB"
+       },
+       "\",\"WEBSOCKET_CONNECTIONS\":\"https://",
+       {
+        "Ref": "AppWsApiProductionBEEBC97C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production\",\"WEBSOCKET_URL\":\"wss://",
+       {
+        "Ref": "AppWsApiProductionBEEBC97C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production\",\"VITE_WEBSOCKET_URL\":\"wss://",
+       {
+        "Ref": "AppWsApiProductionBEEBC97C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production\",\"AMPLIFY_APP_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1AppIdE09B0E44"
+       },
+       "\",\"AMPLIFY_DEFAULT_DOMAIN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "\",\"AMPLIFY_CONSOLE_URL\":\"https://production.",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "/\",\"VITE_AMPLIFY_CONSOLE_URL\":\"https://production.",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "/\",\"S3_VECTORS_BUCKET\":\"arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\",\"S3_VECTORS_BUCKET_ARN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformVectorBucket17B39749VectorBucketArn769C540C"
+       },
+       "\",\"S3_VECTORS_INDEX_RAG_KB\":\"rag-kb\",\"RAG_DOCS_BUCKET\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAiStorageRagDocsBucket207122BB41B0E725"
+       },
+       "\",\"RAG_DOCS_PREFIX\":\"rag/\",\"KB_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKnowledgeBaseC5281373KnowledgeBaseIdD3B95105"
+       },
+       "\",\"RAG_DATA_SOURCE_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKbDataSource4AB2D761DataSourceId0040D196"
+       },
+       "\",\"EMBEDDING_MODEL_ID\":\"amazon.titan-embed-text-v2:0\",\"S3_VECTORS_INDEX_THREAT_EVENTS\":\"threat-events\",\"S3_VECTORS_INDEX_THREAT_EVENTS_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionThreatEventsIndex41BF66CB",
+         "IndexArn"
+        ]
+       },
+       "\",\"S3_VECTORS_INDEX_CATALOG\":\"catalog\",\"S3_VECTORS_INDEX_CATALOG_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionCatalogIndex56DD066B",
+         "IndexArn"
+        ]
+       },
+       "\",\"S3_VECTORS_INDEX_CAMPAIGNS\":\"campaigns\",\"S3_VECTORS_INDEX_CAMPAIGNS_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionCampaignsIndexA30B92B2",
+         "IndexArn"
+        ]
+       },
+       "\",\"EXTERNAL_HANDLERS\":\"arbitiumtriage\",\"WEBHOOK_EDGE_BASE_URL\":\"",
+       {
+        "Fn::GetAtt": [
+         "WebhookIngressWebhookHttpApiF585272E",
+         "ApiEndpoint"
+        ]
+       },
+       "\",\"RENGLO_INGRESS_SECRET_ARN\":\"",
+       {
+        "Ref": "WebhookIngressIngressSecretE261904A"
+       },
+       "\",\"RENGLO_INGRESS_SECRET_NAME\":\"",
+       {
+        "Fn::Join": [
+         "-",
+         [
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "-",
+              {
+               "Fn::Select": [
+                6,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "WebhookIngressIngressSecretE261904A"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "-",
+              {
+               "Fn::Select": [
+                6,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "WebhookIngressIngressSecretE261904A"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       },
+       "\",\"WEBHOOK_EDGE_FUNCTION_NAME\":\"",
+       {
+        "Ref": "WebhookIngressWebhookEdgeFn66256064"
+       },
+       "\",\"RENGLO_INGRESS_CONNECTION\":\"arbitium0813-renglo-ingress\",\"RENGLO_INGRESS_DESTINATION\":\"arbitium0813-renglo-process\"},\"SECRETS\":{}}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/BootstrapConfig/PlatformVarsProduction"
+   }
+  },
+  "BootstrapConfigPlatformVarsStagingA88FE89D": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/arbitium0813/bootstrap/platform-vars/staging",
+    "Tier": "Standard",
+    "Type": "String",
+    "Value": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"GITHUB_REPOSITORY\":\"Arbitium/arbitium-bom\",\"ENVIRONMENT\":\"staging\",\"VARS\":{\"WL_NAME\":\"arbitium0813\",\"BASE_URL\":\"https://",
+       {
+        "Ref": "AppRestApiStaging28FCC49C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/staging\",\"FE_BASE_URL\":\"https://staging.",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "/\",\"FROM_EMAIL\":\"ricardo.cid@arbitium.com\",\"LAMBDA_BACKEND_ARN\":\"arn:aws:lambda:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":function:arbitium0813-backend-staging\",\"LAMBDA_EXTERNAL_HANDLERS_ARN\":\"arn:aws:lambda:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":function:arbitium0813-handlers\",\"ROLE_ARN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC"
+       },
+       "\",\"DYNAMODB_ENTITY_TABLE\":\"arbitium0813_entities\",\"DYNAMODB_BLUEPRINT_TABLE\":\"arbitium0813_blueprints\",\"DYNAMODB_RINGDATA_TABLE\":\"arbitium0813_data\",\"DYNAMODB_REL_TABLE\":\"arbitium0813_rel\",\"DYNAMODB_CHAT_TABLE\":\"arbitium0813_chat\",\"DYNAMODB_SESSION_TABLE\":\"arbitium0813_session\",\"DYNAMODB_SEARCH_TABLE\":\"arbitium0813_search\",\"DYNAMODB_GRAPH_TABLE\":\"arbitium0813_graph\",\"COGNITO_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"COGNITO_USERPOOL_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAuthUserPool8115E87F4F9C6D4C"
+       },
+       "\",\"COGNITO_APP_CLIENT_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAuthUserPoolAppClient1D18298A53AF1D0B"
+       },
+       "\",\"COGNITO_DOMAIN\":\"arbitium0813.auth.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazoncognito.com\",\"VITE_COGNITO_DOMAIN\":\"arbitium0813.auth.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazoncognito.com\",\"COGNITO_CHECK_TOKEN_EXPIRATION\":\"True\",\"PREVIEW_LAYER\":\"2\",\"S3_BUCKET_NAME\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefStorageDataBucketB1B922FA1C3AE375"
+       },
+       "\",\"ALLOW_DEV_ORIGINS\":\"true\",\"CODEDEPLOY_APPLICATION_NAME\":\"arbitium0813-backend-codedeploy\",\"CODEDEPLOY_DEPLOYMENT_GROUP_NAME\":\"arbitium0813-backend-staging\",\"CODEDEPLOY_DEPLOYMENT_CONFIG_NAME\":\"CodeDeployDefault.LambdaAllAtOnce\",\"AWS_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"AWS_DEFAULT_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"AWS_ECR_REPOSITORY\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefRuntimeBackendEcrRepoC10B100E42DABFEB"
+       },
+       "\",\"WEBSOCKET_CONNECTIONS\":\"https://",
+       {
+        "Ref": "AppWsApiStagingA90D5816"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/staging\",\"WEBSOCKET_URL\":\"wss://",
+       {
+        "Ref": "AppWsApiStagingA90D5816"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/staging\",\"VITE_WEBSOCKET_URL\":\"wss://",
+       {
+        "Ref": "AppWsApiStagingA90D5816"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/staging\",\"AMPLIFY_APP_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1AppIdE09B0E44"
+       },
+       "\",\"AMPLIFY_DEFAULT_DOMAIN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "\",\"AMPLIFY_CONSOLE_URL\":\"https://staging.",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "/\",\"VITE_AMPLIFY_CONSOLE_URL\":\"https://staging.",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+       },
+       "/\",\"S3_VECTORS_BUCKET\":\"arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\",\"S3_VECTORS_BUCKET_ARN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformVectorBucket17B39749VectorBucketArn769C540C"
+       },
+       "\",\"S3_VECTORS_INDEX_RAG_KB\":\"rag-kb\",\"RAG_DOCS_BUCKET\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAiStorageRagDocsBucket207122BB41B0E725"
+       },
+       "\",\"RAG_DOCS_PREFIX\":\"rag/\",\"KB_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKnowledgeBaseC5281373KnowledgeBaseIdD3B95105"
+       },
+       "\",\"RAG_DATA_SOURCE_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKbDataSource4AB2D761DataSourceId0040D196"
+       },
+       "\",\"EMBEDDING_MODEL_ID\":\"amazon.titan-embed-text-v2:0\",\"S3_VECTORS_INDEX_THREAT_EVENTS\":\"threat-events\",\"S3_VECTORS_INDEX_THREAT_EVENTS_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionThreatEventsIndex41BF66CB",
+         "IndexArn"
+        ]
+       },
+       "\",\"S3_VECTORS_INDEX_CATALOG\":\"catalog\",\"S3_VECTORS_INDEX_CATALOG_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionCatalogIndex56DD066B",
+         "IndexArn"
+        ]
+       },
+       "\",\"S3_VECTORS_INDEX_CAMPAIGNS\":\"campaigns\",\"S3_VECTORS_INDEX_CAMPAIGNS_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionCampaignsIndexA30B92B2",
+         "IndexArn"
+        ]
+       },
+       "\",\"EXTERNAL_HANDLERS\":\"arbitiumtriage\",\"WEBHOOK_EDGE_BASE_URL\":\"",
+       {
+        "Fn::GetAtt": [
+         "WebhookIngressWebhookHttpApiF585272E",
+         "ApiEndpoint"
+        ]
+       },
+       "\",\"RENGLO_INGRESS_SECRET_ARN\":\"",
+       {
+        "Ref": "WebhookIngressIngressSecretE261904A"
+       },
+       "\",\"RENGLO_INGRESS_SECRET_NAME\":\"",
+       {
+        "Fn::Join": [
+         "-",
+         [
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "-",
+              {
+               "Fn::Select": [
+                6,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "WebhookIngressIngressSecretE261904A"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "-",
+              {
+               "Fn::Select": [
+                6,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "WebhookIngressIngressSecretE261904A"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       },
+       "\",\"WEBHOOK_EDGE_FUNCTION_NAME\":\"",
+       {
+        "Ref": "WebhookIngressWebhookEdgeFn66256064"
+       },
+       "\",\"RENGLO_INGRESS_CONNECTION\":\"arbitium0813-renglo-ingress\",\"RENGLO_INGRESS_DESTINATION\":\"arbitium0813-renglo-process\"},\"SECRETS\":{}}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/BootstrapConfig/PlatformVarsStaging"
+   }
+  },
+  "BootstrapConfigDeployInput3D739AA3": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/arbitium0813/bootstrap/deploy-input",
+    "Tier": "Standard",
+    "Type": "String",
+    "Value": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"GITHUB_REPOSITORY\":\"Arbitium/arbitium-bom\",\"ENVIRONMENT\":\"production\",\"VARS\":{\"WL_NAME\":\"arbitium0813\",\"AWS_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"AWS_DEFAULT_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"LAMBDA_EXTERNAL_HANDLERS_ARN\":\"arn:aws:lambda:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":function:arbitium0813-handlers\",\"DYNAMODB_ENTITY_TABLE\":\"arbitium0813_entities\",\"DYNAMODB_BLUEPRINT_TABLE\":\"arbitium0813_blueprints\",\"DYNAMODB_RINGDATA_TABLE\":\"arbitium0813_data\",\"DYNAMODB_REL_TABLE\":\"arbitium0813_rel\",\"DYNAMODB_CHAT_TABLE\":\"arbitium0813_chat\",\"DYNAMODB_SESSION_TABLE\":\"arbitium0813_session\",\"DYNAMODB_SEARCH_TABLE\":\"arbitium0813_search\",\"DYNAMODB_GRAPH_TABLE\":\"arbitium0813_graph\",\"COGNITO_REGION\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"COGNITO_USERPOOL_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAuthUserPool8115E87F4F9C6D4C"
+       },
+       "\",\"COGNITO_APP_CLIENT_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAuthUserPoolAppClient1D18298A53AF1D0B"
+       },
+       "\",\"COGNITO_CHECK_TOKEN_EXPIRATION\":\"True\",\"S3_BUCKET_NAME\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefStorageDataBucketB1B922FA1C3AE375"
+       },
+       "\",\"ROLE_ARN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC"
+       },
+       "\",\"WEBSOCKET_CONNECTIONS\":\"https://",
+       {
+        "Ref": "AppWsApiProductionBEEBC97C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production\",\"WEBSOCKET_URL\":\"wss://",
+       {
+        "Ref": "AppWsApiProductionBEEBC97C"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".amazonaws.com/production\",\"LAMBDA_HANDLERS_FUNCTION_NAME\":\"arbitium0813-handlers\",\"S3_VECTORS_BUCKET\":\"arbitium0813-vectors-",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\",\"S3_VECTORS_BUCKET_ARN\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformVectorBucket17B39749VectorBucketArn769C540C"
+       },
+       "\",\"S3_VECTORS_INDEX_RAG_KB\":\"rag-kb\",\"RAG_DOCS_BUCKET\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputRefAiStorageRagDocsBucket207122BB41B0E725"
+       },
+       "\",\"RAG_DOCS_PREFIX\":\"rag/\",\"KB_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKnowledgeBaseC5281373KnowledgeBaseIdD3B95105"
+       },
+       "\",\"RAG_DATA_SOURCE_ID\":\"",
+       {
+        "Fn::ImportValue": "arbitium0813-stack-a:ExportsOutputFnGetAttAiStoragePlatformKbDataSource4AB2D761DataSourceId0040D196"
+       },
+       "\",\"EMBEDDING_MODEL_ID\":\"amazon.titan-embed-text-v2:0\",\"S3_VECTORS_INDEX_THREAT_EVENTS\":\"threat-events\",\"S3_VECTORS_INDEX_THREAT_EVENTS_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionThreatEventsIndex41BF66CB",
+         "IndexArn"
+        ]
+       },
+       "\",\"S3_VECTORS_INDEX_CATALOG\":\"catalog\",\"S3_VECTORS_INDEX_CATALOG_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionCatalogIndex56DD066B",
+         "IndexArn"
+        ]
+       },
+       "\",\"S3_VECTORS_INDEX_CAMPAIGNS\":\"campaigns\",\"S3_VECTORS_INDEX_CAMPAIGNS_ARN\":\"",
+       {
+        "Fn::GetAtt": [
+         "ExtensionCampaignsIndexA30B92B2",
+         "IndexArn"
+        ]
+       },
+       "\",\"EXTERNAL_HANDLERS\":\"arbitiumtriage\",\"WEBHOOK_EDGE_BASE_URL\":\"",
+       {
+        "Fn::GetAtt": [
+         "WebhookIngressWebhookHttpApiF585272E",
+         "ApiEndpoint"
+        ]
+       },
+       "\",\"RENGLO_INGRESS_SECRET_ARN\":\"",
+       {
+        "Ref": "WebhookIngressIngressSecretE261904A"
+       },
+       "\",\"RENGLO_INGRESS_SECRET_NAME\":\"",
+       {
+        "Fn::Join": [
+         "-",
+         [
+          {
+           "Fn::Select": [
+            0,
+            {
+             "Fn::Split": [
+              "-",
+              {
+               "Fn::Select": [
+                6,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "WebhookIngressIngressSecretE261904A"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "Fn::Select": [
+            1,
+            {
+             "Fn::Split": [
+              "-",
+              {
+               "Fn::Select": [
+                6,
+                {
+                 "Fn::Split": [
+                  ":",
+                  {
+                   "Ref": "WebhookIngressIngressSecretE261904A"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        ]
+       },
+       "\",\"WEBHOOK_EDGE_FUNCTION_NAME\":\"",
+       {
+        "Ref": "WebhookIngressWebhookEdgeFn66256064"
+       },
+       "\",\"RENGLO_INGRESS_CONNECTION\":\"arbitium0813-renglo-ingress\",\"RENGLO_INGRESS_DESTINATION\":\"arbitium0813-renglo-process\"},\"SECRETS\":{}}"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/BootstrapConfig/DeployInput"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2VR22rDMAz9lr673pbCoI+9sAusrGSw1+ImWubVl2DLLSHk3yc7TZqxJx3JR/LRUcazxyW/n4mLnxflaa7kkbcfKIoTo9KhVUIfS8HbzZd5CqZAaQ0j/AnOX+FKSeEj2IPT0qfyQO2YspXn7Zutnp0NdaQNuGOilpVAuIgmzc/B46qWrIc2uAIi3gF+2zKiLdTKNhoMxoxEVjAdcs7SmOuIV4NQOTEIzm1AGNvYC2IdiTHeKj0pokl3x6TQvN0JQ7Ryb5UsmqTrTyG3Cvp/KN5IPeqYh8IBep16HDmc8qQnIWIsDsJ74vBVDJTzdShOgGvhgcGZtiYjN9YYGK8wyWiZLfknzbjx/0oeFBnmveZRmXBCA4Lr4tN7wDogG31PGqIx0lTTg3Rs39A5zN2CP2R8OfvxUs5dMCg18LyPvy4KboFTAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "arbitium0813-stack-b/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "AppBackendLambdaFunctionNameProduction28CCB412": {
+   "Value": "arbitium0813-backend-production"
+  },
+  "AppBackendLambdaAliasArnProduction0BD17F74": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:lambda:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":function:arbitium0813-backend-production:production"
+     ]
+    ]
+   }
+  },
+  "AppBackendLambdaLogGroupNameProduction46A09638": {
+   "Value": {
+    "Ref": "AppBackendLambdaLogGroupProduction2D8050AD"
+   }
+  },
+  "AppRestApiUrlProductionA1836218": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppRestApiProduction412BD8A4"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "AppWebSocketUrlProduction990A42D1": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "AppWsApiProductionBEEBC97C"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "AppWebSocketConnectionsUrlProduction045AAC0C": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppWsApiProductionBEEBC97C"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "AppBackendLambdaArchitectureDB6C660F": {
+   "Value": "x86_64"
+  },
+  "AppBackendLambdaExecutionRoleArn253BB954": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:iam::",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":role/arbitium0813_tt_role"
+     ]
+    ]
+   }
+  },
+  "AppBackendLambdaFunctionNameStagingC191EEC6": {
+   "Value": "arbitium0813-backend-staging"
+  },
+  "AppBackendLambdaAliasArnStagingA6CFB06A": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:lambda:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":function:arbitium0813-backend-staging:staging"
+     ]
+    ]
+   }
+  },
+  "AppBackendLambdaLogGroupNameStagingFEC05506": {
+   "Value": {
+    "Ref": "AppBackendLambdaLogGroupStagingB63CE9FD"
+   }
+  },
+  "AppRestApiUrlStagingD579FF81": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppRestApiStaging28FCC49C"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "AppWebSocketUrlStagingA2C7B75B": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "AppWsApiStagingA90D5816"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "AppWebSocketConnectionsUrlStagingE75BDACB": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppWsApiStagingA90D5816"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "ComputeHandlersLambdaRoleArn833C3628": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ComputeHandlersLambdaRole7EA2F2BD",
+     "Arn"
+    ]
+   }
+  },
+  "ComputeHandlersLambdaLogGroupName769FA731": {
+   "Value": {
+    "Ref": "ComputeHandlersLambdaLogGroupB03E2C66"
+   }
+  },
+  "ComputeHandlersLambdaFunctionName3250848C": {
+   "Value": "arbitium0813-handlers"
+  },
+  "ComputeComputeTypeB963B44E": {
+   "Value": "lambda_only"
+  },
+  "ComputeHandlersOidcDeployRoleArnProduction186D5802": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ComputeHandlersOidcDeployRoleProduction05C7B835",
+     "Arn"
+    ]
+   }
+  },
+  "ComputeHandlersOidcDeployRoleArnStaging4E9BCB72": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ComputeHandlersOidcDeployRoleStaging7DC6BBBB",
+     "Arn"
+    ]
+   }
+  },
+  "WebhookIngressWebhookEdgeBaseUrl24561F60": {
+   "Value": {
+    "Fn::GetAtt": [
+     "WebhookIngressWebhookHttpApiF585272E",
+     "ApiEndpoint"
+    ]
+   }
+  },
+  "WebhookIngressRengloIngressSecretArn084E74FA": {
+   "Value": {
+    "Ref": "WebhookIngressIngressSecretE261904A"
+   }
+  },
+  "WebhookIngressRengloIngressUrl4F90A50E": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppRestApiProduction412BD8A4"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/_schd/ingress"
+     ]
+    ]
+   }
+  },
+  "ExtensionThreatEventsIndexName2228E4DE": {
+   "Value": "threat-events"
+  },
+  "ExtensionS3VECTORSINDEXTHREATEVENTSB82F17E4": {
+   "Value": "threat-events"
+  },
+  "ExtensionThreatEventsIndexArn57E1561D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ExtensionThreatEventsIndex41BF66CB",
+     "IndexArn"
+    ]
+   }
+  },
+  "ExtensionCatalogIndexNameC44553B4": {
+   "Value": "catalog"
+  },
+  "ExtensionS3VECTORSINDEXCATALOGDADE86E3": {
+   "Value": "catalog"
+  },
+  "ExtensionCatalogIndexArn0E991360": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ExtensionCatalogIndex56DD066B",
+     "IndexArn"
+    ]
+   }
+  },
+  "ExtensionCampaignsIndexNameCD5AD495": {
+   "Value": "campaigns"
+  },
+  "ExtensionS3VECTORSINDEXCAMPAIGNS8967F317": {
+   "Value": "campaigns"
+  },
+  "ExtensionCampaignsIndexArn978DE725": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ExtensionCampaignsIndexA30B92B2",
+     "IndexArn"
+    ]
+   }
+  },
+  "ExtensionEXTERNALHANDLERSA5576CB2": {
+   "Value": "arbitiumtriage"
+  },
+  "ExtensionActionsPolicyArnB329DF08": {
+   "Value": {
+    "Ref": "ExtensionActionsPolicy55958A58"
+   }
+  },
+  "ExtensionActionsPolicyNameA0BF9ED2": {
+   "Value": "arbitium0813-arbitiumtriage-actions"
+  },
+  "ExtensionExtensionPathD1C05C03": {
+   "Value": "arbitiumtriage"
+  },
+  "BackendLambdaFunctionNameProduction": {
+   "Value": "arbitium0813-backend-production"
+  },
+  "BackendLambdaAliasArnProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:lambda:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":function:arbitium0813-backend-production:production"
+     ]
+    ]
+   }
+  },
+  "BackendLambdaLogGroupNameProduction": {
+   "Value": {
+    "Ref": "AppBackendLambdaLogGroupProduction2D8050AD"
+   }
+  },
+  "RestApiUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppRestApiProduction412BD8A4"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "WebSocketUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "AppWsApiProductionBEEBC97C"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "WebSocketConnectionsUrlProduction": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppWsApiProductionBEEBC97C"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/"
+     ]
+    ]
+   }
+  },
+  "BackendLambdaArchitecture": {
+   "Value": "x86_64"
+  },
+  "BackendLambdaExecutionRoleArn": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:iam::",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":role/arbitium0813_tt_role"
+     ]
+    ]
+   }
+  },
+  "BackendLambdaFunctionNameStaging": {
+   "Value": "arbitium0813-backend-staging"
+  },
+  "BackendLambdaAliasArnStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "arn:aws:lambda:",
+      {
+       "Ref": "AWS::Region"
+      },
+      ":",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      ":function:arbitium0813-backend-staging:staging"
+     ]
+    ]
+   }
+  },
+  "BackendLambdaLogGroupNameStaging": {
+   "Value": {
+    "Ref": "AppBackendLambdaLogGroupStagingB63CE9FD"
+   }
+  },
+  "RestApiUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppRestApiStaging28FCC49C"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "WebSocketUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "AppWsApiStagingA90D5816"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "WebSocketConnectionsUrlStaging": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppWsApiStagingA90D5816"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/staging/"
+     ]
+    ]
+   }
+  },
+  "HandlersLambdaRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ComputeHandlersLambdaRole7EA2F2BD",
+     "Arn"
+    ]
+   }
+  },
+  "HandlersLambdaLogGroupName": {
+   "Value": {
+    "Ref": "ComputeHandlersLambdaLogGroupB03E2C66"
+   }
+  },
+  "HandlersLambdaFunctionName": {
+   "Value": "arbitium0813-handlers"
+  },
+  "HandlersOidcDeployRoleArnProduction": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ComputeHandlersOidcDeployRoleProduction05C7B835",
+     "Arn"
+    ]
+   }
+  },
+  "HandlersOidcDeployRoleArnStaging": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ComputeHandlersOidcDeployRoleStaging7DC6BBBB",
+     "Arn"
+    ]
+   }
+  },
+  "WebhookEdgeBaseUrl": {
+   "Value": {
+    "Fn::GetAtt": [
+     "WebhookIngressWebhookHttpApiF585272E",
+     "ApiEndpoint"
+    ]
+   }
+  },
+  "RengloIngressSecretArn": {
+   "Value": {
+    "Ref": "WebhookIngressIngressSecretE261904A"
+   }
+  },
+  "RengloIngressUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "AppRestApiProduction412BD8A4"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazonaws.com/production/_schd/ingress"
+     ]
+    ]
+   }
+  },
+  "WebhookEdgeFunctionName": {
+   "Value": {
+    "Ref": "WebhookIngressWebhookEdgeFn66256064"
+   }
+  },
+  "S3VECTORSINDEXTHREATEVENTS": {
+   "Value": "threat-events"
+  },
+  "S3VECTORSINDEXTHREATEVENTSARN": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ExtensionThreatEventsIndex41BF66CB",
+     "IndexArn"
+    ]
+   }
+  },
+  "S3VECTORSINDEXCATALOG": {
+   "Value": "catalog"
+  },
+  "S3VECTORSINDEXCATALOGARN": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ExtensionCatalogIndex56DD066B",
+     "IndexArn"
+    ]
+   }
+  },
+  "S3VECTORSINDEXCAMPAIGNS": {
+   "Value": "campaigns"
+  },
+  "S3VECTORSINDEXCAMPAIGNSARN": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ExtensionCampaignsIndexA30B92B2",
+     "IndexArn"
+    ]
+   }
+  },
+  "EXTERNALHANDLERS": {
+   "Value": "arbitiumtriage"
+  },
+  "ActionsPolicyArn": {
+   "Value": {
+    "Ref": "ExtensionActionsPolicy55958A58"
+   }
+  },
+  "ActionsPolicyName": {
+   "Value": "arbitium0813-arbitiumtriage-actions"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

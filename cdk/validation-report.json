@@ -1,0 +1,289 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.9.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0018",
+          "description": "UpdateReplacePolicy: UpdateReplacePolicy must be one of Delete, Retain, got 'Snapshot'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableBlueprints/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableBlueprintsFBB416B3",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableEntities/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableEntities44525C4B",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableRel/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableRelC305BC50",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableChat/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableChatC1D62AE8",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableSession/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableSession285B74EB",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableSearch/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableSearch6846210E",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableData/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableDataBFCA9ACA",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableGraph/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableGraph08DFE087",
+                "propertyPaths": [
+                  "UpdateReplacePolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            }
+          ]
+        },
+        {
+          "ruleName": "F3016",
+          "description": "DeletionPolicy: DeletionPolicy must be one of Delete, Retain, RetainExceptOnCreate, got 'Snapshot'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableBlueprints/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableBlueprintsFBB416B3",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableEntities/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableEntities44525C4B",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableRel/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableRelC305BC50",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableChat/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableChatC1D62AE8",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableSession/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableSession285B74EB",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableSearch/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableSearch6846210E",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableData/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableDataBFCA9ACA",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            },
+            {
+              "constructPath": "arbitium0813-stack-a/Storage/TableGraph/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+              "libraryVersion": "2.269.0",
+              "cloudFormationResource": {
+                "templatePath": "arbitium0813-stack-a.template.json",
+                "logicalId": "StorageTableGraph08DFE087",
+                "propertyPaths": [
+                  "DeletionPolicy"
+                ]
+              },
+              "stackTraces": [
+                "...aws-cdk-lib, jsii runtime, node internals...",
+                "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

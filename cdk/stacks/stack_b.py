@@ -22,11 +22,22 @@ from stacks.stack_exports import (
 )
 from stacks.webhook_ingress import WebhookIngressStack, export_webhook_ingress_outputs
 _ROOT = Path(__file__).resolve().parents[1]
+_OPS = _ROOT.parents[1]
 _EXTENSIONS_DIR = _ROOT / "extensions"
+_BOM_HELPER_CDK = _OPS / "bom-helper" / "cdk"
+_EXTENSIONS_SERVICE = _OPS / "extensions-service" / "scripts"
 if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
-    sys.path.insert(0, str(_EXTENSIONS_DIR))
+    _compute_stack_dir = _EXTENSIONS_DIR
+elif (_BOM_HELPER_CDK / "compute_stack.py").is_file():
+    _compute_stack_dir = _BOM_HELPER_CDK
+elif (_EXTENSIONS_SERVICE / "compute_stack.py").is_file():
+    _compute_stack_dir = _EXTENSIONS_SERVICE
 else:
-    sys.path.insert(0, str(_ROOT.parents[1] / "extensions-service" / "scripts"))
+    raise ImportError(
+        "compute_stack.py not found; expected launcher/cdk/extensions/, "
+        "ops/bom-helper/cdk/, or ops/extensions-service/scripts/"
+    )
+sys.path.insert(0, str(_compute_stack_dir))
 
 from compute_stack import ComputeStack, HANDLERS_NETWORK_MODE_CREATE, HANDLERS_NETWORK_MODE_EXISTING  # noqa: E402
 
@@ -63,6 +74,7 @@ class StackB(Stack):
         extension_manifest: dict[str, Any] | None = None,
         extension_config: dict[str, Any] | None = None,
         include_extension: bool = False,
+        package_registry: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -179,6 +191,7 @@ class StackB(Stack):
             enable_staging=enable_staging,
             tenant_policy=tenant_policy,
             handlers_network_params=handlers_network_params,
+            package_registry=package_registry,
         )
 
         self.app = app
