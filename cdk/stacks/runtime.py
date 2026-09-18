@@ -251,9 +251,16 @@ def _tt_policy_document(
                 sid="ECSRunTask",
                 actions=["ecs:RunTask", "ecs:DescribeTasks", "ecs:ListTasks", "ecs:DescribeClusters"],
                 resources=[
-                    f"arn:aws:ecs:{region}:{account}:cluster/{env_name}-handlers",
-                    f"arn:aws:ecs:{region}:{account}:task-definition/{env_name}-handlers-ecs:*",
-                    f"arn:aws:ecs:{region}:{account}:task/{env_name}-handlers/*",
+                    f"arn:aws:ecs:{region}:{account}:cluster/{env_name}-*",
+                    f"arn:aws:ecs:{region}:{account}:task-definition/{env_name}-*-ecs:*",
+                    f"arn:aws:ecs:{region}:{account}:task/{env_name}-*/*",
+                ],
+            ),
+            iam.PolicyStatement(
+                sid="SsmReadPeerRoutes",
+                actions=["ssm:GetParameter", "ssm:GetParameters"],
+                resources=[
+                    f"arn:aws:ssm:{region}:{account}:parameter/{env_name}/bootstrap/peer-routes",
                 ],
             ),
             iam.PolicyStatement(

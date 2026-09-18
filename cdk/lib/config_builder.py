@@ -30,6 +30,10 @@ def ssm_peer_routes_path(env_name: str) -> str:
     return f"/{env_name}/bootstrap/peer-routes"
 
 
+def ssm_deploy_input_path(env_name: str) -> str:
+    return f"/{env_name}/bootstrap/deploy-input"
+
+
 def encode_peer_map(peer_map: dict[str, Any]) -> str:
     if not peer_map:
         return ""
@@ -154,7 +158,6 @@ def build_launcher_vars(
     ecs_network: dict[str, MapValue],
     extension_vars: dict[str, MapValue],
     from_email: MapValue = "",
-    peer_map_json: MapValue = "",
 ) -> dict[str, MapValue]:
     backend_fn = stage_app.get("fn_name", f"{env_name}-backend-{stage}")
     rest_url = normalize_url(stage_app.get("rest_url", ""))
@@ -171,7 +174,6 @@ def build_launcher_vars(
         "FROM_EMAIL": from_email,
         "LAMBDA_BACKEND_ARN": lambda_arn(aws_region, aws_account, backend_fn),
         "LAMBDA_EXTERNAL_HANDLERS_ARN": lambda_arn(aws_region, aws_account, handlers_fn),
-        "EXTERNAL_HANDLERS_PEER_MAP": peer_map_json,
         "ROLE_ARN": tenant_role_arn,
         **dynamodb_vars(env_name),
         "COGNITO_REGION": aws_region,
@@ -217,7 +219,6 @@ def build_deploy_input_vars(
     compute_outputs: dict[str, MapValue],
     ecs_network: dict[str, MapValue],
     extension_vars: dict[str, MapValue],
-    peer_map_json: MapValue = "",
 ) -> dict[str, MapValue]:
     handlers_fn = compute_outputs.get("HandlersLambdaFunctionName", f"{env_name}-handlers")
     handlers_ecr_uri = compute_outputs.get("HandlersEcrRepoUri", "")
@@ -237,7 +238,6 @@ def build_deploy_input_vars(
             "ECS_TASK_DEFINITION": compute_outputs.get("HandlersTaskFamily", ""),
             "ECS_RESULTS_BUCKET": compute_outputs.get("HandlersResultsBucketName", ""),
             "LAMBDA_EXTERNAL_HANDLERS_ARN": lambda_arn(aws_region, aws_account, handlers_fn),
-            "EXTERNAL_HANDLERS_PEER_MAP": peer_map_json,
             **dynamodb_vars(env_name),
             "COGNITO_REGION": aws_region,
             "COGNITO_USERPOOL_ID": cognito_user_pool_id,

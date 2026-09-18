@@ -1,0 +1,1770 @@
+{
+  "/arbitium0813-stack-b": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "resolveValue (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:6980)",
+        "resolveReferences (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:4848)",
+        "prepareApp (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/private/prepare-app.js:1:1240)",
+        "synthesize (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/private/synthesis.js:1:2625)",
+        "App.synth (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/stage.js:1:5061)",
+        "App.synth (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/app.js:1:5008)",
+        "/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:55656",
+        "Kernel._Kernel_ensureSync (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:71277)",
+        "Kernel.invoke (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:55601)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaFunctionNameProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaFunctionNameProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaAliasArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaAliasArnProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaLogGroupNameProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaLogGroupNameProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/RestApiUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebSocketUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebSocketConnectionsUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketConnectionsUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaArchitecture": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaArchitecture"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaExecutionRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaExecutionRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaFunctionNameStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaFunctionNameStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaAliasArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaAliasArnStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BackendLambdaLogGroupNameStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendLambdaLogGroupNameStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/RestApiUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestApiUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebSocketUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebSocketConnectionsUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketConnectionsUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/HandlersLambdaRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/HandlersLambdaLogGroupName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaLogGroupName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/HandlersLambdaFunctionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersLambdaFunctionName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/HandlersOidcDeployRoleArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersOidcDeployRoleArnProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/HandlersOidcDeployRoleArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlersOidcDeployRoleArnStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookEdgeBaseUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookEdgeBaseUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/RengloIngressSecretArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RengloIngressSecretArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/RengloIngressUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RengloIngressUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookEdgeFunctionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookEdgeFunctionName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/S3_VECTORS_INDEX_THREAT_EVENTS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXTHREATEVENTS"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/S3_VECTORS_INDEX_THREAT_EVENTS_ARN": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXTHREATEVENTSARN"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/S3_VECTORS_INDEX_CATALOG": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXCATALOG"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/S3_VECTORS_INDEX_CATALOG_ARN": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXCATALOGARN"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/S3_VECTORS_INDEX_CAMPAIGNS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXCAMPAIGNS"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/S3_VECTORS_INDEX_CAMPAIGNS_ARN": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXCAMPAIGNSARN"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/EXTERNAL_HANDLERS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EXTERNALHANDLERS"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/ActionsPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsPolicyArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/ActionsPolicyName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsPolicyName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaProductionEBFBCBE6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaVersionProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaVersionProductionC609183A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaAliasProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaAliasProduction88466E92"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiProduction412BD8A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiProxyResourceProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiProxyResourceProduction5963C85C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiMethodAnyRootProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiMethodAnyRootProduction3C2BFBDE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiMethodAnyProxyProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiMethodAnyProxyProduction3919D576"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaPermissionRestApiProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaPermissionRestApiProductionE518A327"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiDeploymentProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiDeploymentProductionBE2D79B5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiStageProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiStageProductionFB310CEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsApiProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsApiProductionBEEBC97C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsIntegrationProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsIntegrationProductionEFB22F3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsRouteProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsRouteProductionBD870288"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsStageProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsStageProduction9A9F70AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaFunctionNameProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaFunctionNameProduction28CCB412"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaAliasArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaAliasArnProduction0BD17F74"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaLogGroupNameProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaLogGroupNameProduction46A09638"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiUrlProductionA1836218"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WebSocketUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWebSocketUrlProduction990A42D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WebSocketConnectionsUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWebSocketConnectionsUrlProduction045AAC0C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaArchitecture": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaArchitectureDB6C660F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaExecutionRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaExecutionRoleArn253BB954"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaStaging591ABC97"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaVersionStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaVersionStaging4BD10470"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaAliasStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaAliasStaging99352ACF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiStaging28FCC49C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiProxyResourceStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiProxyResourceStaging76DDC5C7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiMethodAnyRootStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiMethodAnyRootStaging725985FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiMethodAnyProxyStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiMethodAnyProxyStagingE8D00FCD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaPermissionRestApiStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaPermissionRestApiStaging1A7B1574"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiDeploymentStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiDeploymentStaging884A3A6A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiStageStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiStageStaging1305AA4A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsApiStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsApiStagingA90D5816"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsIntegrationStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsIntegrationStaging0CFB793E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsRouteStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsRouteStaging69784F10"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WsStageStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWsStageStaging9D62DC2B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaFunctionNameStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaFunctionNameStagingC191EEC6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaAliasArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaAliasArnStagingA6CFB06A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaLogGroupNameStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaLogGroupNameStagingFEC05506"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/RestApiUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRestApiUrlStagingD579FF81"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WebSocketUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWebSocketUrlStagingA2C7B75B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/WebSocketConnectionsUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppWebSocketConnectionsUrlStagingE75BDACB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersLambda": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersLambda8EEE3466"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersLambdaRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersLambdaRoleArn833C3628"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersLambdaLogGroupName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersLambdaLogGroupName769FA731"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersLambdaFunctionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersLambdaFunctionName3250848C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/ComputeType": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeComputeTypeB963B44E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersOidcDeployRoleArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersOidcDeployRoleArnProduction186D5802"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersOidcDeployRoleArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersOidcDeployRoleArnStaging4E9BCB72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookRule": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookRule4AA6353A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookEdgeBaseUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookEdgeBaseUrl24561F60"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/RengloIngressSecretArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressRengloIngressSecretArn084E74FA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/RengloIngressUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressRengloIngressUrl4F90A50E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ThreatEventsIndex": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionThreatEventsIndex41BF66CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ThreatEventsIndexName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionThreatEventsIndexName2228E4DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/S3_VECTORS_INDEX_THREAT_EVENTS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionS3VECTORSINDEXTHREATEVENTSB82F17E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ThreatEventsIndexArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionThreatEventsIndexArn57E1561D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/CatalogIndex": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionCatalogIndex56DD066B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/CatalogIndexName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionCatalogIndexNameC44553B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/S3_VECTORS_INDEX_CATALOG": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionS3VECTORSINDEXCATALOGDADE86E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/CatalogIndexArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionCatalogIndexArn0E991360"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/CampaignsIndex": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionCampaignsIndexA30B92B2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/CampaignsIndexName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionCampaignsIndexNameCD5AD495"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/S3_VECTORS_INDEX_CAMPAIGNS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionS3VECTORSINDEXCAMPAIGNS8967F317"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/CampaignsIndexArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionCampaignsIndexArn978DE725"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/EXTERNAL_HANDLERS": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionEXTERNALHANDLERSA5576CB2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ActionsPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionActionsPolicyArnB329DF08"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ActionsPolicyName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionActionsPolicyNameA0BF9ED2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ExtensionPath": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionExtensionPathD1C05C03"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BootstrapConfig/PlatformVarsProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapConfigPlatformVarsProductionAE602EA0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BootstrapConfig/PlatformVarsStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapConfigPlatformVarsStagingA88FE89D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/BootstrapConfig/DeployInput": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapConfigDeployInput3D739AA3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/CDKMetadata/Condition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadataAvailable"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaLogGroupProduction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaLogGroupProduction2D8050AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/App/BackendLambdaLogGroupStaging/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppBackendLambdaLogGroupStagingB63CE9FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersPolicyA9144691"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersLambdaRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersLambdaRole7EA2F2BD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersLambdaLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersLambdaLogGroupB03E2C66"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersOidcDeployRoleProduction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersOidcDeployRoleProduction05C7B835"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Compute/HandlersOidcDeployRoleStaging/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeHandlersOidcDeployRoleStaging7DC6BBBB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/IngressSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressIngressSecretE261904A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookEdgeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookEdgeRole4DFDED3E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookEdgeFn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookEdgeFn66256064"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiF585272E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/IngressConnection/Connection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressIngressConnectionB91C4450"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/IngressDestination/ApiDestination": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressIngressDestinationApiDestination7865454A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/Extension/ActionsPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExtensionActionsPolicy55958A58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookEdgeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookEdgeRoleDefaultPolicy9BDDF8B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiDefaultStageA17C3B65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}--{channel}/WebhookIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegrationPermission4C95BAFC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}--{channel}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiGETportfolioorgchannel75B06A05"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}--{channel}/WebhookIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiPOSTportfolioorgchannelWebhookIntegrationPermissionC23B83C9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}--{channel}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiPOSTportfolioorgchannel357DA13E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}/WebhookIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiGETportfolioorgWebhookIntegrationPermission75AC81DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiGETportfolioorgBD6343E7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}/WebhookIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiPOSTportfolioorgWebhookIntegrationPermission138DD849"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/POST--{portfolio}--{org}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiPOSTportfolioorg2A1D10A6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ],
+  "/arbitium0813-stack-b/WebhookIngress/WebhookHttpApi/GET--{portfolio}--{org}--{channel}/WebhookIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebhookIngressWebhookHttpApiGETportfolioorgchannelWebhookIntegration6BC2C2FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...aws-cdk-lib, jsii runtime..."
+      ]
+    }
+  ]
+}

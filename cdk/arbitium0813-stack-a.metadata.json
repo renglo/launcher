@@ -1,0 +1,2368 @@
+{
+  "/arbitium0813-stack-a": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CreateGitHubOIDC": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CreateGitHubOIDC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CreateGitHubOIDCCondition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CreateGitHubOIDCCondition"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/arbitium0813-stack-a/AwsAccountId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsAccountId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AwsRegion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsRegion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/UserPoolId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/UserPoolArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AppClientId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppClientId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CognitoDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CognitoDomain"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/DataBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/DataBucketArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataBucketArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/EnvName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EnvName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AmplifyAppId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AmplifyAppId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AmplifyDefaultDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AmplifyDefaultDomain"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AmplifyConsoleUrlProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AmplifyConsoleUrlProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AmplifyConsoleUrlStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AmplifyConsoleUrlStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/FromEmail": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FromEmail"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/SesIdentityName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SesIdentityName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/SesDnsMode": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SesDnsMode"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/BackendEcrRepoName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendEcrRepoName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/BackendEcrRepoUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackendEcrRepoUri"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/SeedCodeBuildProjectName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SeedCodeBuildProjectName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/TenantPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TenantPolicyArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/TenantRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TenantRoleArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CodeDeployAppName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeDeployAppName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/OidcProviderArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcProviderArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/OidcDeployRoleArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcDeployRoleArnProduction"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/OidcDeployRoleArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OidcDeployRoleArnStaging"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/S3_VECTORS_BUCKET": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSBUCKET"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/S3_VECTORS_BUCKET_ARN": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSBUCKETARN"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/S3_VECTORS_INDEX_RAG_KB": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3VECTORSINDEXRAGKB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/RAG_DOCS_BUCKET": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RAGDOCSBUCKET"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/RAG_DOCS_PREFIX": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RAGDOCSPREFIX"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/KB_ID": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KBID"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/RAG_DATA_SOURCE_ID": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RAGDATASOURCEID"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/EMBEDDING_MODEL_ID": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EMBEDDINGMODELID"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/PlatformAiPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PlatformAiPolicyArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableBlueprints": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableBlueprintsFBB416B3"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableBlueprintsArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableBlueprintsArnFFBCC25C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableEntities": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableEntities44525C4B"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableEntitiesArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableEntitiesArnADF600E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableRel": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableRelC305BC50"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableRelArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableRelArnA9A3531E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableChat": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableChatC1D62AE8"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableChatArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableChatArnB3F203A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableSession": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableSession285B74EB"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableSessionArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableSessionArnFF6F7186"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableSearch": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableSearch6846210E"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableSearchArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableSearchArn4F68FB5B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableData": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableDataBFCA9ACA"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableDataArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableDataArn09338C9B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableGraph": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "StorageTableGraph08DFE087"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableGraphArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableGraphArn3628D2E1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/DataBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageDataBucketName4ED5ABEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/DataBucketArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageDataBucketArnF0D56E96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/EnvName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageEnvName62F70F77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Console/ConsoleApp": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsoleConsoleApp2C00C3B1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Console/ProductionBranch": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsoleProductionBranch6A48783D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Console/StagingBranch": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsoleStagingBranch8B18A274"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Console/AmplifyAppId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsoleAmplifyAppId91397C31"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Console/AmplifyDefaultDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConsoleAmplifyDefaultDomainB2CB8A9A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/UserPoolId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthUserPoolIdC0605E59"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/UserPoolArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthUserPoolArn85C0FF89"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/AppClientId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthAppClientId23A297AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/CognitoDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthCognitoDomain994E45B2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Email/FromEmail": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmailFromEmail4EB08ED3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Email/SesIdentityName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmailSesIdentityName09C727FB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Email/SesIdentityType": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmailSesIdentityType4A7C0483"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Email/SesDnsMode": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmailSesDnsMode75F1EC0B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Email/EnvName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmailEnvName585BB579"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/CodeDeployApp": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeCodeDeployAppEB3231F7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/CodeDeployGroupProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeCodeDeployGroupProductionD5CAF94E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/CodeDeployGroupStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeCodeDeployGroupStaging37B8198C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/GitHubOidcProviderResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeGitHubOidcProviderResource60760A72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/BackendEcrRepoName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeBackendEcrRepoNameE3973B62"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/BackendEcrRepoUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeBackendEcrRepoUri1ECF7F45"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedCodeBuildProjectName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedCodeBuildProjectNameEA6AA04F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/TenantPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeTenantPolicyArn40D9BB1C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/TenantRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeTenantRoleArn41051846"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/CodeDeployAppName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeCodeDeployAppName95751303"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/OidcProviderArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeOidcProviderArn440C695F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/OidcDeployRoleArnProduction": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeOidcDeployRoleArnProduction66855011"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/OidcDeployRoleArnStaging": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeOidcDeployRoleArnStagingA2783588"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformVectorBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformVectorBucket17B39749"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagKbIndex": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagKbIndexB7E73F6C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformVectorBucketPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformVectorBucketPolicy81744C09"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformKnowledgeBase": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformKnowledgeBaseC5281373"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformKbDataSource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformKbDataSource4AB2D761"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/S3VectorsBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageS3VectorsBucketNameEB3C4577"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/S3VectorsBucketArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageS3VectorsBucketArn5B46D121"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/S3VectorsIndexRagKb": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageS3VectorsIndexRagKb88C307FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagDocsBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagDocsBucketNameC9315D6D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagDocsPrefix": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagDocsPrefix7A270E26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/KbId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageKbId4CA1B9E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagDataSourceId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagDataSourceId8A4DF6E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/EmbeddingModelId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageEmbeddingModelIdB372983C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformAiPolicyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformAiPolicyArn3C6778C7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/CDKMetadata/Condition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadataAvailable"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"RuntimeTenantPolicy6EC9A05F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRuntimeTenantPolicy6EC9A05F0821994A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"AiStoragePlatformAiPolicy64662F47\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAiStoragePlatformAiPolicy64662F478CBBABC4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Fn::GetAtt\":[\"RuntimeTenantRoleB259B5DF\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttRuntimeTenantRoleB259B5DFArn14E324DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"RuntimeTenantRoleB259B5DF\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRuntimeTenantRoleB259B5DF59B87888"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Fn::GetAtt\":[\"ConsoleConsoleApp2C00C3B1\",\"DefaultDomain\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1DefaultDomainD2402A07"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"AuthUserPool8115E87F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAuthUserPool8115E87F4F9C6D4C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"AuthUserPoolAppClient1D18298A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAuthUserPoolAppClient1D18298A53AF1D0B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"StorageDataBucketB1B922FA\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStorageDataBucketB1B922FA1C3AE375"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"RuntimeBackendEcrRepoC10B100E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRuntimeBackendEcrRepoC10B100E42DABFEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Fn::GetAtt\":[\"ConsoleConsoleApp2C00C3B1\",\"AppId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttConsoleConsoleApp2C00C3B1AppIdE09B0E44"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Fn::GetAtt\":[\"AiStoragePlatformVectorBucket17B39749\",\"VectorBucketArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAiStoragePlatformVectorBucket17B39749VectorBucketArn769C540C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Ref\":\"AiStorageRagDocsBucket207122BB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAiStorageRagDocsBucket207122BB41B0E725"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Fn::GetAtt\":[\"AiStoragePlatformKnowledgeBaseC5281373\",\"KnowledgeBaseId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAiStoragePlatformKnowledgeBaseC5281373KnowledgeBaseIdD3B95105"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Exports/Output{\"Fn::GetAtt\":[\"AiStoragePlatformKbDataSource4AB2D761\",\"DataSourceId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAiStoragePlatformKbDataSource4AB2D761DataSourceId0040D196"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/DataBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageDataBucketB1B922FA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableBlueprints/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableBlueprintsFBB416B3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableEntities/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableEntities44525C4B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableRel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableRelC305BC50"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableChat/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableChatC1D62AE8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableSession/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableSession285B74EB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableSearch/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableSearch6846210E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableData/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableDataBFCA9ACA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/TableGraph/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageTableGraph08DFE087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "AWS::DynamoDB::Table does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::DynamoDB::TableSnapshotRemovalPolicyIgnored]",
+      "trace": [
+        "Annotations.addMessage (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "CfnTable.applyRemovalPolicy (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/cfn-resource.js:1:5564)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/aws-dynamodb/lib/table.js:1:28182)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/no-box-stack-traces.js:1:345)",
+        "new Table2 (/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/jsii-kernel-N4YaUU/node_modules/aws-cdk-lib/core/lib/prop-injectable.js:1:855)",
+        "Kernel._Kernel_create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:62561)",
+        "Kernel.create (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:53295)",
+        "KernelHost.processRequest (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:228024)",
+        "KernelHost.run (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227008)",
+        "Immediate._onImmediate (/private/var/folders/p3/vm8fr2xn2wb33xggc2qk0xn40000gn/T/tmpgisx4aw2/lib/program.js:1:227052)",
+        "process.processImmediate (node:internal/timers:505:21)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthUserPool8115E87F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Email/InviteFromIdentity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmailInviteFromIdentityF7261B8B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/BackendEcrRepo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeBackendEcrRepoC10B100E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/TenantPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeTenantPolicy6EC9A05F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/TenantRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeTenantRoleB259B5DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedImageBuilder/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedImageBuilder7A80A5D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildOnEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildOnEventDF1E0CE3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildIsComplete/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildIsComplete25B68D52"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildRunner/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildRunner0DAE7324"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/CodeDeployServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeCodeDeployServiceRole5372C7F0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/OidcDeployRoleProduction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeOidcDeployRoleProduction76FE6787"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/OidcDeployRoleStaging/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeOidcDeployRoleStaging6514A1CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagDocsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagDocsBucket207122BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformKnowledgeBaseRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformKnowledgeBaseRole3A05266B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformAiPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformAiPolicy64662F47"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/DataBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageDataBucketPolicyC997B69E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/Storage/DataBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StorageDataBucketAutoDeleteObjectsCustomResource4BB14FB3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthUserPoolDomain31C6792A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Auth/UserPool/AppClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthUserPoolAppClient1D18298A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedImageBuilder/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedImageBuilderRole87B2FFC6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildOnEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildOnEventServiceRole05C34BBF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildIsComplete/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildIsCompleteServiceRoleCAE36667"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonEventFDC39E23"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkisComplete5C44F823"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonTimeout2CC251BC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/waiter-state-machine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderwaiterstatemachine246F8B3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagDocsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagDocsBucketPolicyFD06D9B8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/RagDocsBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStorageRagDocsBucketAutoDeleteObjectsCustomResource912E940B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/AiStorage/PlatformKnowledgeBaseRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AiStoragePlatformKnowledgeBaseRoleDefaultPolicy58CC7CD3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedImageBuilder/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedImageBuilderRoleDefaultPolicy910B6A5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildOnEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildOnEventServiceRoleDefaultPolicyFABB4D24"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildIsComplete/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildIsCompleteServiceRoleDefaultPolicy641B03BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonEventServiceRole8839A058"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/LogRetention/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonEventLogRetentionAA7AB537"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleF557E3E6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/LogRetention/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkisCompleteLogRetention9CCE995F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonTimeoutServiceRole64B0F11C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/LogRetention/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonTimeoutLogRetention647D0761"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/waiter-state-machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderwaiterstatemachineRole2ECA8574"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, jsii runtime...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonEventServiceRoleDefaultPolicy9868A282"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkisCompleteServiceRoleDefaultPolicy710FF8E1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderframeworkonTimeoutServiceRoleDefaultPolicyBEADBA1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/arbitium0813-stack-a/Runtime/SeedBuildProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuntimeSeedBuildProviderwaiterstatemachineRoleDefaultPolicy82B57FD1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}
