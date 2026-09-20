@@ -248,6 +248,15 @@ def _tt_policy_document(
             iam.PolicyStatement(actions=["aoss:APIAccessAll"], resources=["*"]),
             # ECS handlers handshake (mirrors create_iam_policy._ecs_handlers_handshake_statements)
             iam.PolicyStatement(
+                sid="Ec2DescribeDefaultVpc",
+                actions=[
+                    "ec2:DescribeVpcs",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeSecurityGroups",
+                ],
+                resources=["*"],
+            ),
+            iam.PolicyStatement(
                 sid="ECSRunTask",
                 actions=["ecs:RunTask", "ecs:DescribeTasks", "ecs:ListTasks", "ecs:DescribeClusters"],
                 resources=[
@@ -269,13 +278,18 @@ def _tt_policy_document(
                 resources=[
                     f"arn:aws:iam::{account}:role/{env_name}-handlers-ecs-execution",
                     f"arn:aws:iam::{account}:role/{env_name}-handlers-ecs-task",
+                    f"arn:aws:iam::{account}:role/{env_name}-peer-*-ecs-execution",
+                    f"arn:aws:iam::{account}:role/{env_name}-peer-*-ecs-task",
                 ],
                 conditions={"StringEquals": {"iam:PassedToService": "ecs-tasks.amazonaws.com"}},
             ),
             iam.PolicyStatement(
                 sid="ECSHandshakeS3",
                 actions=["s3:PutObject", "s3:GetObject"],
-                resources=[f"arn:aws:s3:::{handlers_bucket}/*"],
+                resources=[
+                    f"arn:aws:s3:::{handlers_bucket}/*",
+                    f"arn:aws:s3:::{env_name}-peer-*-ecs-{account}/*",
+                ],
             ),
         ]
     )

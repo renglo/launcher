@@ -25,21 +25,23 @@ _ROOT = Path(__file__).resolve().parents[1]
 _OPS = _ROOT.parents[1]
 _EXTENSIONS_DIR = _ROOT / "extensions"
 _BOM_HELPER_CDK = _OPS / "bom-helper" / "cdk"
-_EXTENSIONS_SERVICE = _OPS / "extensions-service" / "scripts"
+_BOM_HELPER_SCRIPTS = _OPS / "bom-helper" / "scripts"
 if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
     _compute_stack_dir = _EXTENSIONS_DIR
 elif (_BOM_HELPER_CDK / "compute_stack.py").is_file():
     _compute_stack_dir = _BOM_HELPER_CDK
-elif (_EXTENSIONS_SERVICE / "compute_stack.py").is_file():
-    _compute_stack_dir = _EXTENSIONS_SERVICE
 else:
     raise ImportError(
-        "compute_stack.py not found; expected launcher/cdk/extensions/, "
-        "ops/bom-helper/cdk/, or ops/extensions-service/scripts/"
+        "compute_stack.py not found; expected launcher/cdk/extensions/ "
+        "or ops/bom-helper/cdk/"
     )
-sys.path.insert(0, str(_compute_stack_dir))
+for _extra in (_ROOT / "lib", _BOM_HELPER_SCRIPTS, _BOM_HELPER_CDK, _compute_stack_dir):
+    if _extra.is_dir() and str(_extra) not in sys.path:
+        sys.path.insert(0, str(_extra))
 
 from compute_stack import ComputeStack, HANDLERS_NETWORK_MODE_CREATE, HANDLERS_NETWORK_MODE_EXISTING  # noqa: E402
+from extension_actions import ExtensionActionsSpec, handle_from_extension_folder  # noqa: E402
+from extension_actions_iam import attach_extension_action_specs  # noqa: E402
 
 
 class StackB(Stack):
@@ -74,6 +76,7 @@ class StackB(Stack):
         extension_manifest: dict[str, Any] | None = None,
         extension_config: dict[str, Any] | None = None,
         include_extension: bool = False,
+        hub_actions_specs: list[ExtensionActionsSpec] | None = None,
         package_registry: dict | None = None,
         **kwargs,
     ) -> None:
@@ -235,7 +238,11 @@ class StackB(Stack):
 
         if extension_folder is not None and extension_manifest is not None:
             attach_roles: dict[str, iam.IRole] = {}
-            if tenant_role is not None:
+            bundled_handle = handle_from_extension_folder(extension_folder)
+            hub_handles = {spec.handle for spec in (hub_actions_specs or [])}
+            if tenant_role is not None and (
+                not hub_handles or (bundled_handle and bundled_handle in hub_handles)
+            ):
                 attach_roles[f"{env_name}_tt_role"] = tenant_role
             handlers_lambda_role = getattr(compute, "handlers_lambda_role", None)
             if handlers_lambda_role is not None:
@@ -258,6 +265,20 @@ class StackB(Stack):
                 platform_vector_bucket_arn=platform_vector_bucket_arn,
             )
             self.extension = extension
+
+        remaining_hub = [
+            spec
+            for spec in (hub_actions_specs or [])
+            if extension_folder is None
+            or spec.handle != handle_from_extension_folder(extension_folder)
+        ]
+        if remaining_hub and tenant_role is not None:
+            attach_extension_action_specs(
+                self,
+                env_name=env_name,
+                specs=remaining_hub,
+                roles=[tenant_role],
+            )
 
         export_stack_b_app_outputs(self, app)
         export_stack_b_compute_outputs(self, compute)

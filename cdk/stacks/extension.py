@@ -174,29 +174,14 @@ class ExtensionStack(Construct):
             or runtime_outputs.get("EXTERNAL_HANDLERS")
             or ""
         ).strip()
-        external_handlers_ecs = str(
-            extension_config.get("EXTERNAL_HANDLERS_ECS_HANDLERS")
-            or runtime_outputs.get("EXTERNAL_HANDLERS_ECS_HANDLERS")
-            or ""
-        ).strip()
-        # May already be present from extension_config / runtime_defaults loops above.
+        # Handler catalogs stay on the peer zip. Hub/runtime outputs are membership only.
+        runtime_outputs.pop("EXTERNAL_HANDLERS_HEAVY", None)
+        runtime_outputs.pop("EXTERNAL_HANDLERS_ECS_HANDLERS", None)
         if external_handlers and "EXTERNAL_HANDLERS" not in runtime_outputs:
             runtime_outputs["EXTERNAL_HANDLERS"] = external_handlers
             CfnOutput(self, "EXTERNAL_HANDLERS", value=external_handlers)
         elif external_handlers:
             runtime_outputs["EXTERNAL_HANDLERS"] = external_handlers
-        if (
-            external_handlers_ecs
-            and "EXTERNAL_HANDLERS_ECS_HANDLERS" not in runtime_outputs
-        ):
-            runtime_outputs["EXTERNAL_HANDLERS_ECS_HANDLERS"] = external_handlers_ecs
-            CfnOutput(
-                self,
-                "EXTERNAL_HANDLERS_ECS_HANDLERS",
-                value=external_handlers_ecs,
-            )
-        elif external_handlers_ecs:
-            runtime_outputs["EXTERNAL_HANDLERS_ECS_HANDLERS"] = external_handlers_ecs
 
         self.actions_policy = actions_policy
         self.runtime_outputs = runtime_outputs
