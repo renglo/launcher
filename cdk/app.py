@@ -22,11 +22,19 @@ Deploy order:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import aws_cdk as cdk
 
 _ROOT = Path(__file__).resolve().parent
+for _extra in (
+    _ROOT / "lib",
+    _ROOT.parents[1] / "bom-helper" / "scripts" if len(_ROOT.parents) >= 2 else _ROOT,
+    _ROOT.parents[1] / "bom-helper" / "cdk" if len(_ROOT.parents) >= 2 else _ROOT,
+):
+    if _extra.is_dir() and str(_extra) not in sys.path:
+        sys.path.insert(0, str(_extra))
 
 from stack_names import stack_a_id, stack_b_id  # noqa: E402
 from stacks.stack_a import StackA  # noqa: E402
@@ -38,6 +46,12 @@ from extension_loader import (  # noqa: E402
 )
 from platform_defaults import architecture as platform_architecture  # noqa: E402
 from lib.package_registry import validate_package_registry  # noqa: E402
+from extension_actions import (  # noqa: E402
+    extra_action_roots,
+    find_deploy_targets,
+    hub_actions_specs,
+    repo_workspace_root,
+)
 
 _CONFIG_PATH = _ROOT / "customer-config.json"
 if not _CONFIG_PATH.is_file():
@@ -124,6 +138,14 @@ if extension_path:
     extension_manifest = load_extension_manifest(extension_folder)
     extension_config = load_extension_config(extension_folder)
 
+_workspace = repo_workspace_root(start=_ROOT)
+_targets = find_deploy_targets(cdk_dir=_ROOT, github_repo=github_repo)
+_hub_actions = (
+    hub_actions_specs(_targets, _workspace, extra_roots=extra_action_roots(_ROOT))
+    if _targets is not None
+    else []
+)
+
 stack_b = StackB(
     app,
     stack_b_id(env_name),
@@ -153,6 +175,7 @@ stack_b = StackB(
     extension_manifest=extension_manifest,
     extension_config=extension_config,
     include_extension=extension_folder is not None and extension_manifest is not None,
+    hub_actions_specs=_hub_actions,
     package_registry=package_registry,
 )
 stack_b.add_dependency(stack_a)

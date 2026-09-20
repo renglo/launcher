@@ -76,9 +76,8 @@ def build_extension_state_manifest(
         output_var = str(bucket.get("output_var", "")).strip()
         if output_var and output_var not in runtime_keys:
             runtime_keys.append(output_var)
-    for key in ("EXTERNAL_HANDLERS", "EXTERNAL_HANDLERS_ECS_HANDLERS"):
-        if key not in runtime_keys:
-            runtime_keys.append(key)
+    if "EXTERNAL_HANDLERS" not in runtime_keys:
+        runtime_keys.append("EXTERNAL_HANDLERS")
 
     inventory_keys: list[str] = list(state_cfg.get("inventory_stack_outputs") or [])
 
