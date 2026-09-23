@@ -90,16 +90,6 @@ def export_stack_b_app_outputs(stack: Stack, app: IConstruct) -> None:
         _emit(stack, "WebSocketConnectionsUrlStaging", staging["ws_connections"])
 
 
-def export_stack_b_compute_outputs(stack: Stack, compute: IConstruct) -> None:
-    exports: dict[str, Any] = getattr(compute, "stable_outputs", None) or {}
-    for key, value in exports.items():
-        if value is None:
-            continue
-        if isinstance(value, str) and value == "":
-            continue
-        _emit(stack, key, value)
-
-
 def export_stack_b_extension_outputs(stack: Stack, extension: IConstruct) -> None:
     for key, value in (getattr(extension, "runtime_outputs", None) or {}).items():
         if value is None:

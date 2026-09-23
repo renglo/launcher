@@ -79,31 +79,16 @@ def _optional_id(key: str) -> str | None:
 
 env_name = _require("env_name")
 github_repo = _require("github_repo")
-github_handlers_repo = _cfg.get("github_handlers_repo", github_repo).strip() or github_repo
 github_owner_id = _optional_id("github_owner_id")
 github_repo_id = _optional_id("github_repo_id")
-if github_handlers_repo == github_repo:
-    github_handlers_owner_id = github_owner_id
-    github_handlers_repo_id = github_repo_id
-else:
-    github_handlers_owner_id = _optional_id("github_handlers_owner_id")
-    github_handlers_repo_id = _optional_id("github_handlers_repo_id")
 enable_staging = bool(_cfg.get("enable_staging", True))
 architecture = platform_architecture(config_dir=_ROOT)
-compute_type = _cfg.get("compute_type", "fargate").strip() or "fargate"
-ec2_instance_type = _cfg.get("ec2_instance_type", "t3.medium").strip() or "t3.medium"
-ec2_min_instances = int(_cfg.get("ec2_min_instances", 0))
-ec2_desired_instances = int(_cfg.get("ec2_desired_instances", 1))
-ec2_max_instances = int(_cfg.get("ec2_max_instances", 2))
-network_mode = _cfg.get("network_mode", "").strip() or None
 
 extension_path = _cfg.get("extension_path", "").strip()
 email_from = _require("email_from")
 email_identity_type = _require("email_identity_type")
 email_hosted_zone_id = str(_cfg.get("email_hosted_zone_id", "") or "").strip()
 
-if compute_type not in ("lambda_only", "fargate", "ec2"):
-    raise ValueError(f"customer-config.json: 'compute_type' must be lambda_only|fargate|ec2, got {compute_type!r}")
 if email_identity_type not in ("email", "domain"):
     raise ValueError(
         f"customer-config.json: 'email_identity_type' must be email|domain, got {email_identity_type!r}"
@@ -151,20 +136,9 @@ stack_b = StackB(
     stack_b_id(env_name),
     env_name=env_name,
     github_repo=github_repo,
-    github_handlers_repo=github_handlers_repo,
     enable_staging=enable_staging,
-    github_handlers_owner_id=github_handlers_owner_id,
-    github_handlers_repo_id=github_handlers_repo_id,
     architecture=architecture,
-    compute_type=compute_type,
-    network_mode=network_mode,
-    ec2_instance_type=ec2_instance_type,
-    ec2_min_instances=ec2_min_instances,
-    ec2_desired_instances=ec2_desired_instances,
-    ec2_max_instances=ec2_max_instances,
-    tenant_policy=stack_a.tt_policy,
     tenant_role=stack_a.tt_role,
-    ai_policy=stack_a.ai_policy,
     stack_a_auth=stack_a.auth,
     stack_a_storage=stack_a.storage,
     stack_a_console=stack_a.console,
@@ -176,7 +150,6 @@ stack_b = StackB(
     extension_config=extension_config,
     include_extension=extension_folder is not None and extension_manifest is not None,
     hub_actions_specs=_hub_actions,
-    package_registry=package_registry,
 )
 stack_b.add_dependency(stack_a)
 

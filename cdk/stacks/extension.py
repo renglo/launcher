@@ -37,7 +37,6 @@ class ExtensionStack(Construct):
         extension_folder: Path,
         manifest: dict[str, Any],
         extension_config: dict[str, Any],
-        compute_type: str = "fargate",
         attach_roles: dict[str, iam.IRole] | None = None,
         platform_vector_bucket_name: str | None = None,
         platform_vector_bucket_arn: str | None = None,
@@ -155,10 +154,10 @@ class ExtensionStack(Construct):
 
         for role_template in manifest.get("attach_policy_to_roles", []):
             role_name = str(role_template).replace("{env}", env_name)
-            if compute_type == "lambda_only" and role_name.endswith("-handlers-ecs-task"):
-                continue
             role = role_refs.get(role_name)
             if role is None:
+                if role_name.endswith(("-handlers-role", "-handlers-ecs-task")):
+                    continue
                 raise ValueError(
                     f"Extension attach_policy_to_roles: no IAM role reference for {role_name!r}. "
                     "Pass attach_roles from stack-b with concrete Role constructs."

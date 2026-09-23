@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from aws_cdk import Fn, Token
+from aws_cdk import Fn
 from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
@@ -17,13 +17,9 @@ if str(_CDK_DIR) not in sys.path:
 from lib.config_builder import (  # noqa: E402
     build_deploy_input_envelope,
     build_deploy_input_vars,
-    build_ecs_network_vars,
     build_launcher_vars,
     build_platform_vars_envelope,
     ssm_deploy_input_path,
-    ssm_ecs_security_groups_path,
-    ssm_ecs_subnets_path,
-    ssm_ecs_vpc_path,
     ssm_platform_vars_path,
 )
 
@@ -38,16 +34,12 @@ class BootstrapConfigStack(Construct):
         aws_account: str,
         aws_region: str,
         github_repo: str,
-        github_handlers_repo: str,
         enable_staging: bool,
-        compute_type: str,
-        network_mode: str | None,
         auth: Any,
         storage: Any,
         console: Any,
         runtime: Any,
         app: Any,
-        compute: Any,
         extension: Any | None = None,
         from_email: str = "",
         webhook: Any | None = None,
@@ -55,7 +47,7 @@ class BootstrapConfigStack(Construct):
     ) -> None:
         super().__init__(scope, construct_id)
 
-        compute_outputs: dict[str, Any] = dict(getattr(compute, "stable_outputs", None) or {})
+        compute_outputs: dict[str, Any] = {}
         extension_vars: dict[str, Any] = {}
         if ai_storage is not None:
             # Platform AI amenities first; extension may add index name vars only.
@@ -76,10 +68,7 @@ class BootstrapConfigStack(Construct):
                 **dict(getattr(webhook, "runtime_outputs", None) or {}),
             }
 
-        ecs_network = build_ecs_network_vars(
-            compute_type=compute_type,
-            network_mode_cfg=network_mode,
-        )
+        ecs_network: dict[str, Any] = {}
 
         shared_launcher = {
             "env_name": env_name,
@@ -148,11 +137,8 @@ class BootstrapConfigStack(Construct):
             ecs_network=ecs_network,
             extension_vars=extension_vars,
         )
-        handlers_ecr_uri = compute_outputs.get("HandlersEcrRepoUri", "")
-        if handlers_ecr_uri:
-            deploy_vars["ECR_IMAGE_URI"] = Fn.join("", [handlers_ecr_uri, ":latest"])
         deploy_envelope = build_deploy_input_envelope(
-            github_handlers_repo=github_handlers_repo,
+            github_repo=github_repo,
             vars_dict=deploy_vars,
         )
         self._ssm_json_param(
@@ -160,52 +146,6 @@ class BootstrapConfigStack(Construct):
             ssm_deploy_input_path(env_name),
             deploy_envelope,
         )
-
-        if compute_type == "ec2":
-            self._provision_ecs_network_ssm(env_name, compute)
-
-    def _provision_ecs_network_ssm(self, env_name: str, compute: Any) -> None:
-        """Write ECS VPC/subnet/SG IDs as separate SSM params.
-
-        Use two mutually exclusive AWS::SSM::Parameter resources (create|existing)
-        that share the same Name. A single param whose Value is Fn::If over
-        conditional EC2 resources makes PutParameter fail in existing mode.
-        """
-        spec = getattr(compute, "ecs_network_ssm", None)
-        if not isinstance(spec, dict):
-            return
-        create_condition = spec.get("create_condition")
-        existing_condition = spec.get("existing_condition")
-        if create_condition is None or existing_condition is None:
-            return
-
-        pairs = (
-            (
-                "EcsVpc",
-                ssm_ecs_vpc_path(env_name),
-                spec.get("vpc_create"),
-                spec.get("vpc_existing"),
-            ),
-            (
-                "EcsSubnets",
-                ssm_ecs_subnets_path(env_name),
-                spec.get("subnets_create"),
-                spec.get("subnets_existing"),
-            ),
-            (
-                "EcsSecurityGroups",
-                ssm_ecs_security_groups_path(env_name),
-                spec.get("security_groups_create"),
-                spec.get("security_groups_existing"),
-            ),
-        )
-        for construct_id, name, create_value, existing_value in pairs:
-            if create_value is None or existing_value is None:
-                continue
-            created = self._ssm_string_param(f"{construct_id}Create", name, create_value)
-            created.cfn_options.condition = create_condition
-            existing = self._ssm_string_param(f"{construct_id}Existing", name, existing_value)
-            existing.cfn_options.condition = existing_condition
 
     def _ssm_json_param(self, construct_id: str, name: str, payload: dict[str, Any]) -> ssm.CfnParameter:
         return ssm.CfnParameter(
@@ -215,14 +155,4 @@ class BootstrapConfigStack(Construct):
             type="String",
             tier="Standard",
             value=Fn.to_json_string(payload),
-        )
-
-    def _ssm_string_param(self, construct_id: str, name: str, value: Any) -> ssm.CfnParameter:
-        return ssm.CfnParameter(
-            self,
-            construct_id,
-            name=name,
-            type="String",
-            tier="Standard",
-            value=Token.as_string(value),
         )

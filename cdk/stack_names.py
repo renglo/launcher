@@ -21,8 +21,8 @@ def stack_a_description() -> str:
 
 
 def stack_b_description(*, include_extension: bool = True) -> str:
-    areas = ["app", "compute"]
-    details = ["backend Lambda/API Gateway", "handlers Lambda/ECS/EC2"]
+    areas = ["app"]
+    details = ["backend Lambda/API Gateway"]
     if include_extension:
         areas.append("extension")
         details.append("extension S3/IAM")
