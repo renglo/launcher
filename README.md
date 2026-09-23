@@ -10,8 +10,8 @@ Two CloudFormation stacks per environment (synth output in `bootstrap/output/<en
 
 | Stack | CF name | Description | Contents |
 |-------|---------|-------------|----------|
-| A | `<env>-stack-a` | Reglo deployment — auth, storage, runtime | Cognito, S3/DynamoDB, SES (team invite email), backend ECR, seed CodeBuild, tenant IAM, CodeDeploy, releases OIDC |
-| B | `<env>-stack-b` | Reglo deployment — app, compute, extension | Backend Lambdas (seed), REST + WebSocket API Gateway, handlers compute, extension |
+| A | `<env>-stack-a` | Reglo deployment -— auth, storage, runtime | Cognito, S3/DynamoDB, SES (team invite email), backend ECR, seed CodeBuild, tenant IAM, CodeDeploy, releases OIDC |
+| B | `<env>-stack-b` | Reglo deployment — app, extension | Backend Lambdas (seed), REST + WebSocket API Gateway, optional extension. Handler compute is on peer stacks. |
 
 **Deploy order:** `<env>-stack-a` (builds seed image automatically) → `<env>-stack-b`
 
@@ -30,13 +30,8 @@ cp customer-config.example.json customer-config.json
 |-------|-------------|
 | `env_name` | Resource prefix and synth output folder name |
 | `github_repo` | BOM repo (`OWNER/REPO`) — SSM `GITHUB_REPOSITORY`, not the IAM `sub` |
-| `github_oidc_sub_prefix` | Optional. GitHub Actions OIDC subject prefix (`OWNER@ID/REPO@ID`). Copy from the repo **Settings → Actions → OIDC** page. Omit for name-only `sub` on older repos. Used for **both** staging and production deploy roles |
-| `github_handlers_repo` | Handlers/extensions repo |
-| `github_handlers_oidc_sub_prefix` | Optional. Same as `github_oidc_sub_prefix` for the handlers roles. Defaults to `github_oidc_sub_prefix` when the handlers repo is the BOM repo |
+| `github_owner_id` / `github_repo_id` | Optional. GitHub owner/repo IDs for immutable OIDC `sub` claims. Omit if unknown. |
 | `enable_staging` | `true` → staging Lambda + APIs + staging OIDC |
-| `compute_type` | `lambda_only` \| `fargate` \| `ec2` |
-| `ec2_instance_type` | EC2 instance type for handlers ASG (only `ec2`) |
-| `ec2_min_instances` / `ec2_desired_instances` / `ec2_max_instances` | ASG size (only `ec2`) |
 | `email_from` | **Required** — SES from-address for team invite email (app-owned address or domain) |
 | `email_identity_type` | **Required** — `email` (inbox verify) or `domain` (domain verify; preferred for no-reply) |
 | `email_hosted_zone_id` | Route53 public hosted zone ID when DNS for that domain is in this account (pattern A); omit for external DNS |
@@ -79,7 +74,7 @@ cdk deploy "$ENV-stack-b" --app "python app.py" --output . --exclusively --requi
 
 **Re-deploying `<env>-stack-b`:** resets Lambda code to the seed image. Re-run the releases pipeline afterward.
 
-With `compute_type=ec2`, stack-b creates a dedicated handlers VPC; no network parameters at deploy time.
+Handler compute (Lambda / Fargate / EC2) is on `{env}-peer-*` stacks. See [bom-helper/docs/PEERS.md](../bom-helper/docs/PEERS.md).
 
 ---
 
@@ -94,9 +89,7 @@ SSM paths (bootstrap [§6](../bootstrap/README.md#6-bootstrap-config-in-ssm-writ
 - `/{env}/bootstrap/platform-vars/production`
 - `/{env}/bootstrap/platform-vars/staging`
 - `/{env}/bootstrap/deploy-input`
-- `/{env}/bootstrap/ecs-vpc` (EC2 handlers only)
-- `/{env}/bootstrap/ecs-subnets` (EC2 handlers only)
-- `/{env}/bootstrap/ecs-security-groups` (EC2 handlers only)
+- `/{env}/bootstrap/peer-routes` (after peer stacks exist)
 
 CI workflows (only when you choose cloud go-live) read these via OIDC (bootstrap [§8](../bootstrap/README.md#8-cicd-contract-optional--cloud-production-only)).
 
@@ -112,60 +105,6 @@ cdk deploy "$ENV-stack-a" --app "python app.py" --output . \
   --parameters CreateGitHubOIDC=true \
   --profile "$AWS_PROFILE"
 ```
-
----
-
-## Handlers network (`HandlersNetworkMode`, `compute_type=ec2` only)
-
-`<env>-stack-b` exposes CloudFormation parameters when the template was synthesized with `compute_type=ec2`:
-
-| Parameter | Type | Default | Purpose |
-|-----------|------|---------|---------|
-| `HandlersNetworkMode` | `String` (`create`\|`existing`) | `create` | `create` = dedicated VPC/subnets; `existing` = customer VPC/subnets |
-| `ExistingVpcId` | `String` | *(empty)* | VPC ID when mode is `existing` |
-| `ExistingSubnetIds` | **`CommaDelimitedList`** | *(empty)* | Subnet IDs when mode is `existing` (CFN-native list) |
-
-A CloudFormation **Rule** rejects the changeset if mode is `existing` but `ExistingVpcId` is empty. Supply `ExistingSubnetIds` in the same deploy (console or quoted CLI overrides); an empty list fails when creating the Auto Scaling group.
-
-The stack **always** creates a dedicated handlers security group. In `existing` mode it is created inside `ExistingVpcId`; VPC/subnets are not deleted on stack teardown.
-
-### CloudFormation console (preferred for customer delivery)
-
-1. Upload `bootstrap/output/<env>/<env>-stack-b.template.json` (or use the packaged template URL).
-2. On the Parameters page set:
-   - `HandlersNetworkMode` = `existing`
-   - `ExistingVpcId` = `vpc-…`
-   - `ExistingSubnetIds` = `subnet-aaa,subnet-bbb,subnet-ccc` (single field; commas are part of `CommaDelimitedList`)
-
-### CloudFormation CLI
-
-```bash
-aws cloudformation deploy \
-  --template-file "bootstrap/output/${ENV}/${ENV}-stack-b.template.json" \
-  --stack-name "${ENV}-stack-b" \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --parameter-overrides \
-    "HandlersNetworkMode=existing" \
-    "ExistingVpcId=vpc-0123456789abcdef0" \
-    "ExistingSubnetIds=subnet-aaa,subnet-bbb" \
-  --profile "$AWS_PROFILE" \
-  --region "$AWS_REGION"
-```
-
-### CDK CLI
-
-Quote **each** `--parameters` value (PowerShell treats unquoted commas as arrays and can drop `ExistingVpcId` / `ExistingSubnetIds`):
-
-```bash
-cdk deploy "${ENV}-stack-b" --app "bootstrap/output/${ENV}/cdk" --exclusively \
-  --parameters \
-    "HandlersNetworkMode=existing" \
-    "ExistingVpcId=vpc-0123456789abcdef0" \
-    "ExistingSubnetIds=subnet-aaa,subnet-bbb" \
-  --profile "$AWS_PROFILE" --region "$AWS_REGION"
-```
-
-All `ExistingSubnetIds` must belong to `ExistingVpcId` and should span at least two Availability Zones.
 
 ---
 

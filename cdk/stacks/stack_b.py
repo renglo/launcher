@@ -1,4 +1,7 @@
-"""Stack B (post-seed): backend app, handlers compute, extension resources."""
+"""Stack B (post-seed): backend app, webhook, optional extension resources.
+
+Overflow handlers compute lives on peer stacks, not here.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +9,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from aws_cdk import CfnCondition, CfnParameter, CfnRule, CfnRuleAssertion, Fn, Stack
+from aws_cdk import Stack
 from aws_cdk import aws_iam as iam
 from constructs import Construct
 
@@ -17,29 +20,18 @@ from stacks.bootstrap_config import BootstrapConfigStack
 from stacks.extension import ExtensionStack
 from stacks.stack_exports import (
     export_stack_b_app_outputs,
-    export_stack_b_compute_outputs,
     export_stack_b_extension_outputs,
 )
 from stacks.webhook_ingress import WebhookIngressStack, export_webhook_ingress_outputs
+
 _ROOT = Path(__file__).resolve().parents[1]
 _OPS = _ROOT.parents[1]
-_EXTENSIONS_DIR = _ROOT / "extensions"
 _BOM_HELPER_CDK = _OPS / "bom-helper" / "cdk"
 _BOM_HELPER_SCRIPTS = _OPS / "bom-helper" / "scripts"
-if (_EXTENSIONS_DIR / "compute_stack.py").is_file():
-    _compute_stack_dir = _EXTENSIONS_DIR
-elif (_BOM_HELPER_CDK / "compute_stack.py").is_file():
-    _compute_stack_dir = _BOM_HELPER_CDK
-else:
-    raise ImportError(
-        "compute_stack.py not found; expected launcher/cdk/extensions/ "
-        "or ops/bom-helper/cdk/"
-    )
-for _extra in (_ROOT / "lib", _BOM_HELPER_SCRIPTS, _BOM_HELPER_CDK, _compute_stack_dir):
+for _extra in (_ROOT / "lib", _BOM_HELPER_SCRIPTS, _BOM_HELPER_CDK):
     if _extra.is_dir() and str(_extra) not in sys.path:
         sys.path.insert(0, str(_extra))
 
-from compute_stack import ComputeStack, HANDLERS_NETWORK_MODE_CREATE, HANDLERS_NETWORK_MODE_EXISTING  # noqa: E402
 from extension_actions import ExtensionActionsSpec, handle_from_extension_folder  # noqa: E402
 from extension_actions_iam import attach_extension_action_specs  # noqa: E402
 
@@ -52,20 +44,9 @@ class StackB(Stack):
         *,
         env_name: str,
         github_repo: str,
-        github_handlers_repo: str,
         enable_staging: bool = True,
-        github_handlers_owner_id: str | None = None,
-        github_handlers_repo_id: str | None = None,
         architecture: str = "x86_64",
-        compute_type: str = "fargate",
-        network_mode: str | None = None,
-        ec2_instance_type: str = "t3.medium",
-        ec2_min_instances: int = 0,
-        ec2_desired_instances: int = 1,
-        ec2_max_instances: int = 2,
-        tenant_policy: iam.IManagedPolicy | None = None,
         tenant_role: iam.IRole | None = None,
-        ai_policy: iam.IManagedPolicy | None = None,
         stack_a_auth: Any = None,
         stack_a_storage: Any = None,
         stack_a_console: Any = None,
@@ -77,7 +58,6 @@ class StackB(Stack):
         extension_config: dict[str, Any] | None = None,
         include_extension: bool = False,
         hub_actions_specs: list[ExtensionActionsSpec] | None = None,
-        package_registry: dict | None = None,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -98,116 +78,9 @@ class StackB(Stack):
             enable_staging=enable_staging,
             architecture=architecture,
         )
-        handlers_network_params = None
-        if compute_type == "ec2":
-            handlers_network_mode = CfnParameter(
-                self,
-                "HandlersNetworkMode",
-                type="String",
-                default=HANDLERS_NETWORK_MODE_CREATE,
-                allowed_values=[HANDLERS_NETWORK_MODE_CREATE, HANDLERS_NETWORK_MODE_EXISTING],
-                description=(
-                    "Handlers EC2 network layout. create provisions a dedicated VPC and subnets; "
-                    "existing uses ExistingVpcId and ExistingSubnetIds."
-                ),
-            )
-            handlers_network_params = {
-                "handlers_network_mode": handlers_network_mode,
-                "create_dedicated_network": CfnCondition(
-                    self,
-                    "CreateHandlersDedicatedNetwork",
-                    expression=Fn.condition_equals(
-                        handlers_network_mode.value_as_string,
-                        HANDLERS_NETWORK_MODE_CREATE,
-                    ),
-                ),
-                "use_existing_network": CfnCondition(
-                    self,
-                    "UseHandlersExistingNetwork",
-                    expression=Fn.condition_equals(
-                        handlers_network_mode.value_as_string,
-                        HANDLERS_NETWORK_MODE_EXISTING,
-                    ),
-                ),
-                "existing_vpc_id": CfnParameter(
-                    self,
-                    "ExistingVpcId",
-                    type="String",
-                    default="",
-                    description=(
-                        "VPC ID for handlers EC2 capacity when HandlersNetworkMode is existing. "
-                        "Ignored when HandlersNetworkMode is create."
-                    ),
-                ),
-                "existing_subnet_ids": CfnParameter(
-                    self,
-                    "ExistingSubnetIds",
-                    type="CommaDelimitedList",
-                    default="",
-                    description=(
-                        "Subnet IDs for the handlers Auto Scaling group when HandlersNetworkMode is existing "
-                        "(CloudFormation CommaDelimitedList: subnet-aaa,subnet-bbb). "
-                        "All subnets must belong to ExistingVpcId. Use subnets in at least two "
-                        "Availability Zones for high availability. Ignored when HandlersNetworkMode is create."
-                    ),
-                ),
-            }
-            # Fail the changeset early if existing mode has an empty VPC ID.
-            # (Rules cannot use Fn::Join; subnet list is still required at deploy —
-            # empty ExistingSubnetIds fails ASG create. Avoids opaque SSM PutParameter.)
-            CfnRule(
-                self,
-                "RequireExistingNetworkParams",
-                rule_condition=Fn.condition_equals(
-                    handlers_network_mode.value_as_string,
-                    HANDLERS_NETWORK_MODE_EXISTING,
-                ),
-                assertions=[
-                    CfnRuleAssertion(
-                        assert_=Fn.condition_not(
-                            Fn.condition_equals(
-                                handlers_network_params["existing_vpc_id"].value_as_string,
-                                "",
-                            )
-                        ),
-                        assert_description=(
-                            "ExistingVpcId is required when HandlersNetworkMode is existing"
-                        ),
-                    ),
-                ],
-            )
-
-        compute = ComputeStack(
-            self,
-            "Compute",
-            env_name=env_name,
-            aws_account=aws_account,
-            aws_region=aws_region,
-            compute_type=compute_type,
-            ec2_instance_type=ec2_instance_type,
-            ec2_min_instances=ec2_min_instances,
-            ec2_desired_instances=ec2_desired_instances,
-            ec2_max_instances=ec2_max_instances,
-            github_handlers_repo=github_handlers_repo,
-            github_handlers_owner_id=github_handlers_owner_id,
-            github_handlers_repo_id=github_handlers_repo_id,
-            enable_staging=enable_staging,
-            tenant_policy=tenant_policy,
-            handlers_network_params=handlers_network_params,
-            package_registry=package_registry,
-        )
 
         self.app = app
-        self.compute = compute
         extension = None
-
-        # Platform AI amenity IAM on handlers roles (tenant role already attached in Stack A).
-        # Attach from the role side so the cross-stack edge is B→A (not A→B).
-        if ai_policy is not None:
-            for role_attr in ("handlers_lambda_role", "handlers_ecs_task_role"):
-                role = getattr(compute, role_attr, None)
-                if role is not None:
-                    role.add_managed_policy(ai_policy)
 
         rest_url = app.production.get("rest_url") or ""
         tt_role_arn = (
@@ -244,12 +117,6 @@ class StackB(Stack):
                 not hub_handles or (bundled_handle and bundled_handle in hub_handles)
             ):
                 attach_roles[f"{env_name}_tt_role"] = tenant_role
-            handlers_lambda_role = getattr(compute, "handlers_lambda_role", None)
-            if handlers_lambda_role is not None:
-                attach_roles[f"{env_name}-handlers-role"] = handlers_lambda_role
-            handlers_ecs_task_role = getattr(compute, "handlers_ecs_task_role", None)
-            if handlers_ecs_task_role is not None:
-                attach_roles[f"{env_name}-handlers-ecs-task"] = handlers_ecs_task_role
 
             extension = ExtensionStack(
                 self,
@@ -259,7 +126,6 @@ class StackB(Stack):
                 extension_folder=extension_folder,
                 manifest=extension_manifest,
                 extension_config=extension_config or {},
-                compute_type=compute_type,
                 attach_roles=attach_roles,
                 platform_vector_bucket_name=platform_vector_bucket_name,
                 platform_vector_bucket_arn=platform_vector_bucket_arn,
@@ -281,7 +147,6 @@ class StackB(Stack):
             )
 
         export_stack_b_app_outputs(self, app)
-        export_stack_b_compute_outputs(self, compute)
         export_webhook_ingress_outputs(self, webhook)
         if extension is not None:
             export_stack_b_extension_outputs(self, extension)
@@ -299,17 +164,13 @@ class StackB(Stack):
                 aws_account=aws_account,
                 aws_region=aws_region,
                 github_repo=github_repo,
-                github_handlers_repo=github_handlers_repo,
                 enable_staging=enable_staging,
-                compute_type=compute_type,
-                network_mode=network_mode,
                 auth=stack_a_auth,
                 storage=stack_a_storage,
                 console=stack_a_console,
                 runtime=stack_a_runtime,
                 ai_storage=stack_a_ai_storage,
                 app=app,
-                compute=compute,
                 extension=extension,
                 from_email=from_email,
                 webhook=webhook,
