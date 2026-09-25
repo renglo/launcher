@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "launcher"
+version = "0.1.0"
+description = "CDK infrastructure for Renglo tenant environments"
+requires-python = ">=3.12"
+
+[tool.setuptools]
+packages = []
