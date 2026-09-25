@@ -1,6 +1,6 @@
 # Setting up a Renglo cloud environment (launcher)
 
-Step-by-step guide for **`deploy_environment.py`**. For launcher + handlers + merged bootstrap state, prefer [bootstrap/README.md](../bootstrap/README.md) on **`<main-launcher-root>`** (`bootstrap/`, `launcher/`, `extensions-service/` siblings).
+Step-by-step guide for **`deploy_environment.py`**. For launcher + handlers + merged bootstrap state, prefer [bootstrap/README.md](../bootstrap/README.md) on **`<main-launcher-root>`** (`bootstrap/`, `launcher/`, `bom-helper/` siblings).
 
 Short index: [README.md](README.md)
 

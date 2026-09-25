@@ -23,6 +23,10 @@ from stacks.stack_exports import (
 from stacks.webhook_ingress import WebhookIngressStack, export_webhook_ingress_outputs
 _ROOT = Path(__file__).resolve().parents[1]
 _OPS = _ROOT.parents[1]
+for _p in (_ROOT, *_ROOT.parents):
+    if (_p / "bom-helper" / "cdk").is_dir() and (_p / "bom-helper" / "scripts").is_dir():
+        _OPS = _p
+        break
 _EXTENSIONS_DIR = _ROOT / "extensions"
 _BOM_HELPER_CDK = _OPS / "bom-helper" / "cdk"
 _BOM_HELPER_SCRIPTS = _OPS / "bom-helper" / "scripts"

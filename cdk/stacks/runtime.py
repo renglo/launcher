@@ -123,7 +123,10 @@ def _tt_policy_document(
 ) -> iam.PolicyDocument:
     handlers_bucket = f"{env_name}-handlers-ecs-{account}"
     backend_repo_name = backend_ecr_repository_name(env_name)
-    ses_resources = [ses_identity_arn] if ses_identity_arn else ["*"]
+    # SendRawEmail authorizes From and destination identities. Scoping the
+    # resource to the From identity alone returns 403 in production while
+    # local admin credentials still succeed.
+    ses_resources = [f"arn:aws:ses:{region}:{account}:identity/*"]
     return iam.PolicyDocument(
         statements=[
             iam.PolicyStatement(

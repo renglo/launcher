@@ -28,11 +28,14 @@ from pathlib import Path
 import aws_cdk as cdk
 
 _ROOT = Path(__file__).resolve().parent
-for _extra in (
-    _ROOT / "lib",
-    _ROOT.parents[1] / "bom-helper" / "scripts" if len(_ROOT.parents) >= 2 else _ROOT,
-    _ROOT.parents[1] / "bom-helper" / "cdk" if len(_ROOT.parents) >= 2 else _ROOT,
-):
+_extra_paths = [_ROOT / "lib"]
+for _p in (_ROOT, *_ROOT.parents):
+    _scripts = _p / "bom-helper" / "scripts"
+    _cdk = _p / "bom-helper" / "cdk"
+    if _scripts.is_dir() or _cdk.is_dir():
+        _extra_paths.extend((_scripts, _cdk))
+        break
+for _extra in _extra_paths:
     if _extra.is_dir() and str(_extra) not in sys.path:
         sys.path.insert(0, str(_extra))
 
